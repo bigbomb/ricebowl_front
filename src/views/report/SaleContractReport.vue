@@ -8,7 +8,6 @@
             v-model="filters.keyword"
             :fetch-suggestions="querySearchAsync"
             placeholder="请输入客户名称"
-            @select="handleSelect1"
           ></el-autocomplete>
         </el-form-item>
         <el-form-item>
@@ -44,7 +43,6 @@
         highlight-current-row
         v-loading="listLoading"
         element-loading-text="拼命加载中"
-        @selection-change="handleSelectionChange"
         style="width: 100%;"
       >
         <!-- <el-table-column property="id" v-if="isshow" label="ID" width="100">
@@ -119,7 +117,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column property="grossprofit" label="所得毛利" width="160">
+        <el-table-column property="grossprofit" label="所得毛利">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.grossprofit}}</span>
@@ -150,8 +148,7 @@ export default {
       multipleSelection: "",
       customerList: [],
       timeout: null,
-      gridData: [],
-      contractData: [],
+      contractGridData: [],
       pageSizes: [15, 50, 80, 100],
       startPage: 1,
       pageSize: 15,

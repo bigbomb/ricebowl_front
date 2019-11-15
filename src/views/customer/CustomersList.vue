@@ -122,7 +122,7 @@
             <el-form-item label="税号" prop="taxNumber">
               <el-input v-model="customerRuleForm.taxNumber" placeholder="请输入税号"></el-input>
             </el-form-item>
-            <el-form-item label="允许微信登入" prop="status">
+            <!-- <el-form-item label="允许微信登入" prop="status">
               <el-switch
                 v-model="customerRuleForm.status"
                 active-color="#13ce66"
@@ -130,7 +130,7 @@
                 :active-value="1"
                 :inactive-value="0"
               ></el-switch>
-            </el-form-item>
+            </el-form-item>-->
           </el-form>
         </div>
         <div slot="footer" class="dialog-footer">
@@ -151,7 +151,7 @@ var exportThis;
 export default {
   data() {
     var validatePhone = (rule, value, callback) => {
-      if (exportThis.customerRuleForm.id == null) {
+      if (Object.keys(exportThis.customerRuleForm.id).length === 0) {
         if (value === "") {
           callback(new Error("请输入正确的手机号码"));
         } else {
@@ -291,7 +291,6 @@ export default {
       let _this = this;
       this.readonly = false;
       _this.thistitle = "新增客户";
-      _this.dialogFormVisible = true;
       this.customerRuleForm.companyPhone = "";
       this.customerRuleForm.companyName = "";
       this.customerRuleForm.companyAddress = "";
@@ -300,24 +299,23 @@ export default {
       this.customerRuleForm.bankAccount = "";
       this.customerRuleForm.taxNumber = "";
       this.customerRuleForm.id = "";
-      this.customerRuleForm.memberId = "";
       this.customerRuleForm.status = "";
-      _this.resetForm("customerRuleForm");
+      _this.dialogFormVisible = true;
     },
     // 添加客户
     async addCustomer() {
       let _this = this;
       let params = new FormData();
-      params.append("companyphone", this.customerRuleForm.companyPhone);
-      params.append("companyname", this.customerRuleForm.companyName);
-      params.append("companyaddress", this.customerRuleForm.companyAddress);
-      params.append("fax", this.customerRuleForm.fax);
-      params.append("bankname", this.customerRuleForm.bankName);
-      params.append("bankaccount", this.customerRuleForm.bankAccount);
-      params.append("taxnumber", this.customerRuleForm.taxNumber);
-      params.append("id", this.customerRuleForm.id);
-      params.append("memberid", this.customerRuleForm.memberId);
-      params.append("status", this.customerRuleForm.status);
+      params.append("companyphone", _this.customerRuleForm.companyPhone);
+      params.append("companyname", _this.customerRuleForm.companyName);
+      params.append("companyaddress", _this.customerRuleForm.companyAddress);
+      params.append("fax", _this.customerRuleForm.fax);
+      params.append("bankname", _this.customerRuleForm.bankName);
+      params.append("bankaccount", _this.customerRuleForm.bankAccount);
+      params.append("taxnumber", _this.customerRuleForm.taxNumber);
+      params.append("id", _this.customerRuleForm.id);
+      params.append("memberid", _this.customerRuleForm.memberId);
+      params.append("status", _this.customerRuleForm.status);
       this.axios
         .post(process.env.API_ROOT + "/CustomerApi/v1/addCustomer", params)
         .then(response => {
@@ -427,7 +425,7 @@ export default {
       this.customerRuleForm.taxNumber = row.taxnumber;
       this.customerRuleForm.status = row.status;
       this.customerRuleForm.companyPhone = row.companyphone;
-      this.readonly = true;
+      this.readonly = false;
       this.dialogFormVisible = true;
     },
 
