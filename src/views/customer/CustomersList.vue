@@ -6,59 +6,61 @@
         <el-form-item>
           <el-input v-model="filters.keyword" placeholder="姓名"></el-input>
         </el-form-item>
-        <el-form-item v-if='findShow'>
-          <el-button type="primary" class="el-icon-search" :loading="selLoading" v-on:click="getCustomers">查询</el-button>
-        </el-form-item >
-        <el-form-item v-if='addShow'>
+        <el-form-item v-if="findShow">
+          <el-button
+            type="primary"
+            class="el-icon-search"
+            :loading="selLoading"
+            v-on:click="getCustomers"
+          >查询</el-button>
+        </el-form-item>
+        <el-form-item v-if="addShow">
           <el-button type="success" class="el-icon-plus" @click.native="showDialogForm">新增</el-button>
         </el-form-item>
         <!-- <el-form-item>
 					<el-button type="error" class="el-icon-edit" @click="editCustomer">编辑</el-button>
-				</el-form-item> -->
-        <el-form-item v-if='delShow'>
+        </el-form-item>-->
+        <el-form-item v-if="delShow">
           <el-button type="danger" class="el-icon-delete" @click="delCustomer">删除</el-button>
         </el-form-item>
         <!-- <el-form-item>
 					<el-button type="danger" class="el-icon-delete" @click="toueditor">百度富文本框</el-button>
-				</el-form-item> -->
+        </el-form-item>-->
       </el-form>
     </el-col>
 
     <!--列表-->
     <el-col>
-      <el-table :data="customers" v-loading="listLoading" element-loading-text="拼命加载中" @selection-change="handleSelectionChange" style="width: 100%;">
-        <el-table-column type="selection" width="55">
-        </el-table-column>
-        <el-table-column prop="id" label="id" width="60" sortable>
-        </el-table-column>
-        <el-table-column prop="companyname" label="客户名称" width="200" sortable>
-        </el-table-column>
-        <el-table-column prop="companyaddress" label="客户地址" width="400" sortable>
-        </el-table-column>
-        <el-table-column prop="companyphone" label="会员手机号" width="200" sortable>
-        </el-table-column>
-        <el-table-column prop="fax" label="电话/传真" width="200" sortable>
-        </el-table-column>
-        <el-table-column prop="bankname" label="开户行" width="200" sortable>
-        </el-table-column>
+      <el-table
+        :data="customers"
+        v-loading="listLoading"
+        element-loading-text="拼命加载中"
+        @selection-change="handleSelectionChange"
+        style="width: 100%;"
+      >
+        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column prop="id" label="id" width="60" sortable></el-table-column>
+        <el-table-column prop="companyname" label="客户名称" width="200" sortable></el-table-column>
+        <el-table-column prop="companyaddress" label="客户地址" width="400" sortable></el-table-column>
+        <el-table-column prop="companyphone" label="会员手机号" width="200" sortable></el-table-column>
+        <el-table-column prop="fax" label="电话/传真" width="200" sortable></el-table-column>
+        <el-table-column prop="bankname" label="开户行" width="200" sortable></el-table-column>
 
-        <el-table-column prop="bankaccount" label="银行账号" width="200" sortable>
-        </el-table-column>
-        <el-table-column prop="taxnumber" label="税号" width="200" sortable>
-        </el-table-column>
+        <el-table-column prop="bankaccount" label="银行账号" width="200" sortable></el-table-column>
+        <el-table-column prop="taxnumber" label="税号" width="200" sortable></el-table-column>
         <el-table-column prop="crt" label="创建时间" width="200" sortable>
           <template slot-scope="scope">
             <span>{{scope.row.crt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="upt" label="更新时间" width="200" sortable>
+        <el-table-column prop="upt" label="更新时间" sortable>
           <template slot-scope="scope">
-            <span v-show='scope.row.upt!=null'>{{scope.row.upt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
+            <span v-show="scope.row.upt!=null">{{scope.row.upt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="编辑" width="60">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click='editShow(scope.row)'>编辑</el-button>
+            <el-button type="text" size="small" @click="editShow(scope.row)">编辑</el-button>
           </template>
         </el-table-column>
         <!-- <el-table-column fixed="right" label="允许微信登陆" width="120" v-if='wxShow'>
@@ -66,21 +68,41 @@
             <el-switch @change="switchChange(scope.row.status,scope.row.id)" v-model="scope.row.status" active-color="#13ce66" inactive-color="#ff4949" :active-value="1" :inactive-value="0">
             </el-switch>
           </template>
-        </el-table-column> -->
+        </el-table-column>-->
       </el-table>
     </el-col>
     <el-col>
       <div class="block" style="float: right;margin-right: 10px;margin-top: 10px;">
-        <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="startPage" :page-sizes="pageSizes" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
-        </el-pagination>
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="startPage"
+          :page-sizes="pageSizes"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
       </div>
     </el-col>
     <el-col :span="2">
       <el-dialog :title="thistitle" :visible.sync="dialogFormVisible">
         <div style="width:80%;margin: 0 auto">
-          <el-form :model="customerRuleForm" status-icon :rules="rules" ref="customerRuleForm" :inline="false" label-width="120px" class="customer-ruleForm">
+          <el-form
+            :model="customerRuleForm"
+            status-icon
+            :rules="rules"
+            ref="customerRuleForm"
+            :inline="false"
+            label-width="120px"
+            class="customer-ruleForm"
+          >
             <el-form-item label="会员手机号" prop="companyPhone">
-              <el-input ref="companyPhone" v-model="customerRuleForm.companyPhone" :readonly="readonly" placeholder="请输入会员手机号"></el-input>
+              <el-input
+                ref="companyPhone"
+                v-model="customerRuleForm.companyPhone"
+                :readonly="readonly"
+                placeholder="请输入会员手机号"
+              ></el-input>
             </el-form-item>
             <el-form-item label="公司名称" prop="companyName">
               <el-input v-model="customerRuleForm.companyName" placeholder="请输入公司名称"></el-input>
@@ -101,10 +123,14 @@
               <el-input v-model="customerRuleForm.taxNumber" placeholder="请输入税号"></el-input>
             </el-form-item>
             <el-form-item label="允许微信登入" prop="status">
-              <el-switch v-model="customerRuleForm.status" active-color="#13ce66" inactive-color="#ff4949" :active-value="1" :inactive-value="0">
-              </el-switch>
+              <el-switch
+                v-model="customerRuleForm.status"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                :active-value="1"
+                :inactive-value="0"
+              ></el-switch>
             </el-form-item>
-
           </el-form>
         </div>
         <div slot="footer" class="dialog-footer">
@@ -266,17 +292,17 @@ export default {
       this.readonly = false;
       _this.thistitle = "新增客户";
       _this.dialogFormVisible = true;
-      this.customerRuleForm.companyPhone = ''
-      this.customerRuleForm.companyName = ''
-      this.customerRuleForm.companyAddress =''
-      this.customerRuleForm.fax = ''
-      this.customerRuleForm.bankName = ''
-      this.customerRuleForm.bankAccount = ''
-      this.customerRuleForm.taxNumber = ''
-      this.customerRuleForm.id = ''
-      this.customerRuleForm.memberId =''
-      this.customerRuleForm.status = ''
-      _this.resetForm('customerRuleForm');
+      this.customerRuleForm.companyPhone = "";
+      this.customerRuleForm.companyName = "";
+      this.customerRuleForm.companyAddress = "";
+      this.customerRuleForm.fax = "";
+      this.customerRuleForm.bankName = "";
+      this.customerRuleForm.bankAccount = "";
+      this.customerRuleForm.taxNumber = "";
+      this.customerRuleForm.id = "";
+      this.customerRuleForm.memberId = "";
+      this.customerRuleForm.status = "";
+      _this.resetForm("customerRuleForm");
     },
     // 添加客户
     async addCustomer() {

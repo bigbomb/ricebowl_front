@@ -1,72 +1,95 @@
 <template>
-	<el-row>
-		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="filters">
-				<el-form-item>
-					<el-autocomplete v-model="filters.keyword" :fetch-suggestions="querySearchAsync" placeholder="请输入供应商名称" @select="handleSelect1"></el-autocomplete>
-				</el-form-item>
+  <el-row>
+    <!--工具条-->
+    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+      <el-form :inline="true" :model="filters">
         <el-form-item>
-            <el-date-picker v-model="filters.validateTime" type="daterange" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" @change="searchTime">
-            </el-date-picker>
+          <el-autocomplete
+            v-model="filters.keyword"
+            :fetch-suggestions="querySearchAsync"
+            placeholder="请输入供应商名称"
+            @select="handleSelect1"
+          ></el-autocomplete>
         </el-form-item>
-				<el-form-item v-if='findShow'>
-					<el-button type="primary" class="el-icon-search" :loading="selLoading" v-on:click="getContract">查询</el-button>
-				</el-form-item>
-			</el-form>
-		</el-col>
-        <el-col :span="24">           
-            <el-tabs v-model="activeName" @tab-click="handleClick">
-              <el-tab-pane label="未收到" name="未收到"></el-tab-pane>
-              <el-tab-pane label="已收到" name="已收到"></el-tab-pane>
-            </el-tabs>
-        </el-col> 
-		<!--列表-->
-		<el-col>
-			<el-table ref="purchaseTable" :data="purchaseContracts" highlight-current-row v-loading="listLoading" element-loading-text="拼命加载中" style="width: 100%;">
-        <el-table-column prop="id" label="id" sortable fixed="left"  width="80">
-        </el-table-column>
-        <el-table-column prop="purchasestatus" label="采购单状态" sortable fixed="left"  width="120">
-        </el-table-column>
-        <el-table-column prop="memberid" label="id" sortable fixed="left" width="150" v-if="isshow">
-        </el-table-column>
-        <el-table-column prop="supplyername" label="供应商名称" sortable fixed="left" width="250" >
-        </el-table-column>
-        <el-table-column prop="purchaseno" label="采购合同号" sortable width="200">
-        </el-table-column>
-        <el-table-column prop="purchaseweight" label="采购入库吨位" sortable width="200">
-        </el-table-column>
-        <el-table-column prop="purchaseamount" label="采购金额" sortable width="150">
-        </el-table-column>
+        <el-form-item>
+          <el-date-picker
+            v-model="filters.validateTime"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            @change="searchTime"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="primary"
+            class="el-icon-search"
+            :loading="selLoading"
+            v-on:click="getContract"
+          >查询</el-button>
+        </el-form-item>
+      </el-form>
+    </el-col>
+    <el-col :span="24">
+      <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tab-pane label="未收到" name="未收到"></el-tab-pane>
+        <el-tab-pane label="已收到" name="已收到"></el-tab-pane>
+      </el-tabs>
+    </el-col>
+    <!--列表-->
+    <el-col>
+      <el-table
+        ref="purchaseTable"
+        :data="purchaseContracts"
+        highlight-current-row
+        v-loading="listLoading"
+        element-loading-text="拼命加载中"
+        style="width: 100%;"
+      >
+        <el-table-column prop="id" label="id" sortable fixed="left" width="80"></el-table-column>
+        <el-table-column prop="purchasestatus" label="采购单状态" sortable fixed="left" width="120"></el-table-column>
+        <el-table-column prop="memberid" label="id" sortable fixed="left" width="150" v-if="isshow"></el-table-column>
+        <el-table-column prop="supplyername" label="供应商名称" sortable fixed="left" width="250"></el-table-column>
+        <el-table-column prop="purchaseno" label="采购合同号" sortable width="200"></el-table-column>
+        <el-table-column prop="purchaseweight" label="采购入库吨位" sortable width="200"></el-table-column>
+        <el-table-column prop="purchaseamount" label="采购金额" sortable width="150"></el-table-column>
         <el-table-column prop="purchasedate" label="入库日期" sortable width="150">
           <template slot-scope="scope">
             <span>{{scope.row.purchasedate, 'yyyy-MM-dd' | dataFormat}}</span>
           </template>
-        </el-table-column>        
-        <el-table-column prop="invoicestatus" label="状态" sortable width="200">
         </el-table-column>
-        <el-table-column prop="createby" label="创建人" sortable width="100">
-        </el-table-column>
+        <el-table-column prop="invoicestatus" label="状态" sortable width="200"></el-table-column>
+        <el-table-column prop="createby" label="创建人" sortable width="100"></el-table-column>
         <el-table-column prop="crt" label="创建日期" sortable width="300">
           <template slot-scope="scope">
-            <span v-show='scope.row.crt!=null'>{{scope.row.crt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
+            <span v-show="scope.row.crt!=null">{{scope.row.crt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="operation" fixed="right" label="操作" >
+        <el-table-column prop="operation" fixed="right" label="操作">
           <template slot-scope="scope">
-              <div v-if="scope.row.invoicestatus==='未收到'&& submitShow"><el-button type="text" size="small" @click='editShow(scope.row)' >确认收到</el-button></div>
-              <div v-else></div>
+            <div v-if="scope.row.invoicestatus==='未收到'&& submitShow">
+              <el-button type="text" size="small" @click="editShow(scope.row)">确认收到</el-button>
+            </div>
+            <div v-else></div>
           </template>
         </el-table-column>
       </el-table>
-		</el-col>
-		<el-col>
-			<div class="block" style="float: right;margin-right: 10px;margin-top: 10px;">
-				<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="startPage" :page-sizes="pageSizes" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
-				</el-pagination>
-			</div>
-		</el-col>
-	</el-row>
+    </el-col>
+    <el-col>
+      <div class="block" style="float: right;margin-right: 10px;margin-top: 10px;">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="startPage"
+          :page-sizes="pageSizes"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
+      </div>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
@@ -79,15 +102,15 @@ export default {
       producer: "",
       filters: {
         keyword: "",
-        validateTime: [],
+        validateTime: []
       },
-      activeName:'未收到',
+      activeName: "未收到",
       statusTab: "未收到",
       dateObj: {
         startTime: "",
         endTime: ""
       },
-      customerList:[],
+      customerList: [],
       tableData1: [],
       purchaseContracts: [],
       pageSizes: [30, 50, 80, 100],
@@ -104,7 +127,7 @@ export default {
       deliveryOrderNos: [], //加工单Nos
       memberId: "",
       saleContractNos: [],
-      memberId: "",
+      memberId: ""
     };
   },
   methods: {
@@ -142,7 +165,7 @@ export default {
           }
           if (response.data.status === 200) {
             this.message(true, response.data.msg, "success");
-            this.getContract()
+            this.getContract();
           } else {
             this.message(true, response.data.msg, "error");
           }
@@ -163,7 +186,8 @@ export default {
       params.append("endTime", _this.dateObj.endTime);
       this.axios
         .post(
-          process.env.API_ROOT + "/PurchaseContractApi/v1/findPurchaseContractByPage",
+          process.env.API_ROOT +
+            "/PurchaseContractApi/v1/findPurchaseContractByPage",
           params
         )
         .then(response => {
@@ -235,7 +259,10 @@ export default {
       let memberId = this.memberId;
       params.append("memberId", memberId);
       this.axios
-        .post(process.env.API_ROOT + "/PurchaseContractApi/v1/findSupplyerByNoPage", params)
+        .post(
+          process.env.API_ROOT + "/PurchaseContractApi/v1/findSupplyerByNoPage",
+          params
+        )
         .then(response => {
           let supplyerdata = response.data.data;
           this.supplyerList = [];
@@ -270,7 +297,7 @@ export default {
         return state.value.indexOf(queryString) >= 0;
       };
     },
-     handleSelect1(item) {
+    handleSelect1(item) {
       this.filters.keyword = item.value;
     },
 
@@ -294,11 +321,8 @@ export default {
     this.getCustomerList();
   },
   computed: {
-    findShow() {
-      return this.getHasRule("查询采购发票");
-    },
     submitShow() {
-      return this.getHasRule("确认收到");
+      return this.getHasRule("确认已收");
     }
   }
 };
@@ -335,35 +359,42 @@ export default {
   font-size: 16px;
   margin: 0 auto;
 }
-#pillorderSheet .titleMenu{letter-spacing: 10px; margin-bottom: 30px;font-size: 30px;
-  text-align: center; color: #292929;}
+#pillorderSheet .titleMenu {
+  letter-spacing: 10px;
+  margin-bottom: 30px;
+  font-size: 30px;
+  text-align: center;
+  color: #292929;
+}
 #pillorderSheet .titleBox div {
   padding: 2px;
 }
-#pillorderSheet .botom{
+#pillorderSheet .botom {
   border-bottom: 1px solid #d9d9d9;
   text-align: center;
 }
-#pillorderSheet .txtleft{
+#pillorderSheet .txtleft {
   text-align: left;
-  border-bottom: 1px solid #d9d9d9; 
+  border-bottom: 1px solid #d9d9d9;
 }
 #pillorderSheet .addorder {
   margin-bottom: 15px;
   border: 1px solid #ebeef5;
 }
-#pillorderSheet .footeremark .padingnone{
+#pillorderSheet .footeremark .padingnone {
   padding: 0 !important;
 }
-#pillorderSheet .footeremark .padtop{padding: 15px!important}
+#pillorderSheet .footeremark .padtop {
+  padding: 15px !important;
+}
 #pillorderSheet .footeremark .el-row div {
   padding: 10px 15px;
 }
-#pillorderSheet .footeremark .footrightBox{
+#pillorderSheet .footeremark .footrightBox {
   text-align: right;
   padding: 0 30px 0 0;
 }
-#pillorderSheet .footeremark .footrightBox p{
-  margin: 0
+#pillorderSheet .footeremark .footrightBox p {
+  margin: 0;
 }
 </style>

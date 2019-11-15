@@ -21,7 +21,7 @@
             @change="searchTime"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item v-if="findShow">
+        <el-form-item>
           <el-button
             type="primary"
             class="el-icon-search"
@@ -75,7 +75,7 @@
         <el-table-column prop="operation" fixed="right" label="操作">
           <template slot-scope="scope">
             <div v-if="scope.row.invoiceStatus==='已开'||scope.row.actualamount===undefined"></div>
-            <div v-else>
+            <div v-else-if="submitShow">
               <el-button type="text" size="small" @click="editShow(scope.row)">确认已开</el-button>
             </div>
           </template>
@@ -295,11 +295,8 @@ export default {
     this.getCustomerList();
   },
   computed: {
-    findShow() {
-      return this.getHasRule("查询提单");
-    },
-    printShow() {
-      return this.getHasRule("提单打印");
+    submitShow() {
+      return this.getHasRule("确认已开");
     }
   }
 };

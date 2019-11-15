@@ -103,7 +103,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="createby" label="创建人" sortable width="100"></el-table-column>
-        <el-table-column prop="verifyby" label="审核人" sortable width="100"></el-table-column>
+        <el-table-column prop="verifyby" label="审核人" sortable></el-table-column>
         <el-table-column prop="operation" fixed="right" width="100" label="操作">
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="bottom">
