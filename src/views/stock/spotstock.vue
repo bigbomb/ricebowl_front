@@ -71,6 +71,15 @@
           >查询</el-button>
         </el-form-item>
         <el-form-item>
+          <el-button
+            type="primary"
+            class="el-icon-search"
+            :loading="selLoading"
+            v-on:click="lock"
+            v-if="lockShow"
+          >锁货</el-button>
+        </el-form-item>
+        <el-form-item>
           <el-button type="success" @click.native="showDialogForm" v-if="addShow">生成现货销售订单</el-button>
         </el-form-item>
         <!-- <el-form-item>
@@ -950,6 +959,65 @@ export default {
       setTimeout(() => {
         this.$refs.tdgridTable.setCurrentRow(d);
       }, 10);
+    },
+    async lock() {
+      let _this = this;
+      let ids = [];
+      if (_this.addstock.length === 0) {
+        this.message(true, "请选择需要锁货的商品", "error");
+        return;
+      }
+      _this.addstock.forEach(function(c) {
+        ids.push(c.stockid);
+      });
+      console.log("库存为:" + ids);
+      let params = new FormData();
+      params.append("ids", ids);
+      this.axios
+        .post(process.env.API_ROOT + "/WareHouseApi/v1/lock", params)
+        .then(response => {
+          if (!response.data) {
+            return;
+          }
+          if (response.data && response.data.status === 200) {
+            _this.message(true, response.data.msg, "success");
+            _this.getContract();
+          } else {
+            _this.message(true, response.data.msg, "error");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+      // let params = new FormData();
+      // params.append("startPage", _this.startPage);
+      // params.append("pageSize", _this.pageSize);
+      // params.append("memberid", _this.memberId);
+      // params.append("productname", _this.searchRuleForm.productname);
+      // params.append("productspec", _this.searchRuleForm.productspec);
+      // params.append("productfactory", _this.searchRuleForm.productfactory);
+      // params.append("productmark", _this.searchRuleForm.productmark);
+      // params.append("warehousename", _this.searchRuleForm.warehousename);
+      // params.append("stockstatus", _this.statusTab);
+      // this.axios
+      //   .post(process.env.API_ROOT + "/WareHouseApi/v1/lock", params)
+      //   .then(response => {
+      //     if (!response.data) {
+      //       _this.listLoading = false;
+      //       return;
+      //     }
+      //     if (response.data && response.data.status === 200) {
+      //       _this.stockgridData = response.data.data;
+      //       _this.total = response.data.total;
+      //     } else {
+      //       _this.message(true, response.data.msg, "error");
+      //       _this.stockgridData = [];
+      //     }
+      //     _this.listLoading = false;
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
     },
     // 查询合同
     async getContract() {
@@ -1918,6 +1986,10 @@ export default {
     },
     findShow() {
       return this.getHasRule("查询库存");
+    },
+    lockShow() {
+      return true;
+      // return this.getHasRule("查询库存");
     }
   }
 };
