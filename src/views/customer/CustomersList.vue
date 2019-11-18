@@ -151,37 +151,34 @@ var exportThis;
 export default {
   data() {
     var validatePhone = (rule, value, callback) => {
-      if (Object.keys(exportThis.customerRuleForm.id).length === 0) {
-        if (value === "") {
-          callback(new Error("请输入正确的手机号码"));
-        } else {
-          var length = value.length;
-          var mobile = /^(13[0-9]{9})|(18[0-9]{9})|(14[0-9]{9})|(17[0-9]{9})|(15[0-9]{9})$/;
-          if (length == 11 && mobile.test(value)) {
-            let params = new FormData();
-            params.append("keyword", value);
-            params.append("memberId", exportMemberId);
-            this.axios
-              .post(process.env.API_ROOT + "/CustomerApi/v1/checkPhone", params)
-              .then(response => {
-                if (!response.data) {
-                  _this.listLoading = false;
-                  return;
-                }
-                if (response.data && response.data.status === 200) {
-                  if (response.data.data.length > 0) {
-                    callback(new Error("此手机号已存在"));
-                  } else {
-                    callback();
-                  }
-                }
-              });
-          } else {
-            callback(new Error("请输入正确的手机号码"));
-          }
-        }
+      debugger;
+      if (Object.keys(value).length == 0) {
+        callback(new Error("请输入正确的手机号码"));
       } else {
-        callback();
+        var length = value.length;
+        var mobile = /^(13[0-9]{9})|(18[0-9]{9})|(14[0-9]{9})|(17[0-9]{9})|(15[0-9]{9})$/;
+        if (length == 11 && mobile.test(value)) {
+          let params = new FormData();
+          params.append("keyword", value);
+          params.append("memberId", exportMemberId);
+          this.axios
+            .post(process.env.API_ROOT + "/CustomerApi/v1/checkPhone", params)
+            .then(response => {
+              if (!response.data) {
+                _this.listLoading = false;
+                return;
+              }
+              if (response.data && response.data.status === 200) {
+                if (response.data.data.length > 0) {
+                  callback(new Error("此手机号已存在"));
+                } else {
+                  callback();
+                }
+              }
+            });
+        } else {
+          callback(new Error("请输入正确的手机号码"));
+        }
       }
     };
     return {
@@ -424,7 +421,8 @@ export default {
       this.customerRuleForm.bankAccount = row.bankaccount;
       this.customerRuleForm.taxNumber = row.taxnumber;
       this.customerRuleForm.status = row.status;
-      this.customerRuleForm.companyPhone = row.companyphone;
+      this.customerRuleForm.companyPhone =
+        typeof row.companyphone == "undefined" ? "" : row.companyphone;
       this.readonly = false;
       this.dialogFormVisible = true;
     },

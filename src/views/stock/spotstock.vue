@@ -65,22 +65,18 @@
           <el-button
             type="primary"
             class="el-icon-search"
-            :loading="selLoading"
             v-on:click="getContract"
             v-if="findShow"
           >查询</el-button>
         </el-form-item>
-        <el-form-item>
-          <el-button
-            type="primary"
-            class="el-icon-search"
-            :loading="selLoading"
-            v-on:click="lock"
-            v-if="lockShow"
-          >锁货</el-button>
+        <el-form-item v-if="lockShow&&activeName=='在库'">
+          <el-button type="primary" v-on:click="lock">锁货</el-button>
         </el-form-item>
-        <el-form-item>
-          <el-button type="success" @click.native="showDialogForm" v-if="addShow">生成现货销售订单</el-button>
+        <el-form-item v-if="unlockShow&&activeName=='已锁货'">
+          <el-button type="primary" v-on:click="unlock">解锁</el-button>
+        </el-form-item>
+        <el-form-item v-if="addShow&&activeName=='已锁货'">
+          <el-button type="success" @click.native="showDialogForm">生成现货销售订单</el-button>
         </el-form-item>
         <!-- <el-form-item>
           <el-button type="danger" class="el-icon-delete" @click="delContract" v-if="delShow">删除</el-button>
@@ -105,7 +101,7 @@
         @selection-change="handleSelectionChange"
         style="width: 100%;"
       >
-        <el-table-column type="selection" v-if="activeName=='在库'" width="80"></el-table-column>
+        <el-table-column type="selection" v-if="activeName=='在库'||activeName=='已锁货'" width="80"></el-table-column>
 
         <el-table-column property="id" v-if="isshow" label="ID" width="100">
           <template slot-scope="scope">
@@ -155,10 +151,16 @@
             <span>{{scope.row.warehousename}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="status" label="状态">
+        <el-table-column property="status" label="状态" width="100">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.status}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="lockman" label="锁货人">
+          <template slot-scope="scope">
+            <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
+            <span>{{scope.row.lockman}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -964,13 +966,12 @@ export default {
       let _this = this;
       let ids = [];
       if (_this.addstock.length === 0) {
-        this.message(true, "请选择需要锁货的商品", "error");
+        this.message(true, "请选择需要锁的货", "error");
         return;
       }
       _this.addstock.forEach(function(c) {
         ids.push(c.stockid);
       });
-      console.log("库存为:" + ids);
       let params = new FormData();
       params.append("ids", ids);
       this.axios
@@ -989,35 +990,35 @@ export default {
         .catch(err => {
           console.log(err);
         });
-      // let params = new FormData();
-      // params.append("startPage", _this.startPage);
-      // params.append("pageSize", _this.pageSize);
-      // params.append("memberid", _this.memberId);
-      // params.append("productname", _this.searchRuleForm.productname);
-      // params.append("productspec", _this.searchRuleForm.productspec);
-      // params.append("productfactory", _this.searchRuleForm.productfactory);
-      // params.append("productmark", _this.searchRuleForm.productmark);
-      // params.append("warehousename", _this.searchRuleForm.warehousename);
-      // params.append("stockstatus", _this.statusTab);
-      // this.axios
-      //   .post(process.env.API_ROOT + "/WareHouseApi/v1/lock", params)
-      //   .then(response => {
-      //     if (!response.data) {
-      //       _this.listLoading = false;
-      //       return;
-      //     }
-      //     if (response.data && response.data.status === 200) {
-      //       _this.stockgridData = response.data.data;
-      //       _this.total = response.data.total;
-      //     } else {
-      //       _this.message(true, response.data.msg, "error");
-      //       _this.stockgridData = [];
-      //     }
-      //     _this.listLoading = false;
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //   });
+    },
+    async unlock() {
+      let _this = this;
+      let ids = [];
+      if (_this.addstock.length === 0) {
+        this.message(true, "请选择需要解锁的货", "error");
+        return;
+      }
+      _this.addstock.forEach(function(c) {
+        ids.push(c.stockid);
+      });
+      let params = new FormData();
+      params.append("ids", ids);
+      this.axios
+        .post(process.env.API_ROOT + "/WareHouseApi/v1/unlock", params)
+        .then(response => {
+          if (!response.data) {
+            return;
+          }
+          if (response.data && response.data.status === 200) {
+            _this.message(true, response.data.msg, "success");
+            _this.getContract();
+          } else {
+            _this.message(true, response.data.msg, "error");
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     // 查询合同
     async getContract() {
@@ -1988,8 +1989,10 @@ export default {
       return this.getHasRule("查询库存");
     },
     lockShow() {
-      return true;
-      // return this.getHasRule("查询库存");
+      return this.getHasRule("锁货");
+    },
+    unlockShow() {
+      return this.getHasRule("解锁");
     }
   }
 };
