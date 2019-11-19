@@ -149,7 +149,7 @@
               <div>
                 <el-button
                   type="text"
-                  v-if="processSubmitShow && (scope.row.contractstatus==='正式临调合同'||scope.row.contractstatus==='现货合同'||scope.row.contractstatus==='加工中')"
+                  v-if="processSubmitShow && scope.row.verifyBy"
                   size="small"
                   @click="jgorder(scope.row)"
                 >生成加工单</el-button>
@@ -157,7 +157,7 @@
               <div>
                 <el-button
                   type="text"
-                  v-if="deliverySubmitShow &&(scope.row.contractstatus==='正式临调合同'||scope.row.contractstatus==='现货合同'||scope.row.contractstatus==='运输中')"
+                  v-if="deliverySubmitShow &&scope.row.verifyBy"
                   size="small"
                   @click="deliveryorder(scope.row)"
                 >生成提单</el-button>
@@ -165,7 +165,7 @@
               <div>
                 <el-button
                   type="text"
-                  v-if="deliverySubmitShow &&(scope.row.contractstatus==='正式临调合同'||scope.row.contractstatus==='现货合同'||scope.row.contractstatus==='运输中')"
+                  v-if="deliverySubmitShow &&scope.row.verifyBy"
                   size="small"
                   @click="transportorder(scope.row)"
                 >生成运输单</el-button>
@@ -173,7 +173,7 @@
               <div>
                 <el-button
                   type="text"
-                  v-if="verifyContractShow && (scope.row.contractstatus==='意向临调合同')"
+                  v-if="verifyContractShow&&!scope.row.verifyBy"
                   size="small"
                   @click="verify(scope.row)"
                 >审核</el-button>
