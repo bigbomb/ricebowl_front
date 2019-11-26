@@ -2886,6 +2886,9 @@ export default {
         } else if (index === 6) {
           sums[index] = "";
           return;
+        } else if (index === 10) {
+          sums[index] = "";
+          return;
         } else if (index === 16) {
           sums[index] = "";
           return;
