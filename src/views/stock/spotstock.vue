@@ -70,7 +70,7 @@
           >查询</el-button>
         </el-form-item>
         <el-form-item v-if="lockShow&&activeName=='在库'">
-          <el-button type="primary" v-on:click="lock">锁货</el-button>
+          <el-button type="primary" v-on:click="lockDialog">锁货</el-button>
         </el-form-item>
         <el-form-item v-if="unlockShow&&activeName=='已锁货'">
           <el-button type="primary" v-on:click="unlock">解锁</el-button>
@@ -108,6 +108,13 @@
             <span>{{scope.row.id}}</span>
           </template>
         </el-table-column>
+
+        <el-table-column property="productid" v-if="isshow" label="ID" width="100">
+          <template slot-scope="scope">
+            <span>{{scope.row.productid}}</span>
+          </template>
+        </el-table-column>
+
         <el-table-column property="productname" label="名称" width="180">
           <template slot-scope="scope">
             <span>{{scope.row.productname}}</span>
@@ -426,33 +433,11 @@
 
                 <el-table-column property="stockouttype" label="出库方式" width="150">
                   <template slot-scope="scope">
-                    <el-select
-                      size="mini"
-                      filterable
-                      v-if="scope.row.status=='待审核' ||scope.row.status==undefined "
-                      class="inputwidth"
-                      v-model="scope.row.stockouttype"
-                      placeholder="请选择"
-                    >
-                      <el-option label="过磅" value="过磅"></el-option>
-                      <el-option label="理算" value="理算"></el-option>
-                    </el-select>
                     <span>{{scope.row.stockouttype}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="quality" label="品级" width="150">
                   <template slot-scope="scope">
-                    <el-select
-                      size="mini"
-                      filterable
-                      v-if="scope.row.status=='待审核' ||scope.row.status==undefined "
-                      class="inputwidth"
-                      v-model="scope.row.quality"
-                      placeholder="请选择"
-                    >
-                      <el-option label="合格品" value="合格品"></el-option>
-                      <el-option label="协议品" value="协议品"></el-option>
-                    </el-select>
                     <span>{{scope.row.quality}}</span>
                   </template>
                 </el-table-column>
@@ -633,33 +618,11 @@
 
                 <el-table-column property="stockouttype" label="出库方式" width="100">
                   <template slot-scope="scope">
-                    <el-select
-                      size="mini"
-                      filterable
-                      v-if="scope.row.status=='待审核' ||scope.row.status==undefined "
-                      class="inputwidth"
-                      v-model="scope.row.stockouttype"
-                      placeholder="请选择"
-                    >
-                      <el-option label="过磅" value="过磅"></el-option>
-                      <el-option label="理算" value="理算"></el-option>
-                    </el-select>
                     <span>{{scope.row.stockouttype}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="quality" label="品级" width="110">
                   <template slot-scope="scope">
-                    <el-select
-                      size="mini"
-                      filterable
-                      v-if="scope.row.status=='待审核' ||scope.row.status==undefined "
-                      class="inputwidth"
-                      v-model="scope.row.quality"
-                      placeholder="请选择"
-                    >
-                      <el-option label="合格品" value="合格品"></el-option>
-                      <el-option label="协议品" value="协议品"></el-option>
-                    </el-select>
                     <span>{{scope.row.quality}}</span>
                   </template>
                 </el-table-column>
@@ -683,7 +646,7 @@
         <div slot="footer" class="dialog-footer">
           <el-button @click="closeDialog('lockRuleForm')">取 消</el-button>
           <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
-          <el-button type="primary" @click="submitForm('lockRuleForm')">确 定</el-button>
+          <el-button type="primary" @click="lock('lockRuleForm')">确 定</el-button>
         </div>
       </el-dialog>
     </el-col>
@@ -911,6 +874,7 @@ export default {
       selectedIds: [],
       // contractNos: [],
       addstock: [],
+      gridDataCopy: [],
       isshow: false,
       rowShow: true,
       chooseRow: "",
@@ -1107,10 +1071,14 @@ export default {
       }, 10);
     },
 
-    async lock() {
+    async lockDialog() {
+      let addstock = this.addstock;
+      if (this.addstock.length === 0) {
+        this.message(true, "请选择需要锁的货", "error");
+        return;
+      }
       this.thistitle = "锁货";
       this.lockdialogFormVisible = true;
-      let addstock = this.addstock;
       this.gridData = [];
       for (var i in addstock) {
         this.gridData.push(addstock[i]);
@@ -1118,33 +1086,56 @@ export default {
       setTimeout(() => {
         this.$refs.gridTable.setCurrentRow(addstock[0]);
       }, 10);
-      // let _this = this;
-      // let ids = [];
-      // if (_this.addstock.length === 0) {
-      //   this.message(true, "请选择需要锁的货", "error");
-      //   return;
-      // }
-      // _this.addstock.forEach(function(c) {
-      //   ids.push(c.stockid);
-      // });
-      // let params = new FormData();
-      // params.append("ids", ids);
-      // this.axios
-      //   .post(process.env.API_ROOT + "/WareHouseApi/v1/lock", params)
-      //   .then(response => {
-      //     if (!response.data) {
-      //       return;
-      //     }
-      //     if (response.data && response.data.status === 200) {
-      //       _this.message(true, response.data.msg, "success");
-      //       _this.getContract();
-      //     } else {
-      //       _this.message(true, response.data.msg, "error");
-      //     }
-      //   })
-      //   .catch(err => {
-      //     console.log(err);
-      //   });
+      this.gridDataCopy = JSON.parse(JSON.stringify(this.gridData));
+    },
+    async lock() {
+      let _this = this;
+      let ids = [];
+      let nums = [];
+      _this.gridData.forEach(function(c, index, array) {
+        if (c.num === "") {
+          _this.message(true, "数量不能为空", "error");
+          return;
+        } else if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(c.num)) {
+          _this.message(true, "数量只能为数字", "error");
+          return;
+        } else if (c.num.length > 9) {
+          _this.message(true, "数量不能超过9个字符", "error");
+          return;
+        } else if (c.num > _this.gridDataCopy[index].num) {
+          _this.message(
+            true,
+            "数量不能超过" + _this.gridDataCopy[index].num,
+            "error"
+          );
+          return;
+        } else {
+          ids.push(c.productid);
+          nums.push(c.num);
+        }
+      });
+      if (ids.length === _this.gridData.length) {
+        let params = new FormData();
+        params.append("ids", ids);
+        params.append("nums", nums);
+        this.axios
+          .post(process.env.API_ROOT + "/WareHouseApi/v1/lock", params)
+          .then(response => {
+            if (!response.data) {
+              return;
+            }
+            if (response.data && response.data.status === 200) {
+              this.lockdialogFormVisible = false;
+              _this.message(true, response.data.msg, "success");
+              _this.getContract();
+            } else {
+              _this.message(true, response.data.msg, "error");
+            }
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
     },
     async unlock() {
       let _this = this;
@@ -1754,6 +1745,7 @@ export default {
         val.forEach(row => {
           d = {
             stockid: row.id,
+            productid: row.productid,
             productname: row.productname,
             productspec: row.productspec,
             productfactory: row.productfactory,
@@ -1985,16 +1977,6 @@ export default {
     // this.getCustomerList();
   },
   computed: {
-    inputdisable: function() {
-      if (
-        this.ruleForm.contractstatus === "意向合同" ||
-        this.ruleForm.contractstatus === ""
-      ) {
-        return false;
-      } else {
-        return true;
-      }
-    },
     nowLength: function() {
       if (Number(this.currentLength) - this.maxLength >= 0) {
         this.$refs.myTextEditor.quill.root.contentEditable = false;
