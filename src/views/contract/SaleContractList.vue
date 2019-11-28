@@ -1193,6 +1193,7 @@
                       size="small"
                     >复制</el-button>
                     <el-button
+                      v-if="tdruleForm.contractstatus ==='正式临调合同' "
                       @click.native.prevent="importFrom(scope.$index,scope.row)"
                       type="text"
                       size="small"
@@ -1796,6 +1797,7 @@ export default {
         remark: ""
       },
       tdruleForm: {
+        contractstatus: "",
         validateTime: [],
         warehouseName: "",
         vehicleNumber: "",
@@ -1862,10 +1864,6 @@ export default {
       statusTab: "",
       chooseRow: "",
       chooseRowIndex: "",
-      styleText:
-        '<style type="text/css" media="print">\n' +
-        "  @page { size: landscape; }\n" +
-        "</style>",
       percentoptions: [
         {
           value: "5%",
@@ -4033,7 +4031,7 @@ export default {
       params.append("id", row.id);
       params.append("memberId", this.memberId);
       params.append("contractno", row.contractno);
-      params.append("contractType",row.contractstatus)
+      params.append("contractType", row.contractstatus);
       this.axios
         .post(
           process.env.API_ROOT + "/SaleContractApi/v1/verifySaleContract",
@@ -4099,6 +4097,7 @@ export default {
       this.tdruleForm.contractno = row.contractno;
       this.tdruleForm.id = row.id;
       this.tdruleForm.customername = row.customername;
+      this.tdruleForm.contractstatus = row.contractstatus;
       let params = new FormData();
       params.append("keyword", row.contractno);
       params.append("memberId", this.memberId);
