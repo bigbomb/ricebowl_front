@@ -4033,6 +4033,7 @@ export default {
       params.append("id", row.id);
       params.append("memberId", this.memberId);
       params.append("contractno", row.contractno);
+      params.append("contractType",row.contractstatus)
       this.axios
         .post(
           process.env.API_ROOT + "/SaleContractApi/v1/verifySaleContract",

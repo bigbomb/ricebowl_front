@@ -211,6 +211,7 @@
       >
         <div>
           <el-form
+            :model="ruleForm"
             status-icon
             :rules="rules"
             ref="ruleForm"
