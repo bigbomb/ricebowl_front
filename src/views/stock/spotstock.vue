@@ -101,7 +101,12 @@
         @selection-change="handleSelectionChange"
         style="width: 100%;"
       >
-        <el-table-column type="selection" v-if="activeName=='在库'||activeName=='已锁货'" width="80"></el-table-column>
+        <el-table-column
+          type="selection"
+          :selectable="checkboxNum"
+          v-if="activeName=='在库'||activeName=='已锁货'"
+          width="80"
+        ></el-table-column>
 
         <el-table-column property="id" v-if="isshow" label="ID" width="100">
           <template slot-scope="scope">
@@ -156,6 +161,18 @@
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.warehousename}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="stockouttype" label="出库方式" width="160">
+          <template slot-scope="scope">
+            <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
+            <span>{{scope.row.stockouttype}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="quality" label="品级" width="160">
+          <template slot-scope="scope">
+            <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
+            <span>{{scope.row.quality}}</span>
           </template>
         </el-table-column>
         <el-table-column property="status" label="状态" width="100">
@@ -963,6 +980,13 @@ export default {
   },
 
   methods: {
+    checkboxNum(row, rowIndex) {
+      if (row.num == 0) {
+        return false; //禁用
+      } else {
+        return true; //不禁用
+      }
+    },
     // 切换tab数据
     handleClick(tab, event) {
       this.statusTab = tab.name;
@@ -1092,6 +1116,7 @@ export default {
       let _this = this;
       let ids = [];
       let nums = [];
+      let productids = [];
       _this.gridData.forEach(function(c, index, array) {
         if (c.num === "") {
           _this.message(true, "数量不能为空", "error");
@@ -1110,7 +1135,8 @@ export default {
           );
           return;
         } else {
-          ids.push(c.productid);
+          productids.push(c.productid);
+          ids.push(c.stockid);
           nums.push(c.num);
         }
       });
@@ -1139,16 +1165,22 @@ export default {
     },
     async unlock() {
       let _this = this;
+      let productids = [];
       let ids = [];
+      let nums = [];
       if (_this.addstock.length === 0) {
         this.message(true, "请选择需要解锁的货", "error");
         return;
       }
       _this.addstock.forEach(function(c) {
+        productids.push(c.productid);
         ids.push(c.stockid);
+        nums.push(c.num);
       });
       let params = new FormData();
+      params.append("productids", productids);
       params.append("ids", ids);
+      params.append("nums", nums);
       this.axios
         .post(process.env.API_ROOT + "/WareHouseApi/v1/unlock", params)
         .then(response => {
