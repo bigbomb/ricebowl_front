@@ -1526,11 +1526,11 @@
           >
             <el-table-column type="index" label="序号" width="50"></el-table-column>
             <el-table-column property="productname" width="100" label="产品名称"></el-table-column>
-            <el-table-column property="productspec" width="100" label="规格型号"></el-table-column>
+            <el-table-column property="productspec" width="120" label="规格型号"></el-table-column>
             <el-table-column property="productmark" width="100" label="牌号"></el-table-column>
             <el-table-column property="weight" width="100" label="重量(吨)"></el-table-column>
             <el-table-column property="price" width="100" label="单价(元/吨)"></el-table-column>
-            <el-table-column property="unit" width="100" label="单位"></el-table-column>
+            <el-table-column property="unit" width="80" label="单位"></el-table-column>
             <el-table-column property="total" width="100" label="金额(元)"></el-table-column>
             <el-table-column property="stockouttype" width="100" label="出库方式"></el-table-column>
             <el-table-column property="warehousename" label="所在仓库"></el-table-column>
@@ -3444,10 +3444,10 @@ export default {
 
     delContract(id) {
       if (this.contactIds.length === 0) {
-        this.message(true, "请选择需要删除的用户", "error");
+        this.message(true, "请选择需要删除的合同", "error");
         return;
       }
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该合同, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "error"
@@ -3612,7 +3612,7 @@ export default {
 
     gotoJg(formName) {
       if (this.selectedIds.length === 0) {
-        this.message(true, "请选择需要加工的商品", "error");
+        this.message(true, "请选择需要加工的产品", "error");
         return;
       }
       this.$confirm("是否确定继续?", "提示", {
@@ -3675,7 +3675,7 @@ export default {
     },
     transport(formName) {
       if (this.selectedIds.length === 0) {
-        this.message(true, "请选择需要运输的商品", "error");
+        this.message(true, "请选择需要运输的产品", "error");
         return;
       }
       for (let i = 0; i < this.multipleSelection.length; i++) {
@@ -3838,7 +3838,7 @@ export default {
 
     gotoTd(formName) {
       if (this.selectedIds.length === 0) {
-        this.message(true, "请选择需要提货的商品", "error");
+        this.message(true, "请选择需要提货的产品", "error");
         return;
       }
       for (let i = 0; i < this.multipleSelection.length; i++) {

@@ -1440,7 +1440,9 @@ export default {
       for (var i in addstock) {
         this.gridData.push(addstock[i]);
       }
-
+      setTimeout(() => {
+        this.$refs.gridTable.setCurrentRow(addstock[0]);
+      }, 10);
       this.getCustomerList();
       // this.findProduct();
       // this.findProductSpec();

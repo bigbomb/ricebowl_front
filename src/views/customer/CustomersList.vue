@@ -359,7 +359,7 @@ export default {
         this.message(true, "请选择需要删除的客户么", "error");
         return;
       }
-      this.$confirm("此操作将永久删除改客户, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该客户, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "error"

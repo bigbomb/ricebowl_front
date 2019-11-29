@@ -1403,10 +1403,10 @@ export default {
 
     delContract(id) {
       if (this.contactIds.length === 0) {
-        this.message(true, "请选择需要删除的用户", "error");
+        this.message(true, "请选择需要删除的采购入库单", "error");
         return;
       }
-      this.$confirm("此操作将永久删除该文件, 是否继续?", "提示", {
+      this.$confirm("此操作将永久删除该采购入库单, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "error"
@@ -1421,7 +1421,7 @@ export default {
     // toueditor() {
     // 	this.$router.push({ path: '/ueditor' });
     // },
-    // 删除销售合同
+    // 删除采购入库单
     async delContracts() {
       let params = new FormData();
       params.append("ids", this.contactIds);
