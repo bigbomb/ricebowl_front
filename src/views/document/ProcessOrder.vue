@@ -109,6 +109,7 @@
         :close-on-click-modal="false"
         title="打印加工单"
         :visible.sync="autoterVisible"
+        :append-to-body="true"
         width="1000px"
       >
         <div class="newOrder-pagination" id="processingSheet">
@@ -446,6 +447,7 @@ export default {
     },
 
     printView(row) {
+      this.autoterVisible = true;
       this.print.customerName = row.customerName;
       this.print.processNo = row.processno;
       this.print.crt = row.crt;
@@ -493,7 +495,6 @@ export default {
           }
           this.listLoading = false;
         });
-      this.autoterVisible = true;
     },
     // 打印提货单
     pillorderSheet() {

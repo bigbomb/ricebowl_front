@@ -1492,6 +1492,7 @@
         width="1007.5px"
         :close-on-click-modal="false"
         :visible.sync="contractVisible"
+        :append-to-body="true"
         class="contractheight"
       >
         <div class="contractbox" id="contractbox">

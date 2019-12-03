@@ -133,6 +133,7 @@
         :visible.sync="billVisible"
         width="1000px"
         :close-on-click-modal="false"
+        :append-to-body="true"
       >
         <div class="newOrder-pagination" id="pillorderSheet">
           <p class="titleMenu">提货委托书</p>
@@ -231,6 +232,7 @@
         :visible.sync="exbillVisible"
         width="1000px"
         :close-on-click-modal="false"
+        :append-to-body="true"
       >
         <div class="newOrder-pagination" id="pillorderSheet">
           <p class="titleMenu">提货委托书</p>
@@ -536,6 +538,11 @@ export default {
     },
 
     printView(row, type) {
+      if (type === 1) {
+        this.billVisible = true;
+      } else {
+        this.exbillVisible = true;
+      }
       this.print.deliveryNo = row.deliveryno;
       this.print.crt = row.crt;
       this.print.vehicleNumber = row.vehiclenumber;
@@ -575,11 +582,6 @@ export default {
           }
           this.listLoading = false;
         });
-      if (type === 1) {
-        this.billVisible = true;
-      } else {
-        this.exbillVisible = true;
-      }
     },
     // 打印提货单
     printorderSheet() {
