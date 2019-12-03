@@ -218,7 +218,7 @@
           </div>
         </div>
         <div style="text-align:right;margin-top:30px">
-          <el-button type="primary" @click="pillorderSheet">确认</el-button>
+          <el-button type="primary" @click="printorderSheet">确认</el-button>
           <el-button @click="billVisible =! billVisible">取消</el-button>
         </div>
       </el-dialog>
@@ -582,7 +582,7 @@ export default {
       }
     },
     // 打印提货单
-    pillorderSheet() {
+    printorderSheet() {
       var dom = document.getElementById("pillorderSheet");
       var win = window.open("");
       win.document.write(dom.outerHTML);
@@ -741,7 +741,6 @@ export default {
   margin: 0 auto;
 }
 #pillorderSheet .titleMenu {
-  line-height: 1px;
   letter-spacing: 10px;
   margin-bottom: 30px;
   font-size: 30px;
