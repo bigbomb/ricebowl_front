@@ -17,6 +17,7 @@ import base from './utils/base'
 // Tell Vue to use the plugin
 import { getCookie } from './utils/utils'
 import VueQuillEditor from 'vue-quill-editor'
+import formCreate from '@form-create/element-ui'
 
 // require styles
 import 'quill/dist/quill.core.css'
@@ -30,6 +31,7 @@ Vue.use(VueRouter)
 Vue.use(Vuex)
 Vue.use(VueAxios, axios)
 Vue.use(VueCookie)
+Vue.use(formCreate)
 // 跨域携带cookie
 axios.defaults.withCredentials = true
 // Vue.config.productionTip = false

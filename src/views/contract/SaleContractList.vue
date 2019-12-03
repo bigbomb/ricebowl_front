@@ -168,7 +168,7 @@
                   v-if="deliverySubmitShow &&scope.row.verifyBy"
                   size="small"
                   @click="transportorder(scope.row)"
-                >生成运输单</el-button>
+                >生成发货单</el-button>
               </div>
               <div>
                 <el-button
@@ -551,6 +551,7 @@
                     >
                       <el-option label="过磅" value="过磅"></el-option>
                       <el-option label="理算" value="理算"></el-option>
+                      <el-option label="抄码" value="抄码"></el-option>
                     </el-select>
                     <span>{{scope.row.stockouttype}}</span>
                   </template>
@@ -1222,7 +1223,7 @@
     <el-col :span="2">
       <el-dialog
         :close-on-click-modal="false"
-        title="运输指令单"
+        title="发货单"
         :visible.sync="transportFormVisible"
         width="1250px"
       >
@@ -1687,6 +1688,26 @@
     <el-col :span="2">
       <el-dialog title="库存管理" :visible.sync="stockVisible">
         <div>
+          <el-form>
+            <el-form-item label="请选择">
+              <el-select v-model="formTypeCollection">
+                <el-option
+                  v-for="item in selectOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="renderForm">确定</el-button>
+              <el-button @click="()=>{showAppendForm = false}">取消</el-button>
+            </el-form-item>
+          </el-form>
+          <div class="editor-content">
+            <!--表单主体部分-->
+            <div ref="fc" id="form-create"></div>
+          </div>
           <!-- <el-button size="mini" @click="addwarehouseRow()">+</el-button> -->
           <el-table
             style="width:1000px"
@@ -1758,11 +1779,29 @@
 </template>
 
 <script>
-//   import http from '../../utils/http'
-
+import formConfig from "@/formConfig/main";
+import { handlePlaceholder, handleSingle } from "@/formConfig/handle/handle";
 export default {
   data() {
     return {
+      showAppendForm: false,
+      formList: [], // 左侧表单列表
+      isShowRemoveBtn: true,
+      isShowIndex: 1000,
+      loading: false,
+      $f: null,
+      instance_arr: [],
+      model: {},
+      current: "",
+      formType: "",
+      formTypeCollection: [],
+      rules: [],
+      vm_collection: new Map(),
+      allData: {},
+      submitData: new Map(),
+      isValidate: false,
+      count: 0,
+
       activeName: "全部", //tab切换选中的数据
       thistitle: "",
       filters: {
@@ -4427,6 +4466,262 @@ export default {
             this.findSaleContractWarehouse();
           }
         });
+    },
+    //创建新理算模板页
+    openForm(id, index, isRemove = false) {
+      if (id === this.formType) return;
+      this.$f.validate(this.successValidate(isRemove), this.errorValidate);
+      if (!this.isValidate) return;
+      this.loading = true;
+      this.current = index;
+      let target = formConfig.get(id);
+      this.rules = handlePlaceholder(target.obj.rule);
+      this.formType = id;
+      this.mergeRule(this.rules);
+      // this.paddingData(this.data,this.rules);
+      this.createForm();
+    },
+    changeStyle(index, isShow) {
+      this.isShowRemoveBtn = isShow;
+      this.isShowIndex = index;
+    },
+    // 移除表单
+    removeForm(index, id) {
+      // 修改样式
+      if (id === this.formType) {
+        let el;
+        let prev_id;
+        if (index === 0 && this.formList.length === 1) {
+          this.$f.destroy();
+          this.$f = null;
+        } else if (index === 0 && this.formList.length > 1) {
+          el = this.$refs[`index_${index + 1}`];
+          prev_id = Number(el[0].attributes["data-id"].value);
+          this.openForm(prev_id, index + 1, true);
+        } else if (index !== 0 && this.formList.length > 1) {
+          el = this.$refs[`index_${index - 1}`];
+          prev_id = Number(el[0].attributes["data-id"].value);
+          this.openForm(prev_id, index - 1, true);
+        }
+      }
+
+      this.submitData.delete(id);
+      this.formList.splice(index, 1);
+      this.vm_collection_id.forEach(item => {
+        if (String(item).indexOf(id) !== -1) {
+          this.vm_collection.delete(item);
+        }
+      });
+      // console.log('this.vm_collection', this.vm_collection)
+      this.count++;
+    },
+
+    // 合成规则
+    mergeRule(source) {
+      this.setOptions(source);
+      source.map((item, index) => {
+        if (item._vm) {
+          this.setVmCollection(item._vm);
+        } else if (item.custom) {
+          source[index] = this.makeMarker(item);
+        } else if (item.request) {
+          this.setSelectData(item, index);
+        }
+      });
+    },
+
+    // 处理upload组件的url
+    handleUploadUrl(url) {
+      return `${url}/test`;
+    },
+
+    setOptions(source) {
+      source.forEach(item => {
+        if (item.type && item.type === "select") {
+          !item.options ? this.$set(item, "options", []) : "";
+        }
+      });
+    },
+
+    setVmCollection(vm) {
+      // 一个规则里面有多个自定义组件的时候要给vm_collection的key加后缀
+      if (this.vm_collection.has(this.formType)) {
+        this.vm_collection.set(`${this.formType}_${++this.count}`, vm);
+      } else {
+        this.vm_collection.set(this.formType, vm);
+      }
+      this.count++;
+    },
+
+    // 生成自定义组件
+    makeMarker(source) {
+      const vm = new Vue(source.vm);
+      if (source.field === "__upload") {
+        // 集中处理upload组件的url
+        vm.action = this.handleUploadUrl(vm.action);
+      }
+      this.setVmCollection(vm);
+      return this.$formCreate.maker.createTmp(
+        source.template,
+        vm,
+        source.field,
+        source.label,
+        source.col
+      );
+    },
+
+    // 设置select打开下拉框事件，因为渲染函数on事件不支持修饰符，所以现在需要频繁请求，解决方法是使用缓存
+    setSelectData(item) {
+      let func = () => {
+        this.querySelectData(item.url).then(d => {
+          item.options = d;
+        });
+      };
+      if (item.event) {
+        item.event["visible-change"] = func;
+      } else {
+        item.event = {};
+        item.event["visible-change"] = func;
+      }
+    },
+
+    // 获取select框数据
+    // TODO url要在这里做个处理
+    querySelectData(url) {
+      return new Promise((resolve, reject) => {
+        // setTimeout是示例，下面注释的是生产环境下的
+        setTimeout(() => {
+          const option = [
+            { value: 1, label: "第一个" },
+            { value: 2, label: "第二个" },
+            { value: 3, label: "第三个" }
+          ];
+          resolve(option);
+        }, 200);
+        /*const success = _ => {
+                        let data = _.projects.map((item) => {
+                            return {value: item.id, label: item.name}
+                        })
+                        resolve(data)
+                    }
+                    this.$axiosGet({
+                        url: `/projects?keyword=&listOnly=1`,
+                        data: Object.assign({}),
+                        success,
+                    })*/
+      });
+    },
+
+    addForm() {
+      this.formTypeCollection = [];
+      this.showAppendForm = true;
+      this.$f ? this.$f.submit() : "";
+    },
+
+    renderForm() {
+      this.loading = true;
+      this.showAppendForm = false;
+
+      this.formList.push({
+        id: this.formTypeCollection,
+        name: formConfig.get(this.formTypeCollection).name
+      });
+      this.formType = this.formTypeCollection;
+      this.loadFormData();
+    },
+
+    // 点击确定时加载表单生成规则
+    loadFormData() {
+      let target = formConfig.get(this.formType);
+      this.rules = handlePlaceholder(target.obj.rule);
+      this.mergeRule(this.rules);
+      // this.paddingData(this.data,this.rules);
+      this.createForm();
+      this.$f.submit();
+    },
+
+    // TODO 数据填充应该会有问题，对于upload类型的还没做处理
+    // 填充数据
+    paddingData(data, rules) {
+      rules.forEach(rule => {
+        if (rule.rule && rule.rule._vm) {
+          let temp = rule.rule._vm.extendData;
+          for (let extendKey in temp) {
+            if (temp.hasOwnProperty(extendKey)) {
+              if (Array.isArray(temp[extendKey])) {
+                temp[extendKey] = data[extendKey] ? data[extendKey] : [];
+              } else {
+                temp[extendKey] = data[extendKey] ? data[extendKey] : "";
+              }
+            }
+          }
+        } else {
+          rule.value = data[rule.field] ? data[rule.field] : "";
+        }
+      });
+    },
+
+    createForm() {
+      let _this = this;
+      const root = this.$refs.fc;
+      root.innerHTML = "";
+      this.$f = this.$formCreate(this.rules, {
+        el: root,
+        resetBtn: false,
+        submitBtn: false,
+        mounted: () => {
+          _this.loading = false;
+        },
+        onSubmit: function(formData) {
+          // TODO 每次加载带自定义组件的表单时，数据才会双向绑定
+          if (_this.submitData.size === 0) {
+            _this.allData = {};
+            [..._this.vm_collection.values()].map(item => {
+              Object.assign(_this.allData, item.extendData);
+            });
+            Object.assign(_this.allData, formData);
+            //console.log(_this.allData)
+            _this.submitData.set(_this.formType, _this.allData);
+          } else {
+            _this.vm_collection_id.forEach(item => {
+              if (String(item).indexOf(_this.formType) !== -1) {
+                if (!_this.submitData.get(_this.formType)) {
+                  _this.submitData.set(
+                    _this.formType,
+                    Object.assign(
+                      _this.vm_collection.get(item).extendData,
+                      formData
+                    )
+                  );
+                } else {
+                  Object.assign(
+                    _this.submitData.get(_this.formType),
+                    _this.vm_collection.get(item).extendData,
+                    formData
+                  );
+                }
+              } else {
+                _this.submitData.set(_this.formType, formData);
+              }
+            });
+            _this.vm_collection_id.length === 0
+              ? _this.submitData.set(_this.formType, formData)
+              : "";
+          }
+        }
+      });
+    },
+    saveData() {
+      this.$f.validate(this.successValidate, this.errorValidate);
+      console.log(this.submitData);
+    },
+    successValidate(bool = false) {
+      !bool ? this.$f.submit() : "";
+      this.isValidate = true;
+    },
+    errorValidate() {
+      this.$message({ type: "warning", message: "请正确填写!" });
+      this.isValidate = false;
     }
   },
   mounted() {
@@ -4439,6 +4734,21 @@ export default {
     this.getCustomerList();
   },
   computed: {
+    //选择理算模板
+    selectOptions: function() {
+      return [...formConfig.entries()].map(item => {
+        let idList = this.formList.map(item => {
+          return item.id;
+        });
+        let bool = idList.indexOf(item[0]) !== -1 ? true : false;
+        return { value: item[0], label: item[1].name, disabled: bool };
+      });
+    },
+    vm_collection_id: function() {
+      let temp = this.count;
+      return [...this.vm_collection.keys()];
+    },
+
     inputdisable: function() {
       if (
         this.ruleForm.contractstatus === "意向合同" ||

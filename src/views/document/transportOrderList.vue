@@ -74,12 +74,7 @@
         <el-table-column prop="createby" label="创建人" width="100" sortable></el-table-column>
         <el-table-column fixed="right" label="操作">
           <template slot-scope="scope">
-            <el-button
-              v-if="printShow"
-              type="text"
-              size="small"
-              @click="printView(scope.row)"
-            >打印运输指令单</el-button>
+            <el-button v-if="printShow" type="text" size="small" @click="printView(scope.row)">打印发货单</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -101,13 +96,13 @@
     <!-- 提单 -->
     <el-col :span="2">
       <el-dialog
-        title="打印运输指令单"
+        title="打印发货单"
         :visible.sync="billVisible"
         width="1000px"
         :close-on-click-modal="false"
       >
         <div class="newOrder-pagination" id="pillorderSheet">
-          <p class="titleMenu">运输指令单</p>
+          <p class="titleMenu">发货单</p>
           <div class="titleBox">
             <el-row>
               <el-col :span="24">

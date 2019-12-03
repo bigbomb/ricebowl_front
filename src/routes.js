@@ -106,7 +106,7 @@ let router = [
             {path: '/processOrderList', component: ProcessOrder, name: '加工单'},
             {path: '/deliveryOrderList', component: DeliveryOrder, name: '提单'},
             { path: '/purchaseInstockOrderList', component: PurchaseInstockOrder, name: '采购入库单' },
-            {path:'/transportOrderList',component:transportOrderList,name:'运输指令单'}
+            {path:'/transportOrderList',component:transportOrderList,name:'发货单'}
 
         ]
     },

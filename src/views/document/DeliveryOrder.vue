@@ -136,6 +136,7 @@
       >
         <div class="newOrder-pagination" id="pillorderSheet">
           <p class="titleMenu">提货委托书</p>
+          <p class="titleTd">{{print.deliveryNo}}</p>
           <div class="titleBox">
             <el-row>
               <el-col :span="24">
@@ -176,8 +177,9 @@
                   <el-col :span="20">{{print.vehicleNumber}}</el-col>
                 </el-col>
               </el-col>
-              <el-col :span="24">
-                <el-col :span="24" class="txtleft">提货人姓名/联系方式：</el-col>
+              <el-col :span="4">提货仓库/联系方式：</el-col>
+              <el-col :span="20" class="botom">
+                <el-col :span="20">{{print.warehouseName}}/{{print.warehousePhone}}</el-col>
               </el-col>
             </el-row>
           </div>
@@ -232,6 +234,7 @@
       >
         <div class="newOrder-pagination" id="pillorderSheet">
           <p class="titleMenu">提货委托书</p>
+          <p class="titleTd">{{print.deliveryNo}}</p>
           <div class="titleBox">
             <el-row>
               <el-col :span="24">
@@ -240,6 +243,7 @@
                   <el-col :span="20">{{print.deliverymethod}}</el-col>
                 </el-col>
               </el-col>
+
               <el-col :span="24">
                 <el-col :span="3">提货单位：</el-col>
                 <el-col :span="21" class="botom">
@@ -273,7 +277,10 @@
                 </el-col>
               </el-col>
               <el-col :span="24">
-                <el-col :span="24" class="txtleft">提货人姓名/联系方式：</el-col>
+                <el-col :span="4">提货仓库/联系方式：</el-col>
+                <el-col :span="20" class="botom">
+                  <el-col :span="20">{{print.warehouseName}}/{{print.warehousePhone}}</el-col>
+                </el-col>
               </el-col>
             </el-row>
           </div>
@@ -734,9 +741,15 @@ export default {
   margin: 0 auto;
 }
 #pillorderSheet .titleMenu {
+  line-height: 1px;
   letter-spacing: 10px;
   margin-bottom: 30px;
   font-size: 30px;
+  text-align: center;
+  color: #292929;
+}
+#pillorderSheet .titleTd {
+  line-height: 1px;
   text-align: center;
   color: #292929;
 }

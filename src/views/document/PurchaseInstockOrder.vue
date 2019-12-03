@@ -421,6 +421,7 @@
                     >
                       <el-option label="过磅" value="过磅"></el-option>
                       <el-option label="理算" value="理算"></el-option>
+                      <el-option label="抄码" value="抄码"></el-option>
                     </el-select>
                     <span>{{scope.row.stockouttype}}</span>
                   </template>
@@ -959,6 +960,10 @@ export default {
             }
             if (item.num.length > 9) {
               this.$message("数量字数不能超过9个字符");
+              return;
+            }
+            if (item.warehousename === "") {
+              this.$message("仓库不能为空");
               return;
             }
           }

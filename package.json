@@ -10,11 +10,12 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "@form-create/element-ui": "^1.0.4",
     "async-validator": "^1.8.2",
     "axios": "^0.16.2",
     "cnpm": "^6.1.0",
     "echarts": "^3.3.2",
-    "element-ui": "^2.0.11",
+    "element-ui": "^2.13.0",
     "eslint-plugin-promise": "^3.6.0",
     "js-base64": "^2.4.0",
     "js-md5": "^0.7.3",
