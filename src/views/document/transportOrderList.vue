@@ -100,7 +100,7 @@
         :visible.sync="billVisible"
         width="1000px"
         :close-on-click-modal="false"
-        :modal-append-to-body="false"
+        :append-to-body="true"
       >
         <div class="newOrder-pagination" id="pillorderSheet">
           <p class="titleMenu">发货单</p>
