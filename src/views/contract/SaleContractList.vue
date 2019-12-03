@@ -1251,7 +1251,7 @@
             </el-col>
             <el-col :span="5">
               <el-form-item>
-                <el-button type="text" size="small" @click="watdrulesShow">承运方管理</el-button>
+                <el-button type="text" size="small" @click="carrierShow">承运方管理</el-button>
               </el-form-item>
             </el-col>
             <el-col :span="12">
@@ -1637,16 +1637,16 @@
       </el-dialog>
     </el-col>
     <el-col :span="2">
-      <el-dialog title="运输方管理" :visible.sync="tdrulestVisible" width="880px">
+      <el-dialog title="承运方管理" :visible.sync="carrierVisible" width="880px">
         <div>
-          <el-button size="mini" @click="addwarehouseRow()">+</el-button>
+          <el-button size="mini" @click="addcarrierRow()">+</el-button>
           <el-table
             style="width:880px"
-            :data="warehouseGridData"
+            :data="carrierGridData"
             max-height="500"
             :span-method="arraySpanMethod"
             class="el-tb-edit"
-            ref="warehouseGridData"
+            ref="carrierGridData"
             highlight-current-row
           >
             <el-table-column prop="id" label="id" sortable fixed="left" width="80"></el-table-column>
@@ -1671,7 +1671,7 @@
             <el-table-column fixed="right" label="操作" width="120">
               <template slot-scope="scope">
                 <el-button
-                  @click.native.prevent="deletetdrulestRow(scope.row,scope.$index, warehouseGridData)"
+                  @click.native.prevent="deletetdrulestRow(scope.row,scope.$index, carrierGridData)"
                   type="text"
                   size="small"
                 >移除</el-button>
@@ -1858,7 +1858,7 @@ export default {
       },
       termRuleForm: {},
       warehouseVisible: false,
-      tdrulestVisible: false,
+      carrierVisible: false,
       stockVisible: false,
       customerList: [],
       productNameList: [],
@@ -1871,6 +1871,7 @@ export default {
       gridData: [],
       contractData: [],
       warehouseGridData: [],
+      carrierGridData: [],
       stockGridData: [],
       tdgridData: [],
       multipleSelection: "",
@@ -2211,6 +2212,17 @@ export default {
         this.$refs.warehouseGridData.setCurrentRow(d);
       }, 10);
     },
+    addcarrierRow() {
+      var d = {
+        carrier: "",
+        contactor: "",
+        contactorphone: ""
+      };
+      this.carrierGridData.push(d);
+      setTimeout(() => {
+        this.$refs.carrierGridData.setCurrentRow(d);
+      }, 10);
+    },
     // 保存运输方管理
     savedrulestRow(row) {
       let _this = this;
@@ -2231,12 +2243,12 @@ export default {
           }
           if (response.data && response.data.status === 200) {
             this.message(true, response.data.msg, "success");
-            _this.watdrulesShow();
-            _this.warehousetdrulSelect();
-            _this.warehouseVisible = false;
+            _this.carrierShow();
+            _this.carrierSelect();
+            _this.carrierVisible = false;
           } else {
             _this.message(true, response.data.msg, "error");
-            _this.warehouseGridData = [];
+            _this.carrierGridData = [];
           }
           _this.listLoading = false;
         });
@@ -2339,7 +2351,7 @@ export default {
           }
           if (response.data && response.data.status === 200) {
             _this.message(true, response.data.msg, "success");
-            _this.watdrulesShow();
+            _this.carrierShow();
           } else {
             _this.message(true, response.data.msg, "error");
           }
@@ -2768,22 +2780,22 @@ export default {
         });
     },
 
-    warehousetdrulSelect() {
+    carrierSelect() {
       let params = new FormData();
       let memberId = this.memberId;
       params.append("memberId", memberId);
       this.axios
         .post(process.env.API_ROOT + "/CarriersApi/v1/findByNoPage", params)
         .then(response => {
-          let warehousedata = response.data.data;
-          this.warehousetdrulestList = [];
-          for (let warehouse of warehousedata) {
+          let carrierdata = response.data.data;
+          this.carrierList = [];
+          for (let warehouse of carrierdata) {
             if (warehouse.carrier != null) {
-              let jsonwarehouse = {
+              let jsoncarrier = {
                 value: warehouse.carrier,
                 id: warehouse.id
               };
-              this.warehousetdrulestList.push(jsonwarehouse);
+              this.carrierList.push(jsoncarrier);
             }
           }
         })
@@ -2791,7 +2803,7 @@ export default {
           console.log(err);
         });
     },
-    watdrulesShow() {
+    carrierShow() {
       let _this = this;
       _this.listLoading = true;
       let params = new FormData();
@@ -2807,15 +2819,15 @@ export default {
             return;
           }
           if (response.data && response.data.status === 200) {
-            _this.warehouseGridData = response.data.data;
+            _this.carrierGridData = response.data.data;
             _this.total = response.data.total;
           } else {
             _this.message(true, response.data.msg, "error");
-            _this.warehouseGridData = [];
+            _this.carrierGridData = [];
           }
           _this.listLoading = false;
         });
-      this.tdrulestVisible = true;
+      this.carrierVisible = true;
     },
     resetTemplate() {
       this.$refs["jgruleForm"].resetFields();
@@ -3356,10 +3368,10 @@ export default {
       }, 500);
     },
     querytdrulestSearchAsync(queryString, cb) {
-      var warehousetdrulestList = this.warehousetdrulestList;
+      var carrierList = this.carrierList;
       var results = queryString
-        ? warehousetdrulestList.filter(this.createStateFilter(queryString))
-        : warehousetdrulestList;
+        ? carrierList.filter(this.createStateFilter(queryString))
+        : carrierList;
       if (Object.keys(results).length == 0) {
         this.tpruleFormtransport.carrier = "";
       }
@@ -4118,7 +4130,7 @@ export default {
             for (var i in tabledata) {
               this.tdgridData.push(tabledata[i]);
             }
-            this.warehousetdrulSelect();
+            this.carrierSelect();
             this.warehouseSelect();
             this.message(true, response.data.msg, "success");
           } else {

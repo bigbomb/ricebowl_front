@@ -321,7 +321,7 @@
           </div>
         </div>
         <div style="text-align:right;margin-top:30px">
-          <el-button type="primary" @click="pillorderSheet">确认</el-button>
+          <el-button type="primary" @click="printorderSheet">确认</el-button>
           <el-button @click="exbillVisible =! exbillVisible">取消</el-button>
         </div>
       </el-dialog>
