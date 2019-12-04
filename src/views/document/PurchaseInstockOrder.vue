@@ -220,7 +220,7 @@
             <el-col :span="24">
               <el-form-item label="附加条款" prop="remark">
                 <el-input
-                  :rows="3"
+                  :rows="8"
                   class="inputwidth"
                   type="textarea"
                   placeholder="请输入备注"
@@ -914,6 +914,15 @@ export default {
               this.$message("规格字数不能超过20个字符");
               return;
             }
+
+            if (item.packingno === "") {
+              this.$message("捆包号不能为空");
+              return;
+            }
+            if (item.packingno.length > 30) {
+              this.$message("捆包号字数不能超过30字");
+              return;
+            }
             if (item.productfactory === "") {
               this.$message("钢厂不能为空");
               return;
@@ -967,11 +976,15 @@ export default {
               return;
             }
             if (item.num.length > 9) {
-              this.$message("数量字数不能超过9个字符");
+              this.$message("数量字数不能超过9");
               return;
             }
             if (item.warehousename === "") {
               this.$message("仓库不能为空");
+              return;
+            }
+            if (item.warehousename.length > 9) {
+              this.$message("仓库字数不能超过9字");
               return;
             }
           }

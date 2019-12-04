@@ -125,17 +125,22 @@
             <span>{{scope.row.productname}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="productspec" label="规格" width="200">
+        <el-table-column property="productspec" label="规格" width="150">
           <template slot-scope="scope">
             <span>{{scope.row.productspec}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="productfactory" label="钢厂" width="140">
+        <el-table-column property="packingno" label="捆包号" width="150">
+          <template slot-scope="scope">
+            <span>{{scope.row.packingno}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="productfactory" label="钢厂" width="120">
           <template slot-scope="scope">
             <span>{{scope.row.productfactory}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="productmark" label="材质" width="160">
+        <el-table-column property="productmark" label="材质" width="150">
           <template slot-scope="scope">
             <span>{{scope.row.productmark}}</span>
           </template>
@@ -146,18 +151,18 @@
           </template>
         </el-table-column>
 
-        <el-table-column property="unit" label="单位" width="160">
+        <el-table-column property="unit" label="单位" width="120">
           <template slot-scope="scope">
             <span>{{scope.row.unit}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="num" label="数量" width="160">
+        <el-table-column property="num" label="数量" width="120">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.num}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="warehousename" label="所在仓库" width="160">
+        <el-table-column property="warehousename" label="所在仓库" width="120">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.warehousename}}</span>
@@ -181,10 +186,35 @@
             <span>{{scope.row.status}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="lockman" label="锁货人">
+        <el-table-column
+          property="lockman"
+          label="锁货人"
+          width="100"
+          fixed="right"
+          v-if="activeName=='已锁货'"
+        >
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.lockman}}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          property="customername"
+          label="客户名称"
+          v-if="activeName=='已锁货'"
+          width="150"
+          fixed="right"
+        >
+          <template slot-scope="scope">
+            <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
+            <span>{{scope.row.customername}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="customerid" label="客户id" v-if="isshow">
+          <template slot-scope="scope">
+            <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
+            <span>{{scope.row.customerid}}</span>
           </template>
         </el-table-column>
       </el-table>
@@ -499,7 +529,19 @@
             :inline="true"
             label-width="90px"
             class="demo-form-inline"
+            :model="ruleForm"
           >
+            <el-col :span="24">
+              <el-form-item label="客户名称" prop="addcustomername">
+                <el-autocomplete
+                  v-model="ruleForm.addcustomername"
+                  :fetch-suggestions="querySearchAsync"
+                  placeholder="请输入客户名称"
+                  @select="handleSelectCustomer"
+                  class="inputwidth"
+                ></el-autocomplete>
+              </el-form-item>
+            </el-col>
             <el-form-item label="商品明细">
               <el-table
                 style="width:1100px"
@@ -1118,6 +1160,10 @@ export default {
       let ids = [];
       let nums = [];
       let productids = [];
+      if (!_this.ruleForm.customerId) {
+        _this.message(true, "客户不能为空！", "error");
+        return;
+      }
       _this.gridData.forEach(function(c, index, array) {
         if (c.num === "") {
           _this.message(true, "数量不能为空", "error");
@@ -1145,6 +1191,8 @@ export default {
         let params = new FormData();
         params.append("ids", ids);
         params.append("nums", nums);
+        params.append("customerId", _this.ruleForm.customerId);
+        params.append("customerName", _this.ruleForm.addcustomername);
         this.axios
           .post(process.env.API_ROOT + "/WareHouseApi/v1/lock", params)
           .then(response => {
@@ -1154,9 +1202,13 @@ export default {
             if (response.data && response.data.status === 200) {
               this.lockdialogFormVisible = false;
               _this.message(true, response.data.msg, "success");
+              _this.ruleForm.customerId = null;
+              _this.ruleForm.addcustomername = null;
               _this.getContract();
             } else {
               _this.message(true, response.data.msg, "error");
+              _this.ruleForm.customerId = null;
+              _this.ruleForm.addcustomername = null;
             }
           })
           .catch(err => {
@@ -2009,7 +2061,7 @@ export default {
     this.findProductFactory();
     this.findProductMark();
     this.findSaleContractWarehouse();
-    // this.getCustomerList();
+    this.getCustomerList();
   },
   computed: {
     nowLength: function() {
