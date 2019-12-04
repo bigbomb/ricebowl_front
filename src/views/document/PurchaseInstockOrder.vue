@@ -294,6 +294,12 @@
                     <span>{{scope.row.productspec}}</span>
                   </template>
                 </el-table-column>
+                <el-table-column property="packingno" label="捆包号" width="200">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.packingno" placeholder="请输入内容"></el-input>
+                    <span>{{scope.row.packingno}}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column property="productfactory" label="钢厂" width="150">
                   <template slot-scope="scope">
                     <!-- <el-input size="mini" v-if="scope.row.status!=='在库'" v-model="scope.row.productfactory" placeholder="请输入内容" ></el-input> -->
@@ -832,9 +838,11 @@ export default {
     addRow() {
       let d = {
         productname: "",
+        packingno: "",
         productspec: "",
         productfactory: "",
         productmark: "",
+        warehousename: "",
         weight: "",
         price: "",
         unit: "件",
@@ -1053,7 +1061,7 @@ export default {
         } else if (index === 4) {
           sums[index] = "";
           return;
-        } else if (index === 6) {
+        } else if (index === 7) {
           sums[index] = "";
           return;
         }
@@ -1069,7 +1077,7 @@ export default {
           }, 0);
           if (index === 8) {
             sums[index] += "";
-          } else if (index === 5) {
+          } else if (index === 6) {
             sums[index] = sums[index].toFixed(3);
             this.totalWeight = sums[index];
             sums[index] += "吨";

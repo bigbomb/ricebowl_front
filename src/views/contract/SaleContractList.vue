@@ -1266,11 +1266,24 @@
                 <!-- <el-input type="text" placeholder="请输入仓库全称" auto-complete="off" v-model="jgruleForm.warehouse" ></el-input> -->
               </el-form-item>
             </el-col>
+
             <el-col :span="12">
-              <el-form-item label="运费" prop="freight">
+              <el-form-item label="运费类型" prop="freightoption">
+                <el-select v-model="tpruleFormtransport.freightoption" placeholder="请选择运费类型">
+                  <el-option
+                    v-for="item in freightoptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="运费金额" prop="freight">
                 <el-input
                   :rows="5"
-                  class="vehiclewidth"
+                  size="medium"
                   type="input"
                   placeholder="请输入运费"
                   auto-complete="off"
@@ -1849,6 +1862,7 @@ export default {
       },
       tpruleFormtransport: {
         id: "",
+        freightoption: "",
         warehouseName: "",
         carrier: "",
         freight: "",
@@ -1905,6 +1919,25 @@ export default {
       statusTab: "",
       chooseRow: "",
       chooseRowIndex: "",
+      freightoptions: [
+        {
+          value: 1,
+          label: "不含税元/吨"
+        },
+        {
+          value: 2,
+          label: "含税元/吨"
+        },
+        {
+          value: 3,
+          label: "不含税整车运费"
+        },
+        {
+          value: 4,
+          label: "含税整车运费"
+        }
+      ],
+      value: "",
       percentoptions: [
         {
           value: "5%",
@@ -2029,6 +2062,9 @@ export default {
         ],
         warehouseName: [
           { required: true, message: "请选择提货仓库名", trigger: "change" }
+        ],
+        freightoption: [
+          { required: true, message: "请选择运费类型", trigger: "change" }
         ],
         freight: [
           { required: true, message: "请输入运费", trigger: "blur" },
