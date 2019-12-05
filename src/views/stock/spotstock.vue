@@ -180,7 +180,7 @@
             <span>{{scope.row.quality}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="status" label="状态" width="100">
+        <el-table-column property="status" label="状态">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.status}}</span>
@@ -943,7 +943,11 @@ export default {
       // 表单验证
       rules: {
         addcustomername: [
-          { required: true, message: "请选择客户", trigger: "change" }
+          {
+            required: true,
+            message: "请选择客户",
+            trigger: "change"
+          }
         ],
         adddeliverydate: [
           {
@@ -1161,7 +1165,7 @@ export default {
       let nums = [];
       let productids = [];
       if (!_this.ruleForm.customerId) {
-        _this.message(true, "客户不能为空！", "error");
+        _this.message(true, "请选择已存在的客户！", "error");
         return;
       }
       _this.gridData.forEach(function(c, index, array) {

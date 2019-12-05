@@ -64,7 +64,7 @@
         <el-table-column prop="transportfee" label="运费" width="100" sortable></el-table-column>
         <el-table-column prop="transportweight" label="重量" width="160" sortable></el-table-column>
         <el-table-column prop="vehiclenumber" label="提货车号" width="120" sortable></el-table-column>
-        <el-table-column prop="transportaddress" label="到货地址" width="220" sortable></el-table-column>
+        <el-table-column prop="transportaddress" label="到货地址" width="500" sortable></el-table-column>
         <el-table-column prop="warehouse" label="提货仓库" width="100" sortable></el-table-column>
         <el-table-column prop="crt" label="创建时间" sortable width="160">
           <template slot-scope="scope">
@@ -72,6 +72,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="createby" label="创建人" width="100" sortable></el-table-column>
+        <el-table-column prop="remark" label="备注" sortable></el-table-column>
         <el-table-column fixed="right" label="操作">
           <template slot-scope="scope">
             <el-button v-if="printShow" type="text" size="small" @click="printView(scope.row)">打印发货单</el-button>
@@ -103,10 +104,12 @@
         :append-to-body="true"
       >
         <div class="newOrder-pagination" id="pillorderSheet">
+          <p class="titleMenu">{{print.companyName}}</p>
           <p class="titleMenu">发货单</p>
+          <p class="titleTd">发货单号:{{print.transportNo}} 销售合同号:{{print.contractNo}}</p>
           <div class="titleBox">
             <el-row>
-              <el-col :span="24">
+              <!-- <el-col :span="24">
                 <el-col :span="3">委托方：</el-col>
                 <el-col :span="21" class="botom">
                   <el-col :span="20">{{print.companyName}}</el-col>
@@ -117,21 +120,21 @@
                 <el-col :span="18" class="botom">
                   <el-col :span="15">{{print.carrier}}</el-col>
                 </el-col>
-              </el-col>
+              </el-col>-->
               <el-col :span="24">
                 <el-col :span="3">提货车号：</el-col>
                 <el-col :span="21" class="botom">
                   <el-col :span="20">{{print.vehiclenumber}}</el-col>
                 </el-col>
               </el-col>
-              <el-col :span="24">
-                <el-col :span="3">提货仓库：</el-col>
+              <!-- <el-col :span="24">
+                <el-col :span="3">仓库：</el-col>
                 <el-col :span="21" class="botom">
                   <el-col :span="20">{{print.warehouse}}</el-col>
                 </el-col>
-              </el-col>
+              </el-col>-->
               <el-col :span="24">
-                <el-col :span="3">到货地址：</el-col>
+                <el-col :span="3">收货地址：</el-col>
                 <el-col :span="21" class="botom">
                   <el-col :span="20">{{print.transportaddress}}</el-col>
                 </el-col>
@@ -143,20 +146,20 @@
                 </el-col>              
               </el-col>-->
               <!-- <el-col :span="12">提单编号：{{print.deliveryNo}}</el-col> -->
-              <el-col :span="24">
+              <!-- <el-col :span="24">
                 <el-col :span="3">运费：</el-col>
                 <el-col :span="21" class="botom">
                   <el-col :span="20">{{print.transportfee}}</el-col>
                 </el-col>
-              </el-col>
+              </el-col>-->
               <!-- <el-col :span="12">仓库名称：{{print.warehouseName}}</el-col> -->
               <!-- <el-col :span="12">仓库地址：{{print.warehouseAddress}}</el-col> -->
               <!-- <el-col :span="12">仓库电话：{{print.warehousePhone}}</el-col> -->
               <!-- <el-col :span="12">仓库传真：{{print.warehouseFax}}</el-col> -->
 
-              <el-col :span="24">
+              <!-- <el-col :span="24">
                 <el-col :span="24" class="txtleft">提货人姓名/联系方式：</el-col>
-              </el-col>
+              </el-col>-->
             </el-row>
           </div>
           <p style="margin:3px 0;">提货明细</p>
@@ -186,10 +189,10 @@
 
             <div class="footrightBox">
               <p>
-                委托方：
-                <span class="bortom">{{print.companyName}}</span>
+                收货人签字:
+                <!-- <span class="bortom">{{print.companyName}}</span> -->
               </p>
-              <p class="padinglr">制表日期：{{print.crt, 'yyyy-MM-dd' | dataFormat}}</p>
+              <!-- <p class="padinglr">制表日期:{{print.crt, 'yyyy-MM-dd' | dataFormat}}</p> -->
             </div>
           </div>
         </div>
@@ -215,12 +218,14 @@ export default {
         validateTime: []
       },
       print: {
+        contractNo: "",
         companyName: "",
         carrier: "",
         vehiclenumber: "",
         warehouse: "",
         transportaddress: "",
-        transportfee: ""
+        transportfee: "",
+        remark: ""
       },
       customerList: [],
       tableData1: [],
@@ -409,6 +414,9 @@ export default {
       this.print.transportaddress = row.transportaddress;
       this.print.transportfee = row.transportfee;
       this.print.crt = row.crt;
+      this.print.contractNo = row.contractno;
+      this.print.transportNo = row.transportno;
+      this.print.remark = row.remark;
       let params = new FormData();
       params.append("memberId", this.memberId);
       params.append("transportNo", row.transportno);
@@ -579,6 +587,11 @@ export default {
   text-align: center;
   color: #292929;
 }
+#pillorderSheet .titleTd {
+  line-height: 1px;
+  text-align: center;
+  color: #292929;
+}
 #pillorderSheet .titleBox div {
   padding: 2px;
 }
@@ -608,6 +621,6 @@ export default {
   padding: 0 30px 0 0;
 }
 #pillorderSheet .footeremark .footrightBox p {
-  margin: 0;
+  margin-right: 150px;
 }
 </style>

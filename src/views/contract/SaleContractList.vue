@@ -1257,7 +1257,6 @@
             <el-col :span="12">
               <el-form-item label="提货仓库" prop="warehouseName">
                 <el-autocomplete
-                  class="vehiclewidth"
                   v-model="tpruleFormtransport.warehouseName"
                   :fetch-suggestions="queryWarehouseSearchAsync"
                   placeholder="请输入仓库名"
@@ -1268,8 +1267,8 @@
             </el-col>
 
             <el-col :span="12">
-              <el-form-item label="运费类型" prop="freightoption">
-                <el-select v-model="tpruleFormtransport.freightoption" placeholder="请选择运费类型">
+              <el-form-item label="运费类型" prop="feeoption">
+                <el-select v-model="tpruleFormtransport.feeoption" placeholder="请选择运费类型">
                   <el-option
                     v-for="item in freightoptions"
                     :key="item.value"
@@ -1280,19 +1279,19 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="运费金额" prop="freight">
+              <el-form-item label="运费金额" prop="transportfee">
                 <el-input
                   :rows="5"
                   size="medium"
                   type="input"
                   placeholder="请输入运费"
                   auto-complete="off"
-                  v-model="tpruleFormtransport.freight"
+                  v-model="tpruleFormtransport.transportfee"
                 ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
-              <el-col :span="12">
+              <!-- <el-col :span="12">
                 <el-form-item label="提货车号" prop="vehicleNumber">
                   <el-input
                     :rows="5"
@@ -1303,19 +1302,57 @@
                     v-model="tpruleFormtransport.vehicleNumber"
                   ></el-input>
                 </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="到货地址" prop="vehicleaddress">
-                  <el-input
-                    :rows="5"
-                    class="vehiclewidth"
-                    type="textarea"
-                    placeholder="请输入到货地址"
-                    auto-complete="off"
-                    v-model="tpruleFormtransport.vehicleaddress"
-                  ></el-input>
-                </el-form-item>
-              </el-col>
+              </el-col>-->
+              <el-form-item label="收货地址" prop="vehicleaddress">
+                <el-input
+                  style="width:600px"
+                  type="input"
+                  placeholder="请输入收货地址"
+                  auto-complete="off"
+                  v-model="tpruleFormtransport.vehicleaddress"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <!-- <el-form-item label="备注" prop="remark">
+                <el-input :rows="5" class="vehiclewidth" type="textarea" placeholder="请输入备注事项" auto-complete="off" v-model="tdruleForm.remark"></el-input>
+              </el-form-item>-->
+              <el-form-item label="发货备注" prop="remark">
+                <quill-editor
+                  class="tdquill"
+                  ref="myTextEditor"
+                  v-model="tpruleFormtransport.remark"
+                  :options="editorOption2"
+                  @blur="onEditorBlur($event)"
+                  @focus="onEditorFocus($event)"
+                  @ready="onEditorReady($event)"
+                  @change="onEditorChange($event)"
+                >
+                  >
+                  <div id="toolbar2" slot="toolbar">
+                    <button class="ql-bold">Bold</button>
+                    <button class="ql-italic">Italic</button>
+                    <select class="ql-size">
+                      <option value="small"></option>
+                      <option selected></option>
+                      <option value="large"></option>
+                      <option value="huge"></option>
+                    </select>
+                    <span class="ql-formats">
+                      <select class="ql-align">
+                        <option selected="selected"></option>
+                        <option value="center"></option>
+                        <option value="right"></option>
+                        <option value="justify"></option>
+                      </select>
+                    </span>
+                    <!-- <span class="ql-formats"><button type="button" @click="imgClick">
+                          <svg viewBox="0 0 18 18"> <rect class="ql-stroke" height="10" width="12" x="3" y="4"></rect> <circle class="ql-fill" cx="6" cy="7" r="1"></circle> <polyline class="ql-even ql-fill" points="5 12 5 11 7 9 8 10 11 7 13 9 13 12 5 12"></polyline> </svg>
+                          </button></span>
+                    <input type="file" class="custom-input" @change='upload' style='display: none !important;'>-->
+                  </div>
+                </quill-editor>
+              </el-form-item>
             </el-col>
             <el-form-item label="商品明细">
               <el-table
@@ -1865,10 +1902,12 @@ export default {
         freightoption: "",
         warehouseName: "",
         carrier: "",
-        freight: "",
+        transportfee: "",
         vehicleNumber: "",
         vehicleaddress: "",
-        contractno: ""
+        contractno: "",
+        remark:
+          "<p>1.收货人应当面验明货物材质、数量、产地、公差、签字后不予受理</p><p>2.客户自收货之日起3日内发现有质量异议，在货物完好无损的情况下本公司予以受理,</p><p>产生的赔偿仅限于有质量问题的材料成本</p>"
       },
       termRuleForm: {},
       warehouseVisible: false,
@@ -2066,7 +2105,7 @@ export default {
         freightoption: [
           { required: true, message: "请选择运费类型", trigger: "change" }
         ],
-        freight: [
+        transportfee: [
           { required: true, message: "请输入运费", trigger: "blur" },
           {
             type: "number",
@@ -2077,9 +2116,9 @@ export default {
             }
           }
         ],
-        vehicleNumber: [
-          { required: true, message: "请输入提货车号", trigger: "blur" }
-        ],
+        // vehicleNumber: [
+        //   { required: true, message: "请输入提货车号", trigger: "blur" }
+        // ],
         vehicleaddress: [
           { required: true, message: "请输入到货地址", trigger: "blur" }
         ]
@@ -3895,8 +3934,10 @@ export default {
       params.append("carrier", _this.tpruleFormtransport.carrier);
       params.append("memberid", memberId);
       params.append("warehouse", _this.tpruleFormtransport.warehouseName);
-      params.append("transportfee", _this.tpruleFormtransport.freight);
-      params.append("vehiclenumber", _this.tpruleFormtransport.vehicleNumber);
+      params.append("transportfee", _this.tpruleFormtransport.transportfee);
+      params.append("feeoption", _this.tpruleFormtransport.feeoption);
+      params.append("remark", _this.content);
+      // params.append("vehiclenumber", _this.tpruleFormtransport.vehicleNumber);
       params.append(
         "transportaddress",
         _this.tpruleFormtransport.vehicleaddress
@@ -4355,6 +4396,7 @@ export default {
     },
     onEditorReady(editor) {
       this.editor = editor;
+      this.content= editor.root.innerHTML;
     },
     onEditorChange(editor) {
       this.editor = editor;
