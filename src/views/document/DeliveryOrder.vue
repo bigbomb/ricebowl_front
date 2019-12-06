@@ -136,8 +136,19 @@
         :append-to-body="true"
       >
         <div class="newOrder-pagination" id="pillorderSheet">
+          <p class="titleMenu">{{print.companyName}}</p>
           <p class="titleMenu">提货委托书</p>
-          <p class="titleTd">{{print.deliveryNo}}</p>
+          <el-row>
+            <el-col :span="24" style="border-bottom: 1px solid #d9d9d9; margin-bottom: 10px;">
+              <el-col
+                :span="24"
+                style="
+  text-align: center;
+  margin-bottom: 10px;
+  color: #292929;"
+              >提货单号:{{print.deliveryNo}}</el-col>
+            </el-col>
+          </el-row>
           <div class="titleBox">
             <el-row>
               <el-col :span="24">
@@ -235,8 +246,19 @@
         :append-to-body="true"
       >
         <div class="newOrder-pagination" id="pillorderSheet">
+          <p class="titleMenu">{{print.companyName}}</p>
           <p class="titleMenu">提货委托书</p>
-          <p class="titleTd">{{print.deliveryNo}}</p>
+          <el-row>
+            <el-col :span="24" style="border-bottom: 1px solid #d9d9d9; margin-bottom: 10px;">
+              <el-col
+                :span="24"
+                style="
+  text-align: center;
+  margin-bottom: 10px;
+  color: #292929;"
+              >提货单号:{{print.deliveryNo}}</el-col>
+            </el-col>
+          </el-row>
           <div class="titleBox">
             <el-row>
               <el-col :span="24">

@@ -1539,7 +1539,7 @@
 
     <el-col :span="2">
       <el-dialog
-        width="1007.5px"
+        width="1000px"
         :close-on-click-modal="false"
         :visible.sync="contractVisible"
         :append-to-body="true"
@@ -1566,41 +1566,44 @@
           <el-col :span="8">运输方式 ： {{saleContractbox.transporttype}}</el-col>
           <p>产品明细：</p>
           <!-- <el-col :span="24" class="digitUppercase"> -->
-          <el-table
-            border
-            style
-            :data="contractData"
-            :span-method="contractSpanMethod"
-            show-summary
-            :summary-method="contractgetSummaries"
-            ref="gridTable"
-            highlight-current-row
-          >
-            <el-table-column type="index" label="序号" width="50"></el-table-column>
-            <el-table-column property="productname" width="100" label="产品名称"></el-table-column>
-            <el-table-column property="productspec" width="120" label="规格型号"></el-table-column>
-            <el-table-column property="productmark" width="100" label="牌号"></el-table-column>
-            <el-table-column property="weight" width="100" label="重量(吨)"></el-table-column>
-            <el-table-column property="price" width="100" label="单价(元/吨)"></el-table-column>
-            <el-table-column property="unit" width="80" label="单位"></el-table-column>
-            <el-table-column property="total" width="100" label="金额(元)"></el-table-column>
-            <el-table-column property="stockouttype" width="100" label="出库方式"></el-table-column>
-            <el-table-column property="warehousename" label="所在仓库"></el-table-column>
-            <!-- <el-table-column property="quality" width="100" label="品级"></el-table-column> -->
-          </el-table>
-          <p class="bordertopprint">
-            <span>大写金额：</span>
-            {{ saleContractbox.digitUppercase }}
-          </p>
-          <p class="bordertop">
-            <span>备注：</span>
-            {{ saleContractbox.remark }}
-          </p>
-          <!-- </el-col> -->
-          <el-col :span="24">
-            <p>法律条款：</p>
-            <div v-html="saleContractbox.termContent"></div>
-          </el-col>
+          <div class="addorder">
+            <el-table
+              :data="contractData"
+              :span-method="contractSpanMethod"
+              show-summary
+              :summary-method="contractgetSummaries"
+              ref="gridTable"
+            >
+              <el-table-column type="index" label="序号" width="60"></el-table-column>
+              <el-table-column property="productname" width="100" label="产品名称"></el-table-column>
+              <el-table-column property="productspec" width="140" label="规格型号"></el-table-column>
+              <el-table-column property="productmark" width="110" label="牌号"></el-table-column>
+              <el-table-column property="weight" width="100" label="重量(吨)"></el-table-column>
+              <el-table-column property="price" width="110" label="单价(元/吨)"></el-table-column>
+              <el-table-column property="unit" width="50" label="单位"></el-table-column>
+              <el-table-column property="total" width="100" label="金额(元)"></el-table-column>
+              <el-table-column property="stockouttype" width="90" label="出库方式"></el-table-column>
+              <el-table-column property="warehousename" label="所在仓库" width="88"></el-table-column>
+              <!-- <el-table-column property="quality" width="100" label="品级"></el-table-column> -->
+            </el-table>
+            <div class="footeremark">
+              <el-row>
+                <el-col :span="24">大写金额： {{ saleContractbox.digitUppercase }}</el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24">备注：{{saleContractbox.remark}}</el-col>
+              </el-row>
+            </div>
+          </div>
+          <div class="footeremark">
+            <el-row>
+              <el-col :span="3" class="padtop">合同条款：</el-col>
+              <el-col :span="21" class="padingnone">
+                <span v-html="saleContractbox.termContent">{{saleContractbox.termContent}}</span>
+              </el-col>
+            </el-row>
+          </div>
+
           <el-col :span="12">
             <p>需 方 ：</p>
             <p>单位名称（章）：{{customerdata.companyname}}</p>
@@ -4396,7 +4399,7 @@ export default {
     },
     onEditorReady(editor) {
       this.editor = editor;
-      this.content= editor.root.innerHTML;
+      this.content = editor.root.innerHTML;
     },
     onEditorChange(editor) {
       this.editor = editor;
@@ -4918,21 +4921,39 @@ export default {
 #salecontractList .widthInput {
   width: 300px;
 }
-#contractbox .bordertop {
-  width: 935px;
+
+#contractbox {
+  width: 950px;
+  font-size: 16px;
+  margin: 0 auto;
+}
+#contractbox .addorder {
+  margin-bottom: 15px;
+  border: 1px solid #ebeef5;
+}
+#contractbox .footeremark .padingnone {
+  padding: 0 !important;
+}
+#contractbox .footeremark .padtop {
+  padding: 15px !important;
+}
+#contractbox .footeremark .el-row div {
+  padding: 10px 15px;
+}
+
+/* #contractbox .bordertop {
   border: 1px solid #d9d9d9;
   padding: 5px 15px !important;
   margin: 0;
 }
 #contractbox .bordertopprint {
-  width: 935px;
   padding: 5px 15px !important;
   border: 1px solid #d9d9d9;
   margin: 0;
   border-top: 0;
   border-bottom: 0;
-}
-#salecontractList .contractbox .el-table {
+} */
+/* #salecontractList .contractbox .el-table {
   width: 100%;
   font-size: 14px;
 }
@@ -4941,7 +4962,7 @@ export default {
 }
 #salecontractList .contractbox .el-table td {
   padding: 3px 0;
-}
+} */
 
 #salecontractList .contractbox {
   overflow: hidden;
