@@ -106,7 +106,24 @@
         <div class="newOrder-pagination" id="pillorderSheet">
           <p class="titleMenu">{{print.companyName}}</p>
           <p class="titleMenu">发货单</p>
-          <p class="titleTd">发货单号:{{print.transportNo}} 销售合同号:{{print.contractNo}}</p>
+          <el-row>
+            <el-col :span="24" style="border-bottom: 1px solid #d9d9d9; margin-bottom: 10px;">
+              <el-col
+                :span="12"
+                style="
+  text-align: center;
+  margin-bottom: 10px;
+  color: #292929;"
+              >发货单号:{{print.transportNo}}</el-col>
+              <el-col
+                :span="12"
+                style="
+  text-align: center;
+  margin-bottom: 10px;
+  color: #292929;"
+              >销售合同号:{{print.contractNo}}</el-col>
+            </el-col>
+          </el-row>
           <div class="titleBox">
             <el-row>
               <!-- <el-col :span="24">
@@ -121,12 +138,12 @@
                   <el-col :span="15">{{print.carrier}}</el-col>
                 </el-col>
               </el-col>-->
-              <el-col :span="24">
+              <!-- <el-col :span="24">
                 <el-col :span="3">提货车号：</el-col>
                 <el-col :span="21" class="botom">
-                  <el-col :span="20">{{print.vehiclenumber}}</el-col>
+                  <el-col :span="20">{{print.transportaddress}}</el-col>
                 </el-col>
-              </el-col>
+              </el-col>-->
               <!-- <el-col :span="24">
                 <el-col :span="3">仓库：</el-col>
                 <el-col :span="21" class="botom">
@@ -188,10 +205,17 @@
             </el-row>
 
             <div class="footrightBox">
-              <p>
-                收货人签字:
-                <!-- <span class="bortom">{{print.companyName}}</span> -->
-              </p>
+              <el-row>
+                <el-col :span="12">
+                  <el-row>车号:</el-row>
+                  <el-row>提货人签字:</el-row>
+                </el-col>
+                <el-col :span="8">收货人签字:</el-col>
+              </el-row>
+              <!-- <p>
+              收货人签字:-->
+              <!-- <span class="bortom">{{print.companyName}}</span> -->
+              <!-- </p> -->
               <!-- <p class="padinglr">制表日期:{{print.crt, 'yyyy-MM-dd' | dataFormat}}</p> -->
             </div>
           </div>
@@ -587,11 +611,7 @@ export default {
   text-align: center;
   color: #292929;
 }
-#pillorderSheet .titleTd {
-  line-height: 1px;
-  text-align: center;
-  color: #292929;
-}
+
 #pillorderSheet .titleBox div {
   padding: 2px;
 }
