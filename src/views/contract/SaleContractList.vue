@@ -1328,7 +1328,7 @@
                   @ready="onEditorReady($event)"
                   @change="onEditorChange($event)"
                 >
-                  >
+                 
                   <div id="toolbar2" slot="toolbar">
                     <button class="ql-bold">Bold</button>
                     <button class="ql-italic">Italic</button>
