@@ -1328,7 +1328,6 @@
                   @ready="onEditorReady($event)"
                   @change="onEditorChange($event)"
                 >
-                 
                   <div id="toolbar2" slot="toolbar">
                     <button class="ql-bold">Bold</button>
                     <button class="ql-italic">Italic</button>
@@ -1382,7 +1381,17 @@
                   width="80"
                 ></el-table-column>
                 <el-table-column prop="stockid" label="stockid" sortable v-if="isshow" width="80"></el-table-column>
-                <el-table-column prop="transportstatus" label="运输状态" sortable hidden width="100"></el-table-column>
+                <el-table-column prop="deliverystatus" label="提货状态" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.deliverystatus}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column prop="transportstatus" label="运输状态" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.transportstatus}}</span>
+                  </template>
+                </el-table-column>
 
                 <el-table-column property="productname" label="名称" width="200">
                   <template slot-scope="scope">
@@ -3973,6 +3982,8 @@ export default {
         this.message(true, "请选择需要提货的产品", "error");
         return;
       }
+      this.totalWeight = 0;
+      this.finalWeight = 0;
       for (let i = 0; i < this.multipleSelection.length; i++) {
         let item = this.multipleSelection[i];
         if (item.productname === "") {
@@ -4073,6 +4084,8 @@ export default {
           this.$message("数量字数不能超过9个字符");
           return;
         }
+        this.totalWeight = this.totalWeight + item.actualweight;
+        this.finalWeight = this.finalWeight + item.finalweight;
       }
       this.$confirm("是否确定继续?", "提示", {
         confirmButtonText: "确定",
@@ -4274,7 +4287,7 @@ export default {
     },
 
     checkboxTransportInit(row, index) {
-      if (row.transportstatus === "运输中") {
+      if (row.transportstatus === "运输中" || row.deliverystatus !== "提货中") {
         return 0; //不可勾选
       } else {
         return 1; //可勾选

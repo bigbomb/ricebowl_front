@@ -58,12 +58,12 @@
       >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="id" label="id" width="80" v-if="isshow" sortable></el-table-column>
-        <el-table-column prop="transportno" label="运输号" width="200" sortable></el-table-column>
+        <el-table-column prop="transportno" label="运单号" width="200" sortable></el-table-column>
         <el-table-column prop="contractno" label="合同号" width="200" sortable></el-table-column>
         <el-table-column prop="carrier" label="承运方" width="120" sortable></el-table-column>
         <el-table-column prop="transporttotalfee" label="运费(元)" width="100" sortable></el-table-column>
         <el-table-column prop="transportweight" label="重量(吨)" width="160" sortable></el-table-column>
-        <el-table-column prop="vehiclenumber" label="提货车号" width="120" sortable></el-table-column>
+        <!-- <el-table-column prop="vehiclenumber" label="提货车号" width="120" sortable></el-table-column> -->
         <el-table-column prop="transportaddress" label="到货地址" width="500" sortable></el-table-column>
         <el-table-column prop="warehouse" label="提货仓库" width="100" sortable></el-table-column>
         <el-table-column prop="crt" label="创建时间" sortable width="160">
@@ -72,7 +72,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="createby" label="创建人" width="100" sortable></el-table-column>
-        <el-table-column prop="remark" label="备注" sortable></el-table-column>
+        <el-table-column prop="remark" label="备注" sortable :show-overflow-tooltip="true"></el-table-column>
         <el-table-column fixed="right" label="操作">
           <template slot-scope="scope">
             <el-button v-if="printShow" type="text" size="small" @click="printView(scope.row)">打印发货单</el-button>
@@ -572,7 +572,11 @@ export default {
   }
 };
 </script>
-
+<style lang="scss">
+.el-tooltip__popper {
+  max-width: 80%;
+}
+</style>
 <style scoped>
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
@@ -619,6 +623,7 @@ export default {
   border-bottom: 1px solid #d9d9d9;
   text-align: center;
 }
+
 #pillorderSheet .txtleft {
   text-align: left;
   border-bottom: 1px solid #d9d9d9;

@@ -101,12 +101,7 @@
         @selection-change="handleSelectionChange"
         style="width: 100%;"
       >
-        <el-table-column
-          type="selection"
-          :selectable="checkboxNum"
-          v-if="activeName=='在库'||activeName=='已锁货'"
-          width="80"
-        ></el-table-column>
+        <el-table-column type="selection" :selectable="checkboxNum" width="80"></el-table-column>
 
         <el-table-column property="id" v-if="isshow" label="ID" width="100">
           <template slot-scope="scope">
@@ -114,7 +109,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column property="productid" v-if="isshow" label="ID" width="100">
+        <el-table-column property="productid" v-if="isshow" label="productId" width="100">
           <template slot-scope="scope">
             <span>{{scope.row.productid}}</span>
           </template>
@@ -1474,13 +1469,31 @@ export default {
         this.message(true, "请选择需要生成销售订单的商品", "error");
         return;
       }
+
+      let addstock = this.addstock;
+      this.gridData = [];
+      let customerIds = new Set();
+      let customerNames = new Set();
+      for (var i in addstock) {
+        this.gridData.push(addstock[i]);
+        customerIds.add(addstock[i].customerid);
+        customerNames.add(addstock[i].customername);
+        this.ruleForm.addcustomername = addstock[i].customername;
+        this.ruleForm.customerId = addstock[i].customerid;
+      }
+      if (customerIds.size > 1) {
+        this.message(true, "请选择同一个客户的货生成合同", "error");
+        return;
+      }
+      setTimeout(() => {
+        this.$refs.gridTable.setCurrentRow(addstock[0]);
+      }, 10);
       this.percentShow = false;
       this.thistitle = "生成现货销售合同";
       this.dialogFormVisible = true;
       this.ruleForm.contractstatus = "";
       this.ruleForm.id = "";
       this.ruleForm.addcontractno = "";
-      this.ruleForm.addcustomername = "";
       this.ruleForm.adddeliverydate = "";
       this.ruleForm.depositdate = "";
       this.ruleForm.addcontractaddress = "";
@@ -1491,14 +1504,6 @@ export default {
       this.totalWeight = "";
       this.totalAmount = "";
       this.ruleForm.remark = "";
-      let addstock = this.addstock;
-      this.gridData = [];
-      for (var i in addstock) {
-        this.gridData.push(addstock[i]);
-      }
-      setTimeout(() => {
-        this.$refs.gridTable.setCurrentRow(addstock[0]);
-      }, 10);
       this.getCustomerList();
       // this.findProduct();
       // this.findProductSpec();
@@ -1848,7 +1853,9 @@ export default {
             warehousename: row.warehousename,
             stockouttype: row.stockouttype,
             quality: row.quality,
-            total: ""
+            total: "",
+            customerid: row.customerid,
+            customername: row.customername
           };
           this.addstock.push(d);
 

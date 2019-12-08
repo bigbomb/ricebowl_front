@@ -808,7 +808,8 @@ export default {
         total: row.total,
         warehousename: row.warehousename,
         stockouttype: row.stockouttype,
-        quality: row.quality
+        quality: row.quality,
+        packingno: row.packingno
       };
       this.productGridData.push(d);
       setTimeout(() => {
@@ -898,6 +899,7 @@ export default {
         if (valid) {
           for (let i = 0; i < this.productGridData.length; i++) {
             let item = this.productGridData[i];
+            debugger;
             if (item.productname === "") {
               this.$message("名称不能为空");
               return;

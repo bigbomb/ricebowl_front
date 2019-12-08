@@ -53,7 +53,7 @@
             <span>{{scope.row.crt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="upt" label="更新时间" sortable>
+        <el-table-column prop="upt" label="更新时间" width="200" sortable>
           <template slot-scope="scope">
             <span v-show="scope.row.upt!=null">{{scope.row.upt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
           </template>
@@ -151,7 +151,6 @@ var exportThis;
 export default {
   data() {
     var validatePhone = (rule, value, callback) => {
-      debugger;
       if (Object.keys(value).length == 0) {
         callback(new Error("请输入正确的手机号码"));
       } else {
@@ -286,17 +285,17 @@ export default {
     // 显示添加用户窗口
     showDialogForm() {
       let _this = this;
-      this.readonly = false;
+      _this.readonly = false;
       _this.thistitle = "新增客户";
-      this.customerRuleForm.companyPhone = "";
-      this.customerRuleForm.companyName = "";
-      this.customerRuleForm.companyAddress = "";
-      this.customerRuleForm.fax = "";
-      this.customerRuleForm.bankName = "";
-      this.customerRuleForm.bankAccount = "";
-      this.customerRuleForm.taxNumber = "";
-      this.customerRuleForm.id = "";
-      this.customerRuleForm.status = "";
+      _this.customerRuleForm.companyPhone = "";
+      _this.customerRuleForm.companyName = "";
+      _this.customerRuleForm.companyAddress = "";
+      _this.customerRuleForm.fax = "";
+      _this.customerRuleForm.bankName = "";
+      _this.customerRuleForm.bankAccount = "";
+      _this.customerRuleForm.taxNumber = "";
+      _this.customerRuleForm.id = "";
+      // this.customerRuleForm.status = "";
       _this.dialogFormVisible = true;
     },
     // 添加客户
@@ -313,6 +312,7 @@ export default {
       params.append("id", _this.customerRuleForm.id);
       params.append("memberid", _this.customerRuleForm.memberId);
       params.append("status", _this.customerRuleForm.status);
+      debugger;
       this.axios
         .post(process.env.API_ROOT + "/CustomerApi/v1/addCustomer", params)
         .then(response => {
@@ -420,7 +420,7 @@ export default {
       this.customerRuleForm.bankName = row.bankname;
       this.customerRuleForm.bankAccount = row.bankaccount;
       this.customerRuleForm.taxNumber = row.taxnumber;
-      this.customerRuleForm.status = row.status;
+      this.customerRuleForm.status = 1;
       this.customerRuleForm.companyPhone =
         typeof row.companyphone == "undefined" ? "" : row.companyphone;
       this.readonly = false;
