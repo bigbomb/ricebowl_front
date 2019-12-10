@@ -73,7 +73,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="createby" label="创建人" width="100" sortable></el-table-column>
-        <el-table-column prop="remark" label="备注" sortable></el-table-column>
+        <el-table-column prop="remark" label="备注" sortable :show-overflow-tooltip="true"></el-table-column>
         <el-table-column fixed="right" label="操作">
           <template slot-scope="scope">
             <el-button v-if="printShow" type="text" size="small" @click="printView(scope.row)">打印发货单</el-button>
@@ -581,7 +581,11 @@ export default {
   }
 };
 </script>
-
+<style lang="scss">
+.el-tooltip__popper {
+  max-width: 80%;
+}
+</style>
 <style scoped>
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
@@ -628,6 +632,7 @@ export default {
   border-bottom: 1px solid #d9d9d9;
   text-align: center;
 }
+
 #pillorderSheet .txtleft {
   text-align: left;
   border-bottom: 1px solid #d9d9d9;

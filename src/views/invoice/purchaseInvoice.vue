@@ -59,7 +59,7 @@
             <span>{{scope.row.purchasedate, 'yyyy-MM-dd' | dataFormat}}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="invoicestatus" label="状态" sortable width="200"></el-table-column>
+        <el-table-column prop="invoicestatus" label="发票状态" sortable width="200"></el-table-column>
         <el-table-column prop="createby" label="创建人" sortable width="100"></el-table-column>
         <el-table-column prop="crt" label="创建日期" sortable width="300">
           <template slot-scope="scope">
