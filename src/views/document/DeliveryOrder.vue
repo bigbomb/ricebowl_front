@@ -236,7 +236,53 @@
         </div>
       </el-dialog>
     </el-col>
-
+    <!-- //承运方管理 -->
+    <el-col :span="2">
+      <el-dialog title="承运方管理" :visible.sync="carrierVisible" width="880px">
+        <div>
+          <el-button size="mini" @click="addcarrierRow()">+</el-button>
+          <el-table
+            style="width:880px"
+            :data="carrierGridData"
+            max-height="500"
+            class="el-tb-edit"
+            ref="carrierGridData"
+            highlight-current-row
+          >
+            <el-table-column prop="id" label="id" sortable fixed="left" width="80"></el-table-column>
+            <el-table-column property="carrier" label="名称" width="250">
+              <template slot-scope="scope">
+                <el-input size="mini" v-model="scope.row.carrier" placeholder="请输入内容"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column property="contactor" label="联系人" width="150">
+              <template slot-scope="scope">
+                <el-input size="mini" v-model="scope.row.contactor" placeholder="请输入内容"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column property="contactorphone" label="联系电话">
+              <template slot-scope="scope">
+                <el-input size="mini" v-model="scope.row.contactorphone" placeholder="请输入内容"></el-input>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width="120">
+              <template slot-scope="scope">
+                <el-button
+                  @click.native.prevent="deletetdrulestRow(scope.row,scope.$index, carrierGridData)"
+                  type="text"
+                  size="small"
+                >移除</el-button>
+                <el-button
+                  @click.native.prevent="savedrulestRow(scope.row)"
+                  type="text"
+                  size="small"
+                >保存</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </el-dialog>
+    </el-col>
     <!-- 提单 -->
     <el-col :span="2">
       <el-dialog
@@ -726,6 +772,8 @@ export default {
       carrierList: [],
       billVisible: false, // 提单
       exbillVisible: false, //
+      carrierVisible: false,
+      carrierGridData: [],
       dateObj: {
         startTime: "",
         endTime: ""
@@ -871,6 +919,88 @@ export default {
           }
         });
       });
+    },
+    // 保存运输方管理
+    savedrulestRow(row) {
+      let _this = this;
+      let params = new FormData();
+      if (row.id !== undefined) {
+        params.append("id", row.id);
+      }
+      params.append("memberid", _this.memberId);
+      params.append("contactorphone", row.contactorphone);
+      params.append("contactor", row.contactor);
+      params.append("carrier", row.carrier);
+      this.axios
+        .post(process.env.API_ROOT + "/CarriersApi/v1/addCarrier", params)
+        .then(response => {
+          if (!response.data) {
+            _this.listLoading = false;
+            return;
+          }
+          if (response.data && response.data.status === 200) {
+            this.message(true, response.data.msg, "success");
+            _this.carrierShow();
+            _this.carrierSelect();
+            _this.carrierVisible = false;
+          } else {
+            _this.message(true, response.data.msg, "error");
+            _this.carrierGridData = [];
+          }
+          _this.listLoading = false;
+        });
+    },
+    // 删除运输方管理
+    deletetdrulestRow(row, index, rows) {
+      this.$confirm("此操作将永久删除该运输方, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "error"
+      })
+        .then(() => {
+          this.deldrulestRow(row);
+          rows.splice(index, 1);
+        })
+        .catch(() => {
+          this.message(true, "已取消删除", "error");
+        });
+    },
+    // 删除运输方管理
+    deldrulestRow(row) {
+      let _this = this;
+      let params = new FormData();
+      if (row.id) {
+        params.append("id", row.id);
+        this.axios
+          .post(process.env.API_ROOT + "/CarriersApi/v1/delCarrierRow", params)
+          .then(response => {
+            if (!response.data) {
+              _this.listLoading = false;
+              return;
+            }
+            if (response.data && response.data.status === 200) {
+              _this.message(true, response.data.msg, "success");
+              _this.carrierShow();
+            } else {
+              _this.message(true, response.data.msg, "error");
+            }
+            _this.listLoading = false;
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
+    },
+    addcarrierRow() {
+      var d = {
+        carrier: "",
+        contactor: "",
+        contactorphone: ""
+      };
+      this.carrierGridData.push(d);
+      setTimeout(() => {
+        this.$refs.carrierGridData.setCurrentRow(d);
+      }, 10);
     },
     // 保存运输单
     submittransport() {
