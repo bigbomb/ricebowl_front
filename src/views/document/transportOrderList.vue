@@ -37,7 +37,7 @@
 					<el-button type="error" class="el-icon-edit" @click="editUser">编辑</el-button>
         </el-form-item>-->
         <el-form-item v-if="delShow">
-          <el-button type="danger" class="el-icon-delete" @click="delDeliveryOrder">删除</el-button>
+          <el-button type="danger" class="el-icon-delete" @click="delTransportOrder">删除</el-button>
         </el-form-item>
 
         <!-- <el-form-item>
@@ -58,14 +58,15 @@
       >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="id" label="id" width="80" v-if="isshow" sortable></el-table-column>
-        <el-table-column prop="transportno" label="运输号" width="200" sortable></el-table-column>
-        <el-table-column prop="contractno" label="合同号" width="200" sortable></el-table-column>
+        <el-table-column prop="transportno" label="发货单号" width="200" sortable></el-table-column>
+        <el-table-column prop="contractno" label="销售合同号" width="200" sortable></el-table-column>
+        <el-table-column prop="deliveryno" label="提单号" width="200" sortable></el-table-column>
         <el-table-column prop="carrier" label="承运方" width="120" sortable></el-table-column>
-        <el-table-column prop="transportfee" label="运费" width="100" sortable></el-table-column>
+        <el-table-column prop="transporttotalfee" label="运费" width="100" sortable></el-table-column>
         <el-table-column prop="transportweight" label="重量" width="160" sortable></el-table-column>
         <el-table-column prop="vehiclenumber" label="提货车号" width="120" sortable></el-table-column>
         <el-table-column prop="transportaddress" label="到货地址" width="500" sortable></el-table-column>
-        <el-table-column prop="warehouse" label="提货仓库" width="100" sortable></el-table-column>
+        <!-- <el-table-column prop="warehouse" label="提货仓库" width="100" sortable></el-table-column> -->
         <el-table-column prop="crt" label="创建时间" sortable width="160">
           <template slot-scope="scope">
             <span>{{scope.row.crt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
@@ -263,8 +264,10 @@ export default {
       selLoading: false,
       dialogFormVisible: false,
       formLabelWidth: "120px",
-      deliveryOrderIds: [], // 加工单ids
-      deliveryOrderNos: [], //加工单Nos
+      ids: [], //发货单ids
+      transportOrderIds: [], // 发货单单号s
+      deliveryOrderNos: [], //提单Nos
+      saleContractNos: [], //销售合同号s
       memberId: "",
       saleContractNos: [],
       memberId: "",
@@ -329,8 +332,8 @@ export default {
       this.$refs[formName].resetFields();
     },
     // 删除提单
-    delDeliveryOrder(id) {
-      if (this.deliveryOrderIds.length === 0) {
+    delTransportOrder(id) {
+      if (this.deliveryOrderNos.length === 0) {
         this.message(true, "请选择需要删除的提单", "error");
         return;
       }
@@ -353,9 +356,10 @@ export default {
     // 删除提单
     async delDeliveryOrders() {
       let params = new FormData();
-      params.append("ids", this.deliveryOrderIds);
-      params.append("transportOrderNos", this.deliveryOrderNos);
+      params.append("transportOrderIds", this.transportOrderIds);
+      params.append("deliveryOrderNos", this.deliveryOrderNos);
       params.append("saleContractNos", this.saleContractNos);
+      params.append("ids", this.ids);
       this.axios
         .post(
           process.env.API_ROOT + "/TransportOrderApi/v1/delTransportOrder",
@@ -375,16 +379,21 @@ export default {
     },
     // 获取选中集
     handleSelectionChange(val) {
-      this.deliveryOrderIds = [];
+      this.ids = [];
+      this.transportOrderIds = [];
       this.deliveryOrderNos = [];
       this.saleContractNos = [];
       if (val) {
         val.forEach(row => {
-          this.deliveryOrderIds.push(row.id);
-          this.deliveryOrderNos.push(row.transportno);
+          this.ids.push(row.id);
+          this.transportOrderIds.push(row.transportno);
+          this.deliveryOrderNos.push(row.deliveryno);
           this.saleContractNos.push(row.contractno);
         });
         this.saleContractNos = Array.from(new Set(this.saleContractNos));
+        this.deliveryOrderNos = Array.from(new Set(this.deliveryOrderNos));
+        this.transportOrderIds = Array.from(new Set(this.transportOrderIds));
+        this.ids = Array.from(new Set(this.ids));
       }
     },
     // 每页大小改变时触发

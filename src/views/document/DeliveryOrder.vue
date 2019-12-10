@@ -30,9 +30,9 @@
             v-on:click="getDeliveryOrders"
           >查询</el-button>
         </el-form-item>
-        <!-- <el-form-item v-if='addShow'>
-					<el-button type="success" class="el-icon-plus" @click.native="showDialogForm">新增</el-button>
-        </el-form-item>-->
+        <el-form-item v-if="tansportadd">
+          <el-button type="success" class="el-icon-plus" @click.native="transportorder">生成发货单</el-button>
+        </el-form-item>
         <!-- <el-form-item>
 					<el-button type="error" class="el-icon-edit" @click="editUser">编辑</el-button>
         </el-form-item>-->
@@ -56,8 +56,9 @@
         @selection-change="handleSelectionChange"
         style="width: 100%;"
       >
-        <el-table-column type="selection" width="55"></el-table-column>
+        <el-table-column type="selection" width="55" :selectable="checkboxNum"></el-table-column>
         <el-table-column prop="id" label="id" width="80" v-if="isshow" sortable></el-table-column>
+        <el-table-column prop="status" label="提单状态" width="100"></el-table-column>
         <el-table-column prop="deliveryno" label="提单单号" width="200" sortable></el-table-column>
         <el-table-column prop="contractno" label="销售合同号" width="200" sortable></el-table-column>
         <el-table-column prop="customername" label="客户名称" width="300" sortable></el-table-column>
@@ -348,6 +349,254 @@
         </div>
       </el-dialog>
     </el-col>
+
+    <el-col :span="2">
+      <el-dialog
+        :close-on-click-modal="false"
+        title="发货单"
+        :visible.sync="transportFormVisible"
+        width="1250px"
+      >
+        <div id="deliverorderSheet">
+          <el-form
+            :model="tpruleFormtransport"
+            status-icon
+            :rules="tprulestransport"
+            ref="tpruleFormtransport"
+            :inline="true"
+            label-width="100px"
+            class="demo-form-inline"
+          >
+            <el-col :span="6">
+              <el-form-item label="承运方" prop="carrier">
+                <el-autocomplete
+                  v-model="tpruleFormtransport.carrier"
+                  :fetch-suggestions="querytdrulestSearchAsync"
+                  placeholder="请输入物流公司或者个人"
+                  @select="handleSelecttdrulestWarehouse"
+                  class="autoinputwidth"
+                ></el-autocomplete>
+                <!-- <el-input type="text" placeholder="请输入仓库全称" auto-complete="off" v-model="jgruleForm.warehouse" ></el-input> -->
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-form-item>
+                <el-button type="text" size="small" @click="carrierShow">承运方管理</el-button>
+              </el-form-item>
+            </el-col>
+            <!-- <el-col :span="12">
+              <el-form-item label="提货仓库" prop="warehouseName">
+                <el-autocomplete
+                  v-model="tpruleFormtransport.warehouseName"
+                  :fetch-suggestions="queryWarehouseSearchAsync"
+                  placeholder="请输入仓库名"
+                  @select="handleSelectTdWarehouse"
+                ></el-autocomplete>
+                <el-input type="text" placeholder="请输入仓库全称" auto-complete="off" v-model="jgruleForm.warehouse" ></el-input>
+              </el-form-item>
+            </el-col>-->
+
+            <el-col :span="7">
+              <el-form-item label="运费类型" prop="feeoption">
+                <el-select v-model="tpruleFormtransport.feeoption" placeholder="请选择运费类型">
+                  <el-option
+                    v-for="item in freightoptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="7">
+              <el-form-item label="运费金额" prop="transportfee">
+                <el-input
+                  :rows="5"
+                  size="medium"
+                  type="input"
+                  placeholder="请输入运费"
+                  auto-complete="off"
+                  v-model="tpruleFormtransport.transportfee"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <!-- <el-col :span="12">
+                <el-form-item label="提货车号" prop="vehicleNumber">
+                  <el-input
+                    :rows="5"
+                    class="vehiclewidth"
+                    type="textarea"
+                    placeholder="请输入车辆牌照"
+                    auto-complete="off"
+                    v-model="tpruleFormtransport.vehicleNumber"
+                  ></el-input>
+                </el-form-item>
+              </el-col>-->
+              <el-form-item label="收货地址" prop="vehicleaddress">
+                <el-input
+                  style="width:600px"
+                  type="input"
+                  placeholder="请输入收货地址"
+                  auto-complete="off"
+                  v-model="tpruleFormtransport.vehicleaddress"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <!-- <el-form-item label="备注" prop="remark">
+                <el-input :rows="5" class="vehiclewidth" type="textarea" placeholder="请输入备注事项" auto-complete="off" v-model="tdruleForm.remark"></el-input>
+              </el-form-item>-->
+              <el-form-item label="发货备注" prop="remark">
+                <div class="tdquill">
+                  <quill-editor
+                    ref="myTextEditor"
+                    v-model="tpruleFormtransport.remark"
+                    :options="editorOption2"
+                    @blur="onEditorBlur($event)"
+                    @focus="onEditorFocus($event)"
+                    @ready="onEditorReady($event)"
+                    @change="onEditorChange($event)"
+                  >
+                    >
+                    <div id="toolbar2" slot="toolbar">
+                      <button class="ql-bold">Bold</button>
+                      <button class="ql-italic">Italic</button>
+                      <select class="ql-size">
+                        <option value="small"></option>
+                        <option selected></option>
+                        <option value="large"></option>
+                        <option value="huge"></option>
+                      </select>
+                      <span class="ql-formats">
+                        <select class="ql-align">
+                          <option selected="selected"></option>
+                          <option value="center"></option>
+                          <option value="right"></option>
+                          <option value="justify"></option>
+                        </select>
+                      </span>
+                      <!-- <span class="ql-formats"><button type="button" @click="imgClick">
+                          <svg viewBox="0 0 18 18"> <rect class="ql-stroke" height="10" width="12" x="3" y="4"></rect> <circle class="ql-fill" cx="6" cy="7" r="1"></circle> <polyline class="ql-even ql-fill" points="5 12 5 11 7 9 8 10 11 7 13 9 13 12 5 12"></polyline> </svg>
+                          </button></span>
+                      <input type="file" class="custom-input" @change='upload' style='display: none !important;'>-->
+                    </div>
+                  </quill-editor>
+                </div>
+              </el-form-item>
+            </el-col>
+            <el-form-item label="商品明细">
+              <el-table
+                style="width:1100px"
+                :data="tdgridData"
+                max-height="500"
+                class="el-tb-edit"
+                ref="tdgridTable"
+                highlight-current-row
+                @selection-change="handleItemSelectionChange"
+                show-summary
+                :summary-method="getTdSummaries"
+              >
+                <!-- <el-table-column
+                  type="selection"
+                  width="80"
+                  @selection-change="handleItemSelectionChange"
+                  :selectable="checkboxTransportInit"
+                ></el-table-column>-->
+                <el-table-column
+                  prop="id"
+                  v-model="scope.row.id"
+                  label="id"
+                  sortable
+                  v-if="isshow"
+                  width="80"
+                ></el-table-column>
+                <el-table-column prop="stockid" label="stockid" sortable v-if="isshow" width="80"></el-table-column>
+                <!-- <el-table-column prop="transportstatus" label="运输状态" sortable hidden width="100"></el-table-column> -->
+
+                <el-table-column property="productname" label="名称" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productname}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productspec" label="规格" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productspec}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productfactory" label="钢厂" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productfactory}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productmark" label="材质" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productmark}}</span>
+                  </template>
+                </el-table-column>
+
+                <!-- <el-table-column property="weight" min="1" label="合同重量(吨)" width="120">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.weight}}</span>
+                  </template>
+                </el-table-column>-->
+                <el-table-column property="actualweight" min="1" label="提库重量(吨)" width="120">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.actualweight}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="finalweight" min="1" label="客户结算重量(吨)" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.finalweight}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="stockid" label="库存Id" width="120" v-if="isshow">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.stockid}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="price" label="单价(元)" width="120" v-if="isshow">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.price}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="unit" label="单位" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.unit}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="num" label="数量" width="60">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.num}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="warehousename" label="所在仓库" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.warehousename}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column property="quality" label="品级" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.quality}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="remark" label="备注" width="300">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.remark}}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="closeDialog('tpruleFormtransport')">取 消</el-button>
+          <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
+          <el-button type="primary" @click="transport('tpruleFormtransport')">保 存</el-button>
+        </div>
+      </el-dialog>
+    </el-col>
   </el-row>
 </template>
 
@@ -359,6 +608,7 @@ export default {
       readonly: false,
       isshow: false,
       producer: "",
+      transportFormVisible: false,
       filters: {
         keyword: "",
         validateTime: ""
@@ -380,6 +630,81 @@ export default {
         customername: "",
         companyName: ""
       },
+      tpruleFormtransport: {
+        id: "",
+        freightoption: "",
+        warehouseName: "",
+        carrier: "",
+        transportfee: "",
+        vehicleNumber: "",
+        vehicleaddress: "",
+        contractno: "",
+        remark:
+          "<p>1.收货人应当面验明货物材质、数量、产地、公差、签字后不予受理</p><p>2.客户自收货之日起3日内发现有质量异议，在货物完好无损的情况下本公司予以受理,</p><p>产生的赔偿仅限于有质量问题的材料成本</p>"
+      },
+      tdruleForm: {
+        contractstatus: "",
+        validateTime: [],
+        warehouseName: "",
+        vehicleNumber: "",
+        remark: "",
+        deliverymethod: "",
+        vehicleuser: "",
+        overtimefee: "",
+        isItemRight: false
+      },
+      tprulestransport: {
+        carrier: [
+          { required: true, message: "请选择承运方", trigger: "change" }
+        ],
+        warehouseName: [
+          { required: true, message: "请选择提货仓库名", trigger: "change" }
+        ],
+        freightoption: [
+          { required: true, message: "请选择运费类型", trigger: "change" }
+        ],
+        transportfee: [
+          { required: true, message: "请输入运费", trigger: "blur" },
+          {
+            type: "number",
+            message: "请输入数字格式",
+            trigger: "blur",
+            transform(value) {
+              return Number(value);
+            }
+          }
+        ],
+        // vehicleNumber: [
+        //   { required: true, message: "请输入提货车号", trigger: "blur" }
+        // ],
+        vehicleaddress: [
+          { required: true, message: "请输入到货地址", trigger: "blur" }
+        ]
+      },
+      freightoptions: [
+        {
+          value: 1,
+          label: "不含税元/吨"
+        },
+        {
+          value: 2,
+          label: "含税元/吨"
+        },
+        {
+          value: 3,
+          label: "不含税整车运费"
+        },
+        {
+          value: 4,
+          label: "含税整车运费"
+        }
+      ],
+      editorOption2: {
+        modules: {
+          toolbar: "#toolbar2"
+        }
+      },
+      tdgridData: [],
       customerList: [],
       tableData1: [],
       pageSizes: [30, 50, 80, 100],
@@ -392,11 +717,13 @@ export default {
       selLoading: false,
       dialogFormVisible: false,
       formLabelWidth: "120px",
-      deliveryOrderIds: [], // 加工单ids
-      deliveryOrderNos: [], //加工单Nos
+      deliveryOrderIds: [], // 提单ids
+      deliveryOrderNos: [], //提单Nos
       memberId: "",
       saleContractNos: [],
-      memberId: "",
+      selectedIds: [],
+      warehouseList: [],
+      carrierList: [],
       billVisible: false, // 提单
       exbillVisible: false, //
       dateObj: {
@@ -460,7 +787,7 @@ export default {
     },
     // 删除提单
     delDeliveryOrder(id) {
-      if (this.deliveryOrderIds.length === 0) {
+      if (this.deliveryOrderNos.length === 0) {
         this.message(true, "请选择需要删除的提单", "error");
         return;
       }
@@ -514,7 +841,9 @@ export default {
           this.deliveryOrderNos.push(row.deliveryno);
           this.saleContractNos.push(row.contractno);
         });
+        this.deliveryOrderNos = Array.from(new Set(this.deliveryOrderNos));
         this.saleContractNos = Array.from(new Set(this.saleContractNos));
+        this.deliveryOrderIds = Array.from(new Set(this.deliveryOrderIds));
       }
     },
     // 每页大小改变时触发
@@ -526,6 +855,164 @@ export default {
     handleCurrentChange(val) {
       this.startPage = val;
       this.getDeliveryOrders();
+    },
+    transport(formName) {
+      this.$confirm("是否确定继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "error"
+      }).then(() => {
+        this.$refs[formName].validate(valid => {
+          if (valid) {
+            this.submittransport();
+          } else {
+            console.log("error submit!!");
+            return false;
+          }
+        });
+      });
+    },
+    // 保存运输单
+    submittransport() {
+      let _this = this;
+      let memberId = "";
+      var usr = this.usr;
+      if (usr) {
+        memberId = usr.memberId;
+      }
+      let params = new FormData();
+      // params.append("contractId", _this.tdruleForm.id);
+      params.append("carrier", _this.tpruleFormtransport.carrier);
+      params.append("memberid", memberId);
+      // params.append("warehouse", _this.tpruleFormtransport.warehouseName);
+      params.append("transportfee", _this.tpruleFormtransport.transportfee);
+      params.append("feeoption", _this.tpruleFormtransport.feeoption);
+      params.append("remark", _this.content);
+      // params.append("vehiclenumber", _this.tpruleFormtransport.vehicleNumber);
+      params.append(
+        "transportaddress",
+        _this.tpruleFormtransport.vehicleaddress
+      );
+      params.append("contractno", _this.saleContractNos);
+      params.append("deliveryno", _this.deliveryOrderNos);
+      // params.append("ids", _this.selectedIds);
+      params.append("transportOrderDetail", JSON.stringify(_this.tdgridData));
+
+      this.axios
+        .post(
+          process.env.API_ROOT + "/TransportOrderApi/v1/addTransportOrder",
+          params
+        )
+        .then(response => {
+          if (!response.data) {
+            return;
+          }
+          if (response.data.status === 200) {
+            this.message(true, response.data.msg, "success");
+            this.$router.push({ path: "/transportOrderList" });
+          }
+        });
+    },
+    closeDialog(formName) {
+      if (formName === "tpruleFormtransport") {
+        this.transportFormVisible = false;
+      }
+
+      this.$refs[formName].resetFields();
+    },
+
+    // 合并加工单列
+    processingSheet(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "总计";
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          if (index === 6) {
+            sums[index] = sums[index].toFixed(3) + "吨";
+            this.numone = sums[index];
+          } else if (index === 7) {
+            sums[index] = "";
+            this.numone = sums[index];
+          }
+        } else {
+          sums[index] = "";
+        }
+      });
+      return sums;
+    },
+
+    // queryWarehouseSearchAsync(queryString, cb) {
+    //   var warehouseList = this.warehouseList;
+    //   var results = queryString
+    //     ? warehouseList.filter(this.createStateFilter(queryString))
+    //     : warehouseList;
+    //   if (Object.keys(results).length == 0) {
+    //     this.tdruleForm.warehouseName = "";
+    //     this.tpruleFormtransport.warehouseName = "";
+    //   }
+    //   clearTimeout(this.timeout);
+    //   this.timeout = setTimeout(() => {
+    //     cb(results);
+    //   }, 500);
+    // },
+    // warehouseSelect() {
+    //   let params = new FormData();
+    //   let memberId = this.memberId;
+    //   params.append("memberId", memberId);
+    //   this.axios
+    //     .post(process.env.API_ROOT + "/WareHouseApi/v1/findByNoPage", params)
+    //     .then(response => {
+    //       let warehousedata = response.data.data;
+    //       this.warehouseList = [];
+    //       for (let warehouse of warehousedata) {
+    //         if (warehouse.warehousename != null) {
+    //           let jsonwarehouse = {
+    //             value: warehouse.warehousename,
+    //             id: warehouse.id
+    //           };
+    //           this.warehouseList.push(jsonwarehouse);
+    //         }
+    //       }
+    //     })
+    //     .catch(err => {
+    //       console.log(err);
+    //     });
+    // },
+    carrierSelect() {
+      let params = new FormData();
+      let memberId = this.memberId;
+      params.append("memberId", memberId);
+      this.axios
+        .post(process.env.API_ROOT + "/CarriersApi/v1/findByNoPage", params)
+        .then(response => {
+          let carrierdata = response.data.data;
+          this.carrierList = [];
+          for (let warehouse of carrierdata) {
+            if (warehouse.carrier != null) {
+              let jsoncarrier = {
+                value: warehouse.carrier,
+                id: warehouse.id
+              };
+              this.carrierList.push(jsoncarrier);
+            }
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
     },
     getCustomerList() {
       let _this = this;
@@ -558,7 +1045,103 @@ export default {
           console.log(err);
         });
     },
+    transportorder(row) {
+      if (this.deliveryOrderNos.length === 0) {
+        this.message(true, "请选择提单", "error");
+        return;
+      }
+      this.transportFormVisible = true;
 
+      let params = new FormData();
+      params.append("deliveryNo", this.deliveryOrderNos);
+      // params.append("keyword", row.customerid);
+      // params.append("memberId", this.memberId);
+      // params.append("customerId", row.customerid);
+      this.axios
+        .post(
+          process.env.API_ROOT + "/DeliveryOrderApi/v1/findDetailByPageList",
+          params
+        )
+        .then(response => {
+          if (!response.data) {
+            return;
+          }
+          if (response.data.status === 200) {
+            this.tdgridData = [];
+            var tabledata = response.data.data;
+            for (var i in tabledata) {
+              this.tdgridData.push(tabledata[i]);
+            }
+            this.carrierSelect();
+            // this.warehouseSelect();
+            this.message(true, response.data.msg, "success");
+          } else {
+            this.message(true, response.data.msg, "error");
+          }
+        });
+    },
+    checkboxNum(row, rowIndex) {
+      if (row.status === "已出库") {
+        return false; //禁用
+      } else {
+        return true; //不禁用
+      }
+    },
+    handleSelectTdWarehouse(item) {
+      this.tdruleForm.warehouseName = item.value;
+      this.tdruleForm.warehouseId = item.id;
+    },
+    getTdSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "总计";
+          return;
+        } else if (index === 1) {
+          sums[index] = "";
+          return;
+        } else if (index === 2) {
+          sums[index] = "";
+          return;
+        } else if (index === 3) {
+          sums[index] = "";
+          return;
+        } else if (index === 11) {
+          sums[index] = "";
+          return;
+        } else if (index === 12) {
+          sums[index] = "";
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          if (index === 4) {
+            sums[index] = sums[index].toFixed(3);
+            sums[index] += "吨";
+          } else if (index === 5) {
+            sums[index] = sums[index].toFixed(3);
+            this.totalWeight = sums[index];
+            sums[index] += "吨";
+          } else {
+            sums[index] = sums[index].toFixed(2);
+            this.totalAmount = sums[index];
+            sums[index] += "";
+          }
+        } else {
+          sums[index] = "";
+        }
+      });
+      return sums;
+    },
     printView(row, type) {
       if (type === 1) {
         this.billVisible = true;
@@ -605,6 +1188,70 @@ export default {
           this.listLoading = false;
         });
     },
+    onEditorBlur(editor) {
+      this.editor = editor;
+    },
+    onEditorReady(editor) {
+      this.editor = editor;
+      this.content = editor.root.innerHTML;
+    },
+    onEditorFocus(editor) {
+      this.editor = editor;
+      editor.root.contentEditable = true;
+    },
+    onEditorChange(editor) {
+      this.editor = editor;
+      this.currentLength = editor.text.replace("\n", "").length;
+      this.content = editor.html;
+    },
+    carrierShow() {
+      let _this = this;
+      _this.listLoading = true;
+      let params = new FormData();
+      params.append("startPage", _this.startPage);
+      params.append("pageSize", _this.pageSize);
+      params.append("keyword", _this.filters.keyword);
+      params.append("memberId", _this.memberId);
+      this.axios
+        .post(process.env.API_ROOT + "/CarriersApi/v1/findByPage", params)
+        .then(response => {
+          if (!response.data) {
+            _this.listLoading = false;
+            return;
+          }
+          if (response.data && response.data.status === 200) {
+            _this.carrierGridData = response.data.data;
+            _this.total = response.data.total;
+          } else {
+            _this.message(true, response.data.msg, "error");
+            _this.carrierGridData = [];
+          }
+          _this.listLoading = false;
+        });
+      this.carrierVisible = true;
+    },
+    querytdrulestSearchAsync(queryString, cb) {
+      var carrierList = this.carrierList;
+      var results = queryString
+        ? carrierList.filter(this.createStateFilter(queryString))
+        : carrierList;
+      if (Object.keys(results).length == 0) {
+        this.tpruleFormtransport.carrier = "";
+      }
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        cb(results);
+      }, 500);
+    },
+    handleSelecttdrulestWarehouse(item) {
+      this.tpruleFormtransport.carrier = item.value;
+      this.tpruleFormtransport.id = item.id;
+    },
+    // arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+    //   if (columnIndex === 9) {
+    //     row.total = (row.price * row.num * row.weight).toFixed(2);
+    //   }
+    // },
     // 打印提货单
     printorderSheet() {
       var dom = document.getElementById("pillorderSheet");
@@ -626,7 +1273,15 @@ export default {
         win.close();
       }, 1000);
     },
-
+    handleItemSelectionChange(val) {
+      this.selectedIds = [];
+      if (val) {
+        val.forEach(row => {
+          this.selectedIds.push(row.id);
+        });
+        this.multipleSelection = val;
+      }
+    },
     querySearchAsync(queryString, cb) {
       let customerList = this.customerList;
       let results = queryString
@@ -646,61 +1301,36 @@ export default {
     handleSelect1(item) {
       this.filters.keyword = item.value;
     },
-
-    // 显示打印加工单
-    printprocessingSheet() {
-      var dom = document.getElementById("processingSheet");
-      var win = window.open("");
-      win.document.write(dom.outerHTML);
-      var head = win.document.getElementsByTagName("head")[0];
-      var style = win.document.createElement("link");
-      style.href = "static/index.css";
-      style.rel = "stylesheet";
-      style.type = "text/css";
-      head.appendChild(style);
-      win.document.querySelector(".resize-triggers").remove();
-      var div = win.document.createElement("div");
-      // div.innerText = 'helloworld'
-      // 插入到最前面
-
-      win.document.body.insertBefore(div, win.document.body.firstElementChild);
-      win.setTimeout(function() {
-        win.print();
-        win.close();
-      }, 1000);
+    checkboxTransportInit(row, index) {
+      if (row.transportstatus === "运输中") {
+        return 0; //不可勾选
+      } else {
+        return 1; //可勾选
+      }
     },
-    // 合并加工单列
-    processingSheet(param) {
-      const { columns, data } = param;
-      const sums = [];
-      columns.forEach((column, index) => {
-        if (index === 0) {
-          sums[index] = "总计";
-          return;
-        }
-        const values = data.map(item => Number(item[column.property]));
-        if (!values.every(value => isNaN(value))) {
-          sums[index] = values.reduce((prev, curr) => {
-            const value = Number(curr);
-            if (!isNaN(value)) {
-              return prev + curr;
-            } else {
-              return prev;
-            }
-          }, 0);
-          if (index === 6) {
-            sums[index] = sums[index].toFixed(3) + "吨";
-            this.numone = sums[index];
-          } else if (index === 7) {
-            sums[index] = "";
-            this.numone = sums[index];
-          }
-        } else {
-          sums[index] = "";
-        }
-      });
-      return sums;
-    },
+    // // 显示打印加工单
+    // printprocessingSheet() {
+    //   var dom = document.getElementById("processingSheet");
+    //   var win = window.open("");
+    //   win.document.write(dom.outerHTML);
+    //   var head = win.document.getElementsByTagName("head")[0];
+    //   var style = win.document.createElement("link");
+    //   style.href = "static/index.css";
+    //   style.rel = "stylesheet";
+    //   style.type = "text/css";
+    //   head.appendChild(style);
+    //   win.document.querySelector(".resize-triggers").remove();
+    //   var div = win.document.createElement("div");
+    //   // div.innerText = 'helloworld'
+    //   // 插入到最前面
+
+    //   win.document.body.insertBefore(div, win.document.body.firstElementChild);
+    //   win.setTimeout(function() {
+    //     win.print();
+    //     win.close();
+    //   }, 1000);
+    // },
+
     /**
      * ifshow: true/false msg: message  type: error/error/success
      */
@@ -722,6 +1352,9 @@ export default {
   computed: {
     findShow() {
       return this.getHasRule("查询提单");
+    },
+    tansportadd() {
+      return this.getHasRule("生成发货单");
     },
     delShow() {
       return this.getHasRule("删除提单");
@@ -803,6 +1436,13 @@ export default {
 #pillorderSheet .footeremark .footrightBox {
   text-align: right;
   padding: 0 30px 0 0;
+}
+#deliverorderSheet .tdquill {
+  height: 300px;
+  width: 1050px;
+}
+#deliverorderSheet .tdquill .quill-editor {
+  height: 250px;
 }
 .footrightBox .padinglr {
   padding-right: 50px;
