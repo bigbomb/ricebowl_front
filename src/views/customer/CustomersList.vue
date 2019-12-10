@@ -312,7 +312,6 @@ export default {
       params.append("id", _this.customerRuleForm.id);
       params.append("memberid", _this.customerRuleForm.memberId);
       params.append("status", _this.customerRuleForm.status);
-      debugger;
       this.axios
         .post(process.env.API_ROOT + "/CustomerApi/v1/addCustomer", params)
         .then(response => {

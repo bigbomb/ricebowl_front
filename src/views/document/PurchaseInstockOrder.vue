@@ -899,7 +899,6 @@ export default {
         if (valid) {
           for (let i = 0; i < this.productGridData.length; i++) {
             let item = this.productGridData[i];
-            debugger;
             if (item.productname === "") {
               this.$message("名称不能为空");
               return;
