@@ -58,7 +58,6 @@
       >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="id" label="id" width="80" v-if="isshow" sortable></el-table-column>
-<<<<<<< HEAD
         <el-table-column prop="transportno" label="发货单号" width="200" sortable></el-table-column>
         <el-table-column prop="contractno" label="销售合同号" width="200" sortable></el-table-column>
         <el-table-column prop="deliveryno" label="提单号" width="200" sortable></el-table-column>
@@ -66,14 +65,6 @@
         <el-table-column prop="transporttotalfee" label="运费" width="100" sortable></el-table-column>
         <el-table-column prop="transportweight" label="重量" width="160" sortable></el-table-column>
         <el-table-column prop="vehiclenumber" label="提货车号" width="120" sortable></el-table-column>
-=======
-        <el-table-column prop="transportno" label="运单号" width="200" sortable></el-table-column>
-        <el-table-column prop="contractno" label="合同号" width="200" sortable></el-table-column>
-        <el-table-column prop="carrier" label="承运方" width="120" sortable></el-table-column>
-        <el-table-column prop="transporttotalfee" label="运费(元)" width="100" sortable></el-table-column>
-        <el-table-column prop="transportweight" label="重量(吨)" width="160" sortable></el-table-column>
-        <!-- <el-table-column prop="vehiclenumber" label="提货车号" width="120" sortable></el-table-column> -->
->>>>>>> ce64aaf149be066f2d611782a77c54a60f021653
         <el-table-column prop="transportaddress" label="到货地址" width="500" sortable></el-table-column>
         <!-- <el-table-column prop="warehouse" label="提货仓库" width="100" sortable></el-table-column> -->
         <el-table-column prop="crt" label="创建时间" sortable width="160">
