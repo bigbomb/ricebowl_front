@@ -1211,6 +1211,267 @@
       </el-dialog>
     </el-col>
 
+<<<<<<< HEAD
+=======
+    <!-- 运输单 -->
+    <el-col :span="2">
+      <el-dialog
+        :close-on-click-modal="false"
+        title="发货单"
+        :visible.sync="transportFormVisible"
+        width="1250px"
+      >
+        <div>
+          <el-form
+            :model="tpruleFormtransport"
+            status-icon
+            :rules="tprulestransport"
+            ref="tpruleFormtransport"
+            :inline="true"
+            label-width="100px"
+            class="demo-form-inline"
+          >
+            <el-col :span="7">
+              <el-form-item label="承运方" prop="carrier">
+                <el-autocomplete
+                  v-model="tpruleFormtransport.carrier"
+                  :fetch-suggestions="querytdrulestSearchAsync"
+                  placeholder="请输入物流公司或者个人"
+                  @select="handleSelecttdrulestWarehouse"
+                  class="autoinputwidth"
+                ></el-autocomplete>
+                <!-- <el-input type="text" placeholder="请输入仓库全称" auto-complete="off" v-model="jgruleForm.warehouse" ></el-input> -->
+              </el-form-item>
+            </el-col>
+            <el-col :span="5">
+              <el-form-item>
+                <el-button type="text" size="small" @click="carrierShow">承运方管理</el-button>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="提货仓库" prop="warehouseName">
+                <el-autocomplete
+                  v-model="tpruleFormtransport.warehouseName"
+                  :fetch-suggestions="queryWarehouseSearchAsync"
+                  placeholder="请输入仓库名"
+                  @select="handleSelectTdWarehouse"
+                ></el-autocomplete>
+                <!-- <el-input type="text" placeholder="请输入仓库全称" auto-complete="off" v-model="jgruleForm.warehouse" ></el-input> -->
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="12">
+              <el-form-item label="运费类型" prop="feeoption">
+                <el-select v-model="tpruleFormtransport.feeoption" placeholder="请选择运费类型">
+                  <el-option
+                    v-for="item in freightoptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item label="运费金额" prop="transportfee">
+                <el-input
+                  :rows="5"
+                  size="medium"
+                  type="input"
+                  placeholder="请输入运费"
+                  auto-complete="off"
+                  v-model="tpruleFormtransport.transportfee"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <!-- <el-col :span="12">
+                <el-form-item label="提货车号" prop="vehicleNumber">
+                  <el-input
+                    :rows="5"
+                    class="vehiclewidth"
+                    type="textarea"
+                    placeholder="请输入车辆牌照"
+                    auto-complete="off"
+                    v-model="tpruleFormtransport.vehicleNumber"
+                  ></el-input>
+                </el-form-item>
+              </el-col>-->
+              <el-form-item label="收货地址" prop="vehicleaddress">
+                <el-input
+                  style="width:600px"
+                  type="input"
+                  placeholder="请输入收货地址"
+                  auto-complete="off"
+                  v-model="tpruleFormtransport.vehicleaddress"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="24">
+              <!-- <el-form-item label="备注" prop="remark">
+                <el-input :rows="5" class="vehiclewidth" type="textarea" placeholder="请输入备注事项" auto-complete="off" v-model="tdruleForm.remark"></el-input>
+              </el-form-item>-->
+              <el-form-item label="发货备注" prop="remark">
+                <quill-editor
+                  class="tdquill"
+                  ref="myTextEditor"
+                  v-model="tpruleFormtransport.remark"
+                  :options="editorOption2"
+                  @blur="onEditorBlur($event)"
+                  @focus="onEditorFocus($event)"
+                  @ready="onEditorReady($event)"
+                  @change="onEditorChange($event)"
+                >
+                  <div id="toolbar2" slot="toolbar">
+                    <button class="ql-bold">Bold</button>
+                    <button class="ql-italic">Italic</button>
+                    <select class="ql-size">
+                      <option value="small"></option>
+                      <option selected></option>
+                      <option value="large"></option>
+                      <option value="huge"></option>
+                    </select>
+                    <span class="ql-formats">
+                      <select class="ql-align">
+                        <option selected="selected"></option>
+                        <option value="center"></option>
+                        <option value="right"></option>
+                        <option value="justify"></option>
+                      </select>
+                    </span>
+                    <!-- <span class="ql-formats"><button type="button" @click="imgClick">
+                          <svg viewBox="0 0 18 18"> <rect class="ql-stroke" height="10" width="12" x="3" y="4"></rect> <circle class="ql-fill" cx="6" cy="7" r="1"></circle> <polyline class="ql-even ql-fill" points="5 12 5 11 7 9 8 10 11 7 13 9 13 12 5 12"></polyline> </svg>
+                          </button></span>
+                    <input type="file" class="custom-input" @change='upload' style='display: none !important;'>-->
+                  </div>
+                </quill-editor>
+              </el-form-item>
+            </el-col>
+            <el-form-item label="商品明细">
+              <el-table
+                style="width:1100px"
+                :data="tdgridData"
+                max-height="500"
+                class="el-tb-edit"
+                ref="tdgridTable"
+                highlight-current-row
+                @selection-change="handleItemSelectionChange"
+                :span-method="arraySpanMethod"
+                show-summary
+                :summary-method="getTdSummaries"
+              >
+                <el-table-column
+                  type="selection"
+                  width="80"
+                  @selection-change="handleItemSelectionChange"
+                  :selectable="checkboxTransportInit"
+                ></el-table-column>
+                <el-table-column
+                  prop="id"
+                  v-model="scope.row.id"
+                  label="id"
+                  sortable
+                  v-if="isshow"
+                  width="80"
+                ></el-table-column>
+                <el-table-column prop="stockid" label="stockid" sortable v-if="isshow" width="80"></el-table-column>
+                <el-table-column prop="deliverystatus" label="提货状态" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.deliverystatus}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column prop="transportstatus" label="运输状态" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.transportstatus}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column property="productname" label="名称" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productname}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productspec" label="规格" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productspec}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productfactory" label="钢厂" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productfactory}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productmark" label="材质" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productmark}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column property="weight" min="1" label="合同重量(吨)" width="120">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.weight}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="actualweight" min="1" label="提库重量(吨)" width="120">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.actualweight}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="finalweight" min="1" label="客户结算重量(吨)" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.finalweight}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="stockid" label="库存Id" width="120" v-if="isshow">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.stockid}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="price" label="单价(元)" width="120" v-if="isshow">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.price}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="unit" label="单位" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.unit}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="num" label="数量" width="60">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.num}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="warehousename" label="所在仓库" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.warehousename}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column property="quality" label="品级" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.quality}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="remark" label="备注" width="300">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.remark}}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="closeDialog('tpruleFormtransport')">取 消</el-button>
+          <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
+          <el-button type="primary" @click="transport('tpruleFormtransport')">保 存</el-button>
+        </div>
+      </el-dialog>
+    </el-col>
+
+>>>>>>> ce64aaf149be066f2d611782a77c54a60f021653
     <el-col :span="2">
       <el-dialog title="合同条款" :visible.sync="termFormVisible" :close-on-click-modal="false">
         <div>
