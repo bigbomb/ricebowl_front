@@ -1084,43 +1084,6 @@ export default {
       return sums;
     },
 
-    // queryWarehouseSearchAsync(queryString, cb) {
-    //   var warehouseList = this.warehouseList;
-    //   var results = queryString
-    //     ? warehouseList.filter(this.createStateFilter(queryString))
-    //     : warehouseList;
-    //   if (Object.keys(results).length == 0) {
-    //     this.tdruleForm.warehouseName = "";
-    //     this.tpruleFormtransport.warehouseName = "";
-    //   }
-    //   clearTimeout(this.timeout);
-    //   this.timeout = setTimeout(() => {
-    //     cb(results);
-    //   }, 500);
-    // },
-    // warehouseSelect() {
-    //   let params = new FormData();
-    //   let memberId = this.memberId;
-    //   params.append("memberId", memberId);
-    //   this.axios
-    //     .post(process.env.API_ROOT + "/WareHouseApi/v1/findByNoPage", params)
-    //     .then(response => {
-    //       let warehousedata = response.data.data;
-    //       this.warehouseList = [];
-    //       for (let warehouse of warehousedata) {
-    //         if (warehouse.warehousename != null) {
-    //           let jsonwarehouse = {
-    //             value: warehouse.warehousename,
-    //             id: warehouse.id
-    //           };
-    //           this.warehouseList.push(jsonwarehouse);
-    //         }
-    //       }
-    //     })
-    //     .catch(err => {
-    //       console.log(err);
-    //     });
-    // },
     carrierSelect() {
       let params = new FormData();
       let memberId = this.memberId;
@@ -1211,7 +1174,7 @@ export default {
         });
     },
     checkboxNum(row, rowIndex) {
-      if (row.status === "已出库") {
+      if (row.status === "提货中") {
         return false; //禁用
       } else {
         return true; //不禁用
@@ -1438,28 +1401,6 @@ export default {
         return 1; //可勾选
       }
     },
-    // // 显示打印加工单
-    // printprocessingSheet() {
-    //   var dom = document.getElementById("processingSheet");
-    //   var win = window.open("");
-    //   win.document.write(dom.outerHTML);
-    //   var head = win.document.getElementsByTagName("head")[0];
-    //   var style = win.document.createElement("link");
-    //   style.href = "static/index.css";
-    //   style.rel = "stylesheet";
-    //   style.type = "text/css";
-    //   head.appendChild(style);
-    //   win.document.querySelector(".resize-triggers").remove();
-    //   var div = win.document.createElement("div");
-    //   // div.innerText = 'helloworld'
-    //   // 插入到最前面
-
-    //   win.document.body.insertBefore(div, win.document.body.firstElementChild);
-    //   win.setTimeout(function() {
-    //     win.print();
-    //     win.close();
-    //   }, 1000);
-    // },
 
     /**
      * ifshow: true/false msg: message  type: error/error/success
