@@ -1,42 +1,48 @@
 <template>
-	<el-row>
-		<!--工具条-->
-		<el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-			<el-form :inline="true" :model="filters">
-				<el-form-item>
-					<el-input v-model="filters.keyword" placeholder="菜单"></el-input>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="primary" class="el-icon-search" :loading="selLoading" v-on:click="getFormData">查询</el-button>
-				</el-form-item>
-				<el-form-item>
-					<el-button type="success" class="el-icon-plus" @click.native="showDialogForm">新增</el-button>
-				</el-form-item>
-				<!-- <el-form-item>
+  <el-row>
+    <!--工具条-->
+    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
+      <el-form :inline="true" :model="filters">
+        <el-form-item>
+          <el-input v-model="filters.keyword" placeholder="菜单"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="primary"
+            class="el-icon-search"
+            :loading="selLoading"
+            v-on:click="getFormData"
+          >查询</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="success" class="el-icon-plus" @click.native="showDialogForm">新增</el-button>
+        </el-form-item>
+        <!-- <el-form-item>
 					<el-button type="warning" class="el-icon-edit" v-on:click="editUser">编辑</el-button>
-				</el-form-item> -->
-				<el-form-item>
-					<el-button type="danger" class="el-icon-delete" @click="delPermi">删除</el-button>
-				</el-form-item>
-			</el-form>
-		</el-col>
+        </el-form-item>-->
+        <el-form-item>
+          <el-button type="danger" class="el-icon-delete" @click="delPermi">删除</el-button>
+        </el-form-item>
+      </el-form>
+    </el-col>
 
-		<!--列表-->
-		<el-col>
-			<el-table :data="formData" v-loading="listLoading" element-loading-text="拼命加载中" @selection-change="handleSelectionChange" style="width: 100%;">
-				<el-table-column type="selection" width="55">
-				</el-table-column>
-				<!-- <el-table-column prop="id" label="id"  sortable>
-				</el-table-column> -->
-				<el-table-column prop="url" label="地址" sortable>
-				</el-table-column>
-				<el-table-column prop="name" label="名称" sortable>
-				</el-table-column>
-				<el-table-column prop="typeName" label="菜单类型" sortable>
-				</el-table-column>
-				<el-table-column prop="lastPermis" label="上级菜单" sortable>
-				</el-table-column>
-				<!-- <el-table-column prop="createTime" label="创建时间"  sortable>
+    <!--列表-->
+    <el-col>
+      <el-table
+        :data="formData"
+        v-loading="listLoading"
+        element-loading-text="拼命加载中"
+        @selection-change="handleSelectionChange"
+        style="width: 100%;"
+      >
+        <el-table-column type="selection" width="55"></el-table-column>
+        <!-- <el-table-column prop="id" label="id"  sortable>
+        </el-table-column>-->
+        <el-table-column prop="url" label="地址" sortable></el-table-column>
+        <el-table-column prop="name" label="名称" sortable></el-table-column>
+        <el-table-column prop="typeName" label="菜单类型" sortable></el-table-column>
+        <el-table-column prop="lastPermis" label="上级菜单" sortable></el-table-column>
+        <!-- <el-table-column prop="createTime" label="创建时间"  sortable>
 				<template scope="scope">
           <span v-if="scope.row.createTime != null">{{moment(scope.row.createTime).format("YYYY-MM-DD HH:mm:ss")}}</span>
         </template>
@@ -47,8 +53,8 @@
         </template>
 			</el-table-column>
 			<el-table-column prop="state" label="状态"  sortable>
-			</el-table-column> -->
-				<!-- <el-table-column
+        </el-table-column>-->
+        <!-- <el-table-column
 			      fixed="right"
 			      label="操作" width="120">
 			      <template slot-scope="scope">
@@ -65,47 +71,65 @@
 			          编辑
 			        </el-button>
 			      </template>
-			  </el-table-column> -->
-			</el-table>
-		</el-col>
-		<el-col>
-			<div class="block" style="float: right;margin-right: 10px;margin-top: 10px;">
-				<el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="startPage" :page-sizes="pageSizes" :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper" :total="total">
-				</el-pagination>
-			</div>
-		</el-col>
-		<el-col :span="2">
-			<el-dialog title="新增菜单" :visible.sync="dialogFormVisible">
-				<div style="width:80%;">
-					<el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" :inline="false" label-width="90px" class="demo-ruleForm">
-						<el-form-item label="名称" prop="name">
-							<el-input type="text" placeholder="菜单名称" auto-complete="off" v-model="ruleForm.name"></el-input>
-						</el-form-item>
-						<el-form-item label="地址" prop="url">
-							<el-input type="text" placeholder="url地址" auto-complete="off" v-model="ruleForm.url"></el-input>
-						</el-form-item>
-						<el-form-item label="类型" prop="type">
-							<el-select v-model="ruleForm.type" @change="typeChange" filterable placeholder="请选择">
-								<el-option v-for="item in types" :key="item.id" :label="item.name" :value="item.id">
-								</el-option>
-							</el-select>
-						</el-form-item>
-						<el-form-item label="父级" prop="baseType" v-show="farCboshow">
-							<el-select v-model="ruleForm.baseType" filterable placeholder="请选择">
-								<el-option v-for="item in baseTypes" :key="item.id" :label="item.name" :value="item.id">
-								</el-option>
-							</el-select>
-						</el-form-item>
-					</el-form>
-				</div>
-				<div slot="footer" class="dialog-footer">
-					<el-button @click="dialogFormVisible = false">取 消</el-button>
-					<el-button @click="resetForm('ruleForm')">重置</el-button>
-					<el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
-				</div>
-			</el-dialog>
-		</el-col>
-	</el-row>
+        </el-table-column>-->
+      </el-table>
+    </el-col>
+    <el-col>
+      <div class="block" style="float: right;margin-right: 10px;margin-top: 10px;">
+        <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="startPage"
+          :page-sizes="pageSizes"
+          :page-size="pageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+        ></el-pagination>
+      </div>
+    </el-col>
+    <el-col :span="2">
+      <el-dialog title="新增菜单" :visible.sync="dialogFormVisible">
+        <div style="width:80%;">
+          <el-form
+            :model="ruleForm"
+            status-icon
+            :rules="rules"
+            ref="ruleForm"
+            :inline="false"
+            label-width="90px"
+            class="demo-ruleForm"
+          >
+            <el-form-item label="名称" prop="name">
+              <el-input type="text" placeholder="菜单名称" auto-complete="off" v-model="ruleForm.name"></el-input>
+            </el-form-item>
+            <el-form-item label="地址" prop="url">
+              <el-input type="text" placeholder="url地址" auto-complete="off" v-model="ruleForm.url"></el-input>
+            </el-form-item>
+            <el-form-item label="类型" prop="type">
+              <el-select v-model="ruleForm.type" @change="typeChange" filterable placeholder="请选择">
+                <el-option v-for="item in types" :key="item.id" :label="item.name" :value="item.id"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="父级" prop="baseType" v-show="farCboshow">
+              <el-select v-model="ruleForm.baseType" filterable placeholder="请选择">
+                <el-option
+                  v-for="item in baseTypes"
+                  :key="item.id"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button @click="resetForm('ruleForm')">重置</el-button>
+          <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+        </div>
+      </el-dialog>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
@@ -129,7 +153,6 @@ export default {
       pageSize: 30,
       total: 0,
       formData: [],
-      total: 0,
       page: 1,
       listLoading: false,
       selLoading: false,
@@ -246,13 +269,12 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-        .then(() => {
-          this.delPermis();
-        })
-        // .catch(() => {
-        //   this.message(true, "已取消删除", "warning");
-        // });
+      }).then(() => {
+        this.delPermis();
+      });
+      // .catch(() => {
+      //   this.message(true, "已取消删除", "warning");
+      // });
     },
     // 删除用户
     delPermis() {

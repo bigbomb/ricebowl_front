@@ -543,6 +543,7 @@ export default {
       value: "",
       supplyerForm: {
         id: "",
+        supplyername: "",
         contractno: "",
         purchaseno: "",
         memberId: "",
@@ -1053,7 +1054,7 @@ export default {
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 8) {
-        row.total = (row.price * row.num * row.weight).toFixed(2);
+        row.total = (row.price * row.weight).toFixed(2);
       }
     },
     getSummaries(param) {
@@ -1130,7 +1131,7 @@ export default {
     // 打印模板的合并
     contractSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 6) {
-        row.total = (row.price * row.num * row.weight).toFixed(2);
+        row.total = (row.price * row.weight).toFixed(2);
       }
     },
 
@@ -1143,6 +1144,7 @@ export default {
       this.thistitle = "新增采购入库单";
       this.supplyDialogFormVisible = true;
       this.supplyerForm.id = "";
+      this.supplyerForm.supplyername = "";
       this.supplyerForm.purchaseno = "";
       this.supplyerForm.customername = "";
       this.supplyerForm.purchaseweight = "";
@@ -1326,6 +1328,7 @@ export default {
       };
     },
     handleSelect(item) {
+      this.supplyerForm.supplyername = item.value;
       this.supplyerForm.id = item.id;
     },
 
@@ -1392,6 +1395,7 @@ export default {
       params.append("memberid", memberId);
       params.append("contractno", _this.supplyerForm.contractno);
       params.append("purchaseno", _this.supplyerForm.purchaseno);
+      params.append("supplyerid", _this.supplyerForm.id);
       params.append("supplyername", _this.supplyerForm.supplyername);
       params.append("purchasedate", new Date(_this.supplyerForm.purchasedate));
       params.append("payment", _this.supplyerForm.payment);

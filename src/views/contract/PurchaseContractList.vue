@@ -983,7 +983,7 @@ export default {
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 8) {
-        row.total = (row.price * row.num * row.weight).toFixed(2);
+        row.total = (row.price * row.weight).toFixed(2);
       }
     },
     getSummaries(param) {
@@ -1060,7 +1060,7 @@ export default {
     // 打印模板的合并
     contractSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 6) {
-        row.total = (row.price * row.num * row.weight).toFixed(2);
+        row.total = (row.price * row.weight).toFixed(2);
       }
     },
 

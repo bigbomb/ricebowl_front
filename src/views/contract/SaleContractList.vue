@@ -510,7 +510,7 @@
                   </template>
                 </el-table-column>
 
-                <el-table-column property="warehousename" label="所在仓库" width="200">
+                <!-- <el-table-column property="warehousename" label="所在仓库" width="200">
                   <template slot-scope="scope">
                     <el-autocomplete
                       class="autoInputwidth"
@@ -529,7 +529,7 @@
                     </el-autocomplete>
                     <span>{{scope.row.warehousename}}</span>
                   </template>
-                </el-table-column>
+                </el-table-column>-->
 
                 <el-table-column property="stockouttype" label="出库方式" width="150">
                   <template slot-scope="scope">
@@ -748,7 +748,7 @@
             <el-form-item label="商品明细">
               <el-table
                 style="width:1100px"
-                :data="gridData"
+                :data="jggridData"
                 max-height="500"
                 class="el-tb-edit"
                 ref="jggridTable"
@@ -769,7 +769,11 @@
                   v-if="isshow"
                   width="80"
                 ></el-table-column>
-                <el-table-column prop="deliverystatus" label="提货状态" sortable hidden width="100"></el-table-column>
+                <el-table-column prop="deliverystatus" label="提货状态" sortable hidden width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.deliverystatus}}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column
                   prop="processstatus"
                   label="加工状态"
@@ -777,8 +781,12 @@
                   fixed="left"
                   hidden
                   width="100"
-                ></el-table-column>
-
+                >
+                  <template slot-scope="scope">
+                    <span>{{scope.row.processstatus}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="stockid" label="stockid" sortable v-if="isshow" width="80"></el-table-column>
                 <el-table-column property="productname" label="名称" width="150">
                   <template slot-scope="scope">
                     <span>{{scope.row.productname}}</span>
@@ -799,9 +807,26 @@
                     <span>{{scope.row.productmark}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="weight" label="重量(吨)" width="120">
+                <el-table-column property="weight" min="1" label="合同重量(吨)" width="120">
                   <template slot-scope="scope">
+                    <!-- <el-input
+                      size="mini"
+                      v-model="scope.row.weight"
+                      placeholder="请输入内容"
+                      v-if="scope.row.id===null"
+                    ></el-input>-->
                     <span>{{scope.row.weight}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="actualweight" min="1" label="提库重量(吨)" width="120">
+                  <template slot-scope="scope">
+                    <!-- <el-input
+                      size="mini"
+                      v-model="scope.row.actualweight"
+                      placeholder="请输入提库重量"
+                      v-if="scope.row.id===null"
+                    ></el-input>-->
+                    <span>{{scope.row.actualweight}}</span>
                   </template>
                 </el-table-column>
 
@@ -816,10 +841,28 @@
                     <span>{{scope.row.num}}</span>
                   </template>
                 </el-table-column>
+                <el-table-column property="warehousename" label="所在仓库" width="120">
+                  <template slot-scope="scope">
+                    <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
+                    <span>{{scope.row.warehousename}}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column property="remark" label="加工要求" width="300">
                   <template slot-scope="scope">
                     <el-input size="mini" v-model="scope.row.remark" placeholder="请输入内容"></el-input>
                     <span>{{scope.row.remark}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template
+                    slot-scope="scope"
+                    v-if="!scope.row.processstatus=='加工中'||!scope.row.deliverystatus=='提货中'"
+                  >
+                    <el-button
+                      @click.native.prevent="importFrom(scope.$index,scope.row,'jg')"
+                      type="text"
+                      size="small"
+                    >库存提取</el-button>
                   </template>
                 </el-table-column>
               </el-table>
@@ -1187,7 +1230,7 @@
                     >复制</el-button>
                     <el-button
                       v-if="tdruleForm.contractstatus ==='正式临调合同' "
-                      @click.native.prevent="importFrom(scope.$index,scope.row)"
+                      @click.native.prevent="importFrom(scope.$index,scope.row,'td')"
                       type="text"
                       size="small"
                     >库存提取</el-button>
@@ -1485,7 +1528,7 @@
     <el-col :span="2">
       <el-dialog title="库存管理" :visible.sync="stockVisible">
         <div>
-          <el-form>
+          <!-- <el-form>
             <el-form-item label="请选择">
               <el-select v-model="formTypeCollection">
                 <el-option
@@ -1500,11 +1543,11 @@
               <el-button type="primary" @click="renderForm">确定</el-button>
               <el-button @click="()=>{showAppendForm = false}">取消</el-button>
             </el-form-item>
-          </el-form>
-          <div class="editor-content">
-            <!--表单主体部分-->
-            <div ref="fc" id="form-create"></div>
-          </div>
+          </el-form>-->
+          <!-- <div class="editor-content"> -->
+          <!--表单主体部分-->
+          <!-- <div ref="fc" id="form-create"></div> -->
+          <!-- </div> -->
           <!-- <el-button size="mini" @click="addwarehouseRow()">+</el-button> -->
           <el-table
             style="width:1000px"
@@ -1657,6 +1700,7 @@ export default {
       saleContractWarehouseList: [],
       timeout: null,
       gridData: [],
+      jggridData: [],
       contractData: [],
       warehouseGridData: [],
       carrierGridData: [],
@@ -1942,6 +1986,7 @@ export default {
       memberId: "",
       id: "",
       usr: "",
+      ordertype: "",
       termFormVisible: false,
       companyName: "",
       contractNo: "",
@@ -2276,7 +2321,7 @@ export default {
         stockoutfee: 0,
         shorttransportfee: 0,
         stockouttype: "过磅",
-        quality: "",
+        quality: "合格品",
         warehousename: ""
       };
       this.gridData.push(d);
@@ -2441,10 +2486,10 @@ export default {
               this.$message("数量字数不能为空");
               return;
             }
-            if (item.warehousename === "") {
-              this.$message("仓库名称不能为空");
-              return;
-            }
+            // if (item.warehousename === "") {
+            //   this.$message("仓库名称不能为空");
+            //   return;
+            // }
             if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.num)) {
               this.$message("数量只能为数字");
               return;
@@ -2462,11 +2507,15 @@ export default {
       });
     },
     chooseThis(row) {
-      this.tdgridData.splice(this.chooseRowIndex, 1);
+      if (this.ordertype == "td") {
+        this.tdgridData.splice(this.chooseRowIndex, 1);
+      } else if (this.ordertype == "jg") {
+        this.jggridData.splice(this.chooseRowIndex, 1);
+      }
       let d = {
         id: this.chooseRow.id,
         deliverystatus: this.chooseRow.deliverystatus,
-        warehousename: this.chooseRow.warehousename,
+        warehousename: row.warehousename,
         productname: this.chooseRow.productname,
         productspec: this.chooseRow.productspec,
         productfactory: this.chooseRow.productfactory,
@@ -2480,10 +2529,17 @@ export default {
         remark: this.chooseRow.remark,
         quality: this.chooseRow.quality
       };
-      this.tdgridData.push(d);
-      setTimeout(() => {
-        this.$refs.tdgridTable.setCurrentRow(d);
-      }, 10);
+      if (this.ordertype == "td") {
+        this.tdgridData.push(d);
+        setTimeout(() => {
+          this.$refs.tdgridTable.setCurrentRow(d);
+        }, 10);
+      } else if (this.ordertype == "jg") {
+        this.jggridData.push(d);
+        setTimeout(() => {
+          this.$refs.jggridTable.setCurrentRow(d);
+        }, 10);
+      }
       this.stockVisible = false;
       // this.chooseRow.actualweight = 2332;
     },
@@ -2529,6 +2585,7 @@ export default {
           let result = response.data.data;
           this.jgruleForm.templateId = selVal;
           this.jgruleForm.warehouseName = result.warehousename;
+          this.jgruleForm.warehouseId = result.warehouseid;
           this.jgruleForm.processtype = result.processtype;
           this.jgruleForm.processfee = result.processfee;
           this.jgruleForm.remark = result.remark;
@@ -2667,9 +2724,10 @@ export default {
       this.warehouseVisible = true;
     },
 
-    importFrom(index, row) {
+    importFrom(index, row, orderType) {
       let _this = this;
       _this.listLoading = true;
+      this.ordertype = orderType;
       let params = new FormData();
       this.chooseRow = row;
       this.chooseRowIndex = index;
@@ -2681,7 +2739,7 @@ export default {
       params.append("productspec", row.productspec);
       params.append("productfactory", row.productfactory);
       params.append("productmark", row.productmark);
-      params.append("warehousename", row.warehousename);
+      // params.append("warehousename", row.warehousename);
       params.append("stockstatus", "在库");
       this.axios
         .post(process.env.API_ROOT + "/WareHouseApi/v1/findItemByPage", params)
@@ -2704,22 +2762,20 @@ export default {
 
     contractarraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 9) {
-        row.total = (row.price * row.num * row.weight).toFixed(2);
+        row.total = (row.price * row.weight).toFixed(2);
       }
       if (columnIndex === 13) {
-        row.stockouttotal = (row.stockoutfee * row.num * row.weight).toFixed(2);
+        row.stockouttotal = (row.stockoutfee * row.weight).toFixed(2);
       }
       if (columnIndex === 15) {
-        row.shorttransporttotal = (
-          row.shorttransportfee *
-          row.num *
-          row.weight
-        ).toFixed(2);
+        row.shorttransporttotal = (row.shorttransportfee * row.weight).toFixed(
+          2
+        );
       }
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 9) {
-        row.total = (row.price * row.num * row.weight).toFixed(2);
+        row.total = (row.price * row.weight).toFixed(2);
       }
     },
     getSummaries(param) {
@@ -2873,7 +2929,7 @@ export default {
     // 打印模板的合并
     contractSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 6) {
-        row.total = (row.price * row.num * row.weight).toFixed(2);
+        row.total = (row.price * row.weight).toFixed(2);
       }
     },
     contractgetSummaries(param) {
@@ -3459,6 +3515,18 @@ export default {
         this.message(true, "请选择需要加工的产品", "error");
         return;
       }
+
+      for (let i = 0; i < this.jggridData.length; i++) {
+        let item = this.jggridData[i];
+        if (item.weight === "") {
+          this.$message("重量不能为空");
+          return;
+        }
+        if (item.warehousename === "") {
+          this.$message("仓库名称不能为空");
+          return;
+        }
+      }
       this.$confirm("是否确定继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -3943,10 +4011,10 @@ export default {
             return;
           }
           if (response.data.status === 200) {
-            this.gridData = [];
+            this.jggridData = [];
             var tabledata = response.data.data.saleContractDetail;
             for (var i in tabledata) {
-              this.gridData.push(tabledata[i]);
+              this.jggridData.push(tabledata[i]);
             }
             this.warehouseSelect();
             this.processTemplateSelect();

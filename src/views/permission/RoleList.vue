@@ -164,7 +164,6 @@ export default {
       pageSize: 30,
       total: 0,
       formData: [],
-      total: 0,
       page: 1,
       options: [
         {

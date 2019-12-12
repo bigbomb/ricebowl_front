@@ -246,7 +246,7 @@ export default {
 
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 10) {
-        row.total = (row.price * row.num * row.weight).toFixed(2);
+        row.total = (row.price * row.weight).toFixed(2);
       }
     },
     getSummaries(param) {
