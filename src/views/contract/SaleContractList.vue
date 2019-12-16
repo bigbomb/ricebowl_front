@@ -856,7 +856,7 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template
                     slot-scope="scope"
-                    v-if="!scope.row.processstatus=='加工中'||!scope.row.deliverystatus=='提货中'"
+                    v-if="(scope.row.processstatus== null && scope.row.deliverystatus== null)"
                   >
                     <el-button
                       @click.native.prevent="importFrom(scope.$index,scope.row,'jg')"
