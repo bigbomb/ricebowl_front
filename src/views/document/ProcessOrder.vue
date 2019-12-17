@@ -79,7 +79,7 @@
             <span v-show='scope.row.upt!=null'>{{scope.row.upt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
           </template>
         </el-table-column>-->
-        <el-table-column fixed="right" label="操作">
+        <el-table-column fixed="right" width="200" label="操作">
           <template slot-scope="scope">
             <el-button
               type="text"
@@ -87,6 +87,12 @@
               v-if="printViewShow"
               @click="printView(scope.row)"
             >打印预览</el-button>
+            <el-button
+              type="text"
+              size="small"
+              v-if="printViewShow"
+              @click="inputProcess(scope.row)"
+            >加工明细录入</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -220,6 +226,168 @@
         </div>
       </el-dialog>
     </el-col>
+
+    <el-col :span="2">
+      <el-dialog
+        :close-on-click-modal="false"
+        :title="thistitle"
+        :visible.sync="inputProcessdialogFormVisible"
+        width="1250px"
+      >
+        <div>
+          <el-form status-icon :inline="true" label-width="90px" class="demo-form-inline">
+            <el-form-item label="商品明细">
+              <el-table
+                style="width:1100px"
+                max-height="500"
+                :data="processOrders1"
+                :summary-method="getSummaries"
+                show-summary
+                class="el-tb-edit"
+                highlight-current-row
+              >
+                <el-table-column property="stockid" label="库存id" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.stockid}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productname" label="名称" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productname}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productspec" label="规格" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productspec}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productfactory" label="钢厂" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productfactory}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productmark" label="材质" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productmark}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="weight" label="重量(吨)" width="120">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.weight}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="unit" label="单位" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.unit}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="num" label="数量" width="80">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.num}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="addDetailRow(scope.row)"
+                      type="text"
+                      size="small"
+                    >增加加工明细</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+            <p></p>
+            <el-form-item label="加工明细">
+              <el-table
+                style="width:1100px"
+                max-height="500"
+                :summary-method="getSummaries"
+                show-summary
+                class="el-tb-edit"
+                :data="jgdetailData"
+                highlight-current-row
+                ref="jgdetailTable"
+              >
+                <el-table-column property="id" label="ID" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.id}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productname" label="名称" width="200">
+                  <template slot-scope="scope">
+                    <el-autocomplete
+                      class="autoInputwidth"
+                      ref="productnameInput"
+                      v-model="scope.row.productname"
+                      placeholder="请输入商品名称"
+                    >
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span hidden>{{ item.id }}</span>
+                        <el-tooltip content="删除后重新点击输入框刷新" placement="bottom" effect="light">
+                          <span class="addr" @click.stop="delProductname(item.id)">删除</span>
+                        </el-tooltip>
+                      </template>
+                    </el-autocomplete>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productspec" label="规格" width="200">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.productspec" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productfactory" label="钢厂" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productfactory}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productmark" label="材质" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productmark}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="weight" label="重量(吨)" width="120">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.weight" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column property="unit" label="单位" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.unit}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="num" label="数量" width="80">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="deleteRow(scope.$index, jgdetailData)"
+                      type="text"
+                      size="small"
+                    >移除</el-button>
+                    <el-button
+                      @click.native.prevent="copyRow(scope.row)"
+                      type="text"
+                      size="small"
+                    >复制</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="inputProcessdialogFormVisible =! inputProcessdialogFormVisible">取 消</el-button>
+          <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
+          <el-button type="primary" @click="submitForm()">保 存</el-button>
+        </div>
+      </el-dialog>
+    </el-col>
   </el-row>
 </template>
 
@@ -254,11 +422,16 @@ export default {
       pageSize: 30,
       total: 0,
       processOrders: [],
+      processOrders1: [],
+      processNo: "",
+      jgdetailData: [],
+      delids: [],
       autoterVisible: false,
       page: 1,
       listLoading: false,
       selLoading: false,
       dialogFormVisible: false,
+      inputProcessdialogFormVisible: false,
       formLabelWidth: "120px",
       processOrderIds: [], // 加工单ids
       processOrderNos: [], //加工单Nos
@@ -345,6 +518,30 @@ export default {
         .catch(() => {
           this.message(true, "已取消删除", "error");
         });
+    },
+    deleteRow(index, rows) {
+      let x = rows[index].id;
+
+      if (x !== void 0 || x !== null) {
+        this.delids.unshift(x);
+      }
+      rows.splice(index, 1);
+    },
+    copyRow(row) {
+      let d = {
+        id: null,
+        productname: row.productname,
+        productspec: row.productspec,
+        productfactory: row.productfactory,
+        productmark: row.productmark,
+        weight: row.weight,
+        unit: row.unit,
+        num: row.num
+      };
+      this.jgdetailData.push(d);
+      setTimeout(() => {
+        this.$refs.jgdetailTable.setCurrentRow(d);
+      }, 10);
     },
     // 删除用户
     async delProcessOrders() {
@@ -446,6 +643,95 @@ export default {
       this.getProcessOrders();
     },
 
+    submitForm() {
+      for (let i = 0; i < this.jgdetailData.length; i++) {
+        let item = this.jgdetailData[i];
+        if (item.productname === "") {
+          this.$message("名称不能为空");
+          return;
+        }
+        if (item.productname.length > 20) {
+          this.$message("名称字数不能超过20个字符");
+          return;
+        }
+        if (item.productspec === "") {
+          this.$message("规格不能为空");
+          return;
+        }
+        if (item.productspec.length > 20) {
+          this.$message("规格字数不能超过20个字符");
+          return;
+        }
+        if (item.productfactory === "") {
+          this.$message("钢厂不能为空");
+          return;
+        }
+        if (item.productfactory.length > 20) {
+          this.$message("钢厂字数不能超过20个字符");
+          return;
+        }
+        if (item.productmark === "") {
+          this.$message("材质不能为空");
+          return;
+        }
+        if (item.productmark.length > 20) {
+          this.$message("材质字数不能超过20个字符");
+          return;
+        }
+        if (item.productmark === "") {
+          this.$message("材质不能为空");
+          return;
+        }
+        if (item.weight === "") {
+          this.$message("重量不能为空");
+          return;
+        }
+        if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.weight)) {
+          this.$message("重量只能为大于0的数字");
+          return;
+        }
+        if (item.weight.length > 9) {
+          this.$message("重量字数不能超过9个字符");
+          return;
+        }
+        if (item.num === "") {
+          this.$message("数量字数不能为空");
+          return;
+        }
+        if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.num)) {
+          this.$message("数量只能为数字");
+          return;
+        }
+        if (item.num.length > 9) {
+          this.$message("数量字数不能超过9个字符");
+          return;
+        }
+      }
+      if (this.jgdetailData.length === 0) {
+        this.message(true, "产品明细不能为空！", "error");
+        return;
+      }
+      let params = new FormData();
+      params.append("jgdetail", JSON.stringify(this.jgdetailData));
+      params.append("processno", this.processNo);
+      params.append("delids", JSON.stringify(this.delids));
+      this.axios
+        .post(
+          process.env.API_ROOT + "/ProcessOrderApi/v1/addProcessOrderFinish",
+          params
+        )
+        .then(response => {
+          if (!response.data) {
+            return;
+          }
+
+          if (response.data.status === 200) {
+            this.message(true, response.data.msg, "success");
+          } else {
+            this.message(true, response.data.msg, "error");
+          }
+        });
+    },
     printView(row) {
       this.autoterVisible = true;
       this.print.customerName = row.customerName;
@@ -496,6 +782,49 @@ export default {
           this.listLoading = false;
         });
     },
+    inputProcess(row) {
+      this.thistitle = "加工明细录入";
+      this.inputProcessdialogFormVisible = true;
+      let params = new FormData();
+      params.append("processNo", row.processno);
+      this.processNo = row.processno;
+      this.axios
+        .post(
+          process.env.API_ROOT + "/ProcessOrderApi/v1/findByPageList",
+          params
+        )
+        .then(response => {
+          if (response.data && response.data.status === 200) {
+            this.processOrders1 = response.data.data;
+            this.total = response.data.total;
+            this.inputProcessDetail(this.processNo);
+          } else {
+            this.message(true, response.data.msg, "error");
+            this.processOrders1 = [];
+          }
+          this.listLoading = false;
+        });
+    },
+
+    inputProcessDetail(processNo) {
+      let params = new FormData();
+      params.append("processNo", processNo);
+      this.axios
+        .post(
+          process.env.API_ROOT + "/ProcessOrderApi/v1/getProcessOrderFinish",
+          params
+        )
+        .then(response => {
+          if (response.data && response.data.status === 200) {
+            this.jgdetailData = response.data.data;
+            this.total = response.data.total;
+          } else {
+            this.message(true, response.data.msg, "error");
+            this.jgdetailData = [];
+          }
+          this.listLoading = false;
+        });
+    },
     // 打印提货单
     pillorderSheet() {
       var dom = document.getElementById("pillorderSheet");
@@ -540,6 +869,24 @@ export default {
         win.close();
       }, 1000);
     },
+
+    addDetailRow(row) {
+      let d = {
+        id: null,
+        stockid: row.stockid,
+        productname: row.productname,
+        productspec: row.productspec,
+        productfactory: row.productfactory,
+        productmark: row.productmark,
+        weight: 0,
+        unit: row.unit,
+        num: row.num
+      };
+      this.jgdetailData.push(d);
+      setTimeout(() => {
+        this.$refs.jgdetailTable.setCurrentRow(d);
+      }, 10);
+    },
     // 合并加工单列
     processingSheet(param) {
       const { columns, data } = param;
@@ -565,6 +912,48 @@ export default {
           } else if (index === 7) {
             sums[index] = "";
             this.numone = sums[index];
+          }
+        } else {
+          sums[index] = "";
+        }
+      });
+      return sums;
+    },
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "总计";
+          return;
+        } else if (index === 1) {
+          sums[index] = "";
+          return;
+        } else if (index === 2) {
+          sums[index] = "";
+          return;
+        } else if (index === 3) {
+          sums[index] = "";
+          return;
+        } else if (index === 5) {
+          sums[index] = "";
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+
+          if (index === 4) {
+            sums[index] = sums[index].toFixed(3);
+            this.totalWeight = sums[index];
+            sums[index] += "吨";
           }
         } else {
           sums[index] = "";
