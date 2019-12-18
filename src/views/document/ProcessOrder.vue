@@ -241,12 +241,14 @@
                 style="width:1100px"
                 max-height="500"
                 :data="processOrders1"
+                ref="processTable"
                 :summary-method="getSummaries"
                 show-summary
                 class="el-tb-edit"
                 highlight-current-row
+                @current-change="handleCurrentChange1"
               >
-                <el-table-column property="stockid" label="库存id" width="200">
+                <el-table-column property="stockid" label="库存id" v-if="isshow" width="200">
                   <template slot-scope="scope">
                     <span>{{scope.row.stockid}}</span>
                   </template>
@@ -310,7 +312,7 @@
                 highlight-current-row
                 ref="jgdetailTable"
               >
-                <el-table-column property="id" label="ID" width="160">
+                <el-table-column property="id" label="ID" width="160" v-if="isshow">
                   <template slot-scope="scope">
                     <span>{{scope.row.id}}</span>
                   </template>
@@ -423,6 +425,7 @@ export default {
       total: 0,
       processOrders: [],
       processOrders1: [],
+      selectsockid: [],
       processNo: "",
       jgdetailData: [],
       delids: [],
@@ -530,6 +533,7 @@ export default {
     copyRow(row) {
       let d = {
         id: null,
+        stockid: row.stockid,
         productname: row.productname,
         productspec: row.productspec,
         productfactory: row.productfactory,
@@ -642,7 +646,9 @@ export default {
       this.startPage = val;
       this.getProcessOrders();
     },
-
+    handleCurrentChange1(val) {
+      this.inputProcessDetail(val.stockid);
+    },
     submitForm() {
       for (let i = 0; i < this.jgdetailData.length; i++) {
         let item = this.jgdetailData[i];
@@ -785,6 +791,7 @@ export default {
     inputProcess(row) {
       this.thistitle = "加工明细录入";
       this.inputProcessdialogFormVisible = true;
+      this.jgdetailData = [];
       let params = new FormData();
       params.append("processNo", row.processno);
       this.processNo = row.processno;
@@ -797,7 +804,11 @@ export default {
           if (response.data && response.data.status === 200) {
             this.processOrders1 = response.data.data;
             this.total = response.data.total;
-            this.inputProcessDetail(this.processNo);
+            // setTimeout(() => {
+            //   this.$refs.processTable.setCurrentRow(this.processOrders1[0]);
+            //   this.selectsockid = this.processOrders1[0].stockid;
+            //   this.inputProcessDetail(this.selectsockid);
+            // }, 10);
           } else {
             this.message(true, response.data.msg, "error");
             this.processOrders1 = [];
@@ -806,9 +817,9 @@ export default {
         });
     },
 
-    inputProcessDetail(processNo) {
+    inputProcessDetail(stockid) {
       let params = new FormData();
-      params.append("processNo", processNo);
+      params.append("stockid", stockid);
       this.axios
         .post(
           process.env.API_ROOT + "/ProcessOrderApi/v1/getProcessOrderFinish",
