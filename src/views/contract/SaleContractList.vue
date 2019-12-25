@@ -1558,6 +1558,11 @@
             ref="stockGridData"
             highlight-current-row
           >
+            <el-table-column property="status" label="状态" width="80">
+              <template slot-scope="scope">
+                <span>{{scope.row.status}}</span>
+              </template>
+            </el-table-column>
             <el-table-column property="id" label="ID" width="60">
               <template slot-scope="scope">
                 <span>{{scope.row.id}}</span>
@@ -2507,34 +2512,97 @@ export default {
       });
     },
     chooseThis(row) {
+      let d = {};
       if (this.ordertype == "td") {
-        this.tdgridData.splice(this.chooseRowIndex, 1);
+        if (row.status == "加工中") {
+          let params = new FormData();
+          params.append("stockid", row.id);
+          this.axios
+            .post(
+              process.env.API_ROOT +
+                "/ProcessOrderApi/v1/getProcessOrderFinish",
+              params
+            )
+            .then(response => {
+              if (response.data && response.data.status === 200) {
+                let jgdetailData = response.data.data;
+                if (jgdetailData.length > 0) {
+                  this.tdgridData.splice(this.chooseRowIndex, 1);
+                  for (let jgdetail of jgdetailData) {
+                    if (jgdetail.stockid != null) {
+                      d = {
+                        warehousename: jgdetail.warehousename,
+                        productname: jgdetail.productname,
+                        productspec: jgdetail.productspec,
+                        productfactory: jgdetail.productfactory,
+                        productmark: jgdetail.productmark,
+                        weight: jgdetail.weight,
+                        actualweight: jgdetail.weight,
+                        finalweight: 0,
+                        stockid: jgdetail.id,
+                        price: jgdetail.price,
+                        unit: jgdetail.unit,
+                        num: jgdetail.num,
+                        remark: jgdetail.remark,
+                        quality: jgdetail.quality
+                      };
+                      this.tdgridData.push(d);
+                    }
+                  }
+                } else {
+                  this.message(true, response.data.msg, "error");
+                }
+              } else {
+                this.message(true, response.data.msg, "error");
+                this.jgdetailData = [];
+              }
+              this.listLoading = false;
+            });
+        } else {
+          this.tdgridData.splice(this.chooseRowIndex, 1);
+          d = {
+            id: this.chooseRow.id,
+            deliverystatus: this.chooseRow.deliverystatus,
+            warehousename: row.warehousename,
+            productname: this.chooseRow.productname,
+            productspec: this.chooseRow.productspec,
+            productfactory: this.chooseRow.productfactory,
+            productmark: this.chooseRow.productmark,
+            weight: this.chooseRow.weight,
+            actualweight: row.weight,
+            finalweight: 0,
+            stockid: row.id,
+            price: this.chooseRow.price,
+            unit: this.chooseRow.unit,
+            num: this.chooseRow.num,
+            remark: this.chooseRow.remark,
+            quality: this.chooseRow.quality
+          };
+          this.tdgridData.push(d);
+          setTimeout(() => {
+            this.$refs.tdgridTable.setCurrentRow(d);
+          }, 10);
+        }
       } else if (this.ordertype == "jg") {
         this.jggridData.splice(this.chooseRowIndex, 1);
-      }
-      let d = {
-        id: this.chooseRow.id,
-        deliverystatus: this.chooseRow.deliverystatus,
-        warehousename: row.warehousename,
-        productname: this.chooseRow.productname,
-        productspec: this.chooseRow.productspec,
-        productfactory: this.chooseRow.productfactory,
-        productmark: this.chooseRow.productmark,
-        weight: this.chooseRow.weight,
-        actualweight: row.weight,
-        stockid: row.id,
-        price: this.chooseRow.price,
-        unit: this.chooseRow.unit,
-        num: this.chooseRow.num,
-        remark: this.chooseRow.remark,
-        quality: this.chooseRow.quality
-      };
-      if (this.ordertype == "td") {
-        this.tdgridData.push(d);
-        setTimeout(() => {
-          this.$refs.tdgridTable.setCurrentRow(d);
-        }, 10);
-      } else if (this.ordertype == "jg") {
+        d = {
+          id: this.chooseRow.id,
+          deliverystatus: this.chooseRow.deliverystatus,
+          warehousename: row.warehousename,
+          productname: this.chooseRow.productname,
+          productspec: this.chooseRow.productspec,
+          productfactory: this.chooseRow.productfactory,
+          productmark: this.chooseRow.productmark,
+          weight: this.chooseRow.weight,
+          actualweight: row.weight,
+          finalweight: 0,
+          stockid: row.id,
+          price: this.chooseRow.price,
+          unit: this.chooseRow.unit,
+          num: this.chooseRow.num,
+          remark: this.chooseRow.remark,
+          quality: this.chooseRow.quality
+        };
         this.jggridData.push(d);
         setTimeout(() => {
           this.$refs.jggridTable.setCurrentRow(d);
@@ -2739,8 +2807,14 @@ export default {
       params.append("productspec", row.productspec);
       params.append("productfactory", row.productfactory);
       params.append("productmark", row.productmark);
+      params.append("stockstatus", orderType);
+      if (orderType === "jg") {
+        params.append("customerid", _this.jgruleForm.customerId);
+      } else if (orderType === "td") {
+        params.append("customerid", _this.tdruleForm.customerid);
+      }
+
       // params.append("warehousename", row.warehousename);
-      params.append("stockstatus", "在库");
       this.axios
         .post(process.env.API_ROOT + "/WareHouseApi/v1/findItemByPage", params)
         .then(response => {
@@ -3515,15 +3589,32 @@ export default {
         this.message(true, "请选择需要加工的产品", "error");
         return;
       }
+      for (let i = 0; i < this.multipleSelection.length; i++) {
+        let item = this.multipleSelection[i];
 
-      for (let i = 0; i < this.jggridData.length; i++) {
-        let item = this.jggridData[i];
-        if (item.weight === "") {
-          this.$message("重量不能为空");
+        if (
+          !item.activeweight &&
+          typeof item.activeweight != "undefined" &&
+          item.activeweight != 0
+        ) {
+          this.$message("实提重量不能为空", "error");
           return;
         }
-        if (item.warehousename === "") {
-          this.$message("仓库名称不能为空");
+        if (
+          !item.stockid &&
+          typeof item.stockid != "undefined" &&
+          item.stockid != 0
+        ) {
+          this.$message("请从仓库选择正确的商品", "error");
+          return;
+        }
+
+        if (
+          !item.warehousename &&
+          typeof item.warehousename != "undefined" &&
+          item.warehousename != 0
+        ) {
+          this.$message("仓库名称不能为空", "error");
           return;
         }
       }
@@ -3814,9 +3905,19 @@ export default {
           this.$message("数量字数不能超过9个字符");
           return;
         }
-        this.totalWeight = this.totalWeight + item.actualweight;
-        this.finalWeight = this.finalWeight + item.finalweight;
+
+        if (
+          !item.stockid &&
+          typeof item.stockid != "undefined" &&
+          item.stockid != 0
+        ) {
+          this.$message("请从仓库选择正确的商品", "error");
+          return;
+        }
+        this.totalWeight = this.totalWeight + Number(item.actualweight);
+        this.finalWeight = this.finalWeight + Number(item.finalweight);
       }
+
       this.$confirm("是否确定继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
