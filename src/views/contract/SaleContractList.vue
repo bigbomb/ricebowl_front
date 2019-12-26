@@ -1024,6 +1024,7 @@
                   width="80"
                 ></el-table-column>
                 <el-table-column prop="stockid" label="stockid" sortable v-if="isshow" width="80"></el-table-column>
+                <el-table-column prop="processstatus" label="加工状态" sortable width="100"></el-table-column>
                 <el-table-column prop="deliverystatus" label="提货状态" sortable width="100"></el-table-column>
 
                 <el-table-column property="productname" label="名称" width="200">
@@ -1229,7 +1230,7 @@
                       size="small"
                     >复制</el-button>
                     <el-button
-                      v-if="tdruleForm.contractstatus ==='正式临调合同' "
+                      v-if="scope.row.deliverystatus!=='提货中' && scope.row.processstatus!=='加工成品' "
                       @click.native.prevent="importFrom(scope.$index,scope.row,'td')"
                       type="text"
                       size="small"
@@ -2544,7 +2545,8 @@ export default {
                         unit: jgdetail.unit,
                         num: jgdetail.num,
                         remark: jgdetail.remark,
-                        quality: jgdetail.quality
+                        processstatus: "加工成品",
+                        quality: "合格品"
                       };
                       this.tdgridData.push(d);
                     }
@@ -2946,6 +2948,9 @@ export default {
         } else if (index === 12) {
           sums[index] = "";
           return;
+        } else if (index === 14) {
+          sums[index] = "";
+          return;
         }
         const values = data.map(item => Number(item[column.property]));
         if (!values.every(value => isNaN(value))) {
@@ -2957,14 +2962,14 @@ export default {
               return prev;
             }
           }, 0);
-          if (index === 6) {
+          if (index === 7) {
             sums[index] = sums[index].toFixed(3);
             sums[index] += "吨";
           } else if (index === 7) {
             sums[index] = sums[index].toFixed(3);
             this.totalWeight = sums[index];
             sums[index] += "吨";
-          } else if (index === 8) {
+          } else if (index === 9) {
             sums[index] = sums[index].toFixed(3);
             this.finalWeight = sums[index];
             sums[index] += "吨";

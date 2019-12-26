@@ -365,6 +365,11 @@
                     <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input>
                   </template>
                 </el-table-column>
+                <el-table-column property="remark" label="备注" width="300">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.remark" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="scope">
                     <el-button
@@ -647,7 +652,12 @@ export default {
       this.getProcessOrders();
     },
     handleCurrentChange1(val) {
-      this.inputProcessDetail(val.stockid);
+      let isval = val;
+      if (!isval && typeof isval != "undefined" && isval != 0) {
+        //true
+      } else {
+        this.inputProcessDetail(val.stockid);
+      }
     },
     submitForm() {
       for (let i = 0; i < this.jgdetailData.length; i++) {
@@ -804,11 +814,13 @@ export default {
           if (response.data && response.data.status === 200) {
             this.processOrders1 = response.data.data;
             this.total = response.data.total;
-            // setTimeout(() => {
-            //   this.$refs.processTable.setCurrentRow(this.processOrders1[0]);
-            //   this.selectsockid = this.processOrders1[0].stockid;
-            //   this.inputProcessDetail(this.selectsockid);
-            // }, 10);
+            if (this.processOrders1.length > 0) {
+              setTimeout(() => {
+                this.$refs.processTable.setCurrentRow(this.processOrders1[0]);
+                this.selectsockid = this.processOrders1[0].stockid;
+                this.inputProcessDetail(this.selectsockid);
+              }, 10);
+            }
           } else {
             this.message(true, response.data.msg, "error");
             this.processOrders1 = [];
