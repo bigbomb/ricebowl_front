@@ -355,6 +355,7 @@
                 size="mini"
                 @click="addRow()"
               >+</el-button>
+              <el-button size="mini" @click="refreshRow()">刷新</el-button>
               <el-table
                 style="width:1100px"
                 :data="gridData"
@@ -997,6 +998,7 @@
             </el-col>
             <el-form-item label="商品明细">
               <el-button size="mini" @click="addTdRow()">+</el-button>
+              <el-button size="mini" @click="refreshRow()">刷新</el-button>
               <el-table
                 style="width:1100px"
                 :data="tdgridData"
@@ -1005,9 +1007,11 @@
                 ref="tdgridTable"
                 highlight-current-row
                 @selection-change="handleItemSelectionChange"
-                :span-method="arraySpanMethod"
                 show-summary
                 :summary-method="getTdSummaries"
+                :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+                row-key="id"
+                default-expand-all
               >
                 <el-table-column
                   type="selection"
@@ -1529,7 +1533,8 @@
     <el-col :span="2">
       <el-dialog title="库存管理" :visible.sync="stockVisible">
         <div>
-          <!-- <el-form>
+          <el-form>
+            <!-- <el-form>
             <el-form-item label="请选择">
               <el-select v-model="formTypeCollection">
                 <el-option
@@ -1544,80 +1549,161 @@
               <el-button type="primary" @click="renderForm">确定</el-button>
               <el-button @click="()=>{showAppendForm = false}">取消</el-button>
             </el-form-item>
-          </el-form>-->
-          <!-- <div class="editor-content"> -->
-          <!--表单主体部分-->
-          <!-- <div ref="fc" id="form-create"></div> -->
-          <!-- </div> -->
-          <!-- <el-button size="mini" @click="addwarehouseRow()">+</el-button> -->
-          <el-table
-            style="width:1000px"
-            :data="stockGridData"
-            max-height="500"
-            :span-method="arraySpanMethod"
-            class="el-tb-edit"
-            ref="stockGridData"
-            highlight-current-row
-          >
-            <el-table-column property="status" label="状态" width="80">
-              <template slot-scope="scope">
-                <span>{{scope.row.status}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column property="id" label="ID" width="60">
-              <template slot-scope="scope">
-                <span>{{scope.row.id}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column property="productname" label="名称" width="150">
-              <template slot-scope="scope">
-                <span>{{scope.row.productname}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column property="productspec" label="规格" width="150">
-              <template slot-scope="scope">
-                <span>{{scope.row.productspec}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column property="productfactory" label="钢厂" width="100">
-              <template slot-scope="scope">
-                <span>{{scope.row.productfactory}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column property="productmark" label="材质" width="100">
-              <template slot-scope="scope">
-                <span>{{scope.row.productmark}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column property="weight" label="重量(吨)" width="120">
-              <template slot-scope="scope">
-                <span>{{scope.row.weight}}</span>
-              </template>
-            </el-table-column>
+            </el-form>-->
+            <!-- <div class="editor-content"> -->
+            <!--表单主体部分-->
+            <!-- <div ref="fc" id="form-create"></div> -->
+            <!-- </div> -->
+            <!-- <el-button size="mini" @click="addwarehouseRow()">+</el-button> -->
+            <el-form-item label="库存列表">
+              <el-table
+                style="width:1000px"
+                :data="stockGridData"
+                max-height="500"
+                :span-method="arraySpanMethod"
+                class="el-tb-edit"
+                ref="stockGridData"
+                highlight-current-row
+                @current-change="handleCurrentChange1"
+              >
+                <el-table-column property="status" label="状态" width="80">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.status}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="id" label="ID" width="60">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.id}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productname" label="名称" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productname}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productspec" label="规格" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productspec}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productfactory" label="钢厂" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productfactory}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productmark" label="材质" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productmark}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="weight" label="重量(吨)" width="120">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.weight}}</span>
+                  </template>
+                </el-table-column>
 
-            <el-table-column property="unit" label="单位" width="60">
-              <template slot-scope="scope">
-                <span>{{scope.row.unit}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column property="num" label="数量" width="60">
-              <template slot-scope="scope">
-                <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
-                <span>{{scope.row.num}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column property="warehousename" label="所在仓库" width="120">
-              <template slot-scope="scope">
-                <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
-                <span>{{scope.row.warehousename}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column fixed="right" label="操作" width="120">
-              <template slot-scope="scope">
-                <el-button @click.native.prevent="chooseThis(scope.row)" type="text" size="small">选取</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+                <el-table-column property="unit" label="单位" width="60">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.unit}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="num" label="数量" width="60">
+                  <template slot-scope="scope">
+                    <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
+                    <span>{{scope.row.num}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="warehousename" label="所在仓库" width="120">
+                  <template slot-scope="scope">
+                    <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
+                    <span>{{scope.row.warehousename}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="chooseThis(scope.row)"
+                      type="text"
+                      size="small"
+                    >选取</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+            <el-form-item label="加工明细">
+              <el-table
+                style="width:1100px"
+                max-height="500"
+                :summary-method="getJgSummaries"
+                show-summary
+                class="el-tb-edit"
+                :data="jgdetailData"
+                highlight-current-row
+                ref="jgdetailTable"
+              >
+                <el-table-column
+                  type="selection"
+                  width="80"
+                  @selection-change="handleItemSelectionChange"
+                ></el-table-column>
+                <el-table-column property="id" label="ID" width="160" v-if="isshow">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.id}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productname" label="名称" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productname}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productspec" label="规格" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productspec}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productfactory" label="钢厂" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productfactory}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productmark" label="材质" width="160">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productmark}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="weight" label="重量(吨)" width="120">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.weight}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="unit" label="单位" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.unit}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="num" label="数量" width="80">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.num}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="price" label="价格" width="80" v-if="isshow">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.price}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="warehousename" label="所在仓库" width="80">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.warehousename}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="remark" label="备注" width="300">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.remark}}</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-form>
         </div>
       </el-dialog>
     </el-col>
@@ -1647,13 +1733,14 @@ export default {
       submitData: new Map(),
       isValidate: false,
       count: 0,
-
+      gridDataCopy: [],
       activeName: "全部", //tab切换选中的数据
       thistitle: "",
       filters: {
         keyword: "",
         validateTime: []
       },
+      jgdetailData: [],
       value: "",
       ruleForm: {
         id: "",
@@ -1946,13 +2033,13 @@ export default {
         vehicleNumber: {
           required: true,
           message: "请输入车辆",
-          trigger: "blue"
+          trigger: "blur"
         },
         overtimefee: [
           {
             required: false,
             message: "请输入加班费",
-            trigger: "blue"
+            trigger: "blur"
           },
           {
             type: "number",
@@ -2269,6 +2356,12 @@ export default {
           console.log(err);
         });
     },
+    refreshRow() {
+      this.tdgridData = [];
+      for (var i in this.gridDataCopy) {
+        this.tdgridData.push(this.gridDataCopy[i]);
+      }
+    },
     copyRow(row) {
       let d = {
         productname: row.productname,
@@ -2515,76 +2608,78 @@ export default {
     chooseThis(row) {
       let d = {};
       if (this.ordertype == "td") {
-        if (row.status == "加工中") {
-          let params = new FormData();
-          params.append("stockid", row.id);
-          this.axios
-            .post(
-              process.env.API_ROOT +
-                "/ProcessOrderApi/v1/getProcessOrderFinish",
-              params
-            )
-            .then(response => {
-              if (response.data && response.data.status === 200) {
-                let jgdetailData = response.data.data;
-                if (jgdetailData.length > 0) {
-                  this.tdgridData.splice(this.chooseRowIndex, 1);
-                  for (let jgdetail of jgdetailData) {
-                    if (jgdetail.stockid != null) {
-                      d = {
-                        warehousename: jgdetail.warehousename,
-                        productname: jgdetail.productname,
-                        productspec: jgdetail.productspec,
-                        productfactory: jgdetail.productfactory,
-                        productmark: jgdetail.productmark,
-                        weight: jgdetail.weight,
-                        actualweight: jgdetail.weight,
-                        finalweight: 0,
-                        stockid: jgdetail.id,
-                        price: jgdetail.price,
-                        unit: jgdetail.unit,
-                        num: jgdetail.num,
-                        remark: jgdetail.remark,
-                        processstatus: "加工成品",
-                        quality: "合格品"
-                      };
-                      this.tdgridData.push(d);
-                    }
-                  }
-                } else {
-                  this.message(true, response.data.msg, "error");
-                }
-              } else {
-                this.message(true, response.data.msg, "error");
-                this.jgdetailData = [];
-              }
-              this.listLoading = false;
-            });
-        } else {
-          this.tdgridData.splice(this.chooseRowIndex, 1);
-          d = {
-            id: this.chooseRow.id,
-            deliverystatus: this.chooseRow.deliverystatus,
-            warehousename: row.warehousename,
-            productname: this.chooseRow.productname,
-            productspec: this.chooseRow.productspec,
-            productfactory: this.chooseRow.productfactory,
-            productmark: this.chooseRow.productmark,
-            weight: this.chooseRow.weight,
-            actualweight: row.weight,
-            finalweight: 0,
-            stockid: row.id,
-            price: this.chooseRow.price,
-            unit: this.chooseRow.unit,
-            num: this.chooseRow.num,
-            remark: this.chooseRow.remark,
-            quality: this.chooseRow.quality
-          };
-          this.tdgridData.push(d);
-          setTimeout(() => {
-            this.$refs.tdgridTable.setCurrentRow(d);
-          }, 10);
-        }
+        // if (row.status == "加工中") {
+        //   let params = new FormData();
+        //   params.append("stockid", row.id);
+        //   this.axios
+        //     .post(
+        //       process.env.API_ROOT +
+        //         "/ProcessOrderApi/v1/getProcessOrderFinish",
+        //       params
+        //     )
+        //     .then(response => {
+        //       if (response.data && response.data.status === 200) {
+        //         let jgdetailData = response.data.data;
+        //         if (jgdetailData.length > 0) {
+        //           this.tdgridData.splice(this.chooseRowIndex, 1);
+        //           this.tdgridData.push(row);
+        //           // for (let jgdetail of jgdetailData) {
+        //           //   if (jgdetail.stockid != null) {
+        //           //     d = {
+        //           //       warehousename: jgdetail.warehousename,
+        //           //       productname: jgdetail.productname,
+        //           //       productspec: jgdetail.productspec,
+        //           //       productfactory: jgdetail.productfactory,
+        //           //       productmark: jgdetail.productmark,
+        //           //       weight: jgdetail.weight,
+        //           //       actualweight: jgdetail.weight,
+        //           //       finalweight: jgdetail.weight,
+        //           //       stockid: jgdetail.id,
+        //           //       price: jgdetail.price,
+        //           //       unit: jgdetail.unit,
+        //           //       num: jgdetail.num,
+        //           //       remark: jgdetail.remark,
+        //           //       processstatus: "加工成品",
+        //           //       quality: "合格品"
+        //           //     };
+        //           //     this.tdgridData.push(d);
+        //           //   }
+        //           // }
+        //         } else {
+        //           this.message(true, response.data.msg, "error");
+        //         }
+        //       } else {
+        //         this.message(true, response.data.msg, "error");
+        //         this.jgdetailData = [];
+        //       }
+        //       this.listLoading = false;
+        //     });
+        // } else {
+        this.tdgridData.splice(this.chooseRowIndex, 1);
+        d = {
+          id: this.chooseRow.id,
+          deliverystatus: this.chooseRow.deliverystatus,
+          processstatus: this.chooseRow.processstatus,
+          warehousename: row.warehousename,
+          productname: this.chooseRow.productname,
+          productspec: this.chooseRow.productspec,
+          productfactory: this.chooseRow.productfactory,
+          productmark: this.chooseRow.productmark,
+          weight: this.chooseRow.weight,
+          actualweight: row.weight,
+          finalweight: row.weight,
+          stockid: row.id,
+          price: this.chooseRow.price,
+          unit: this.chooseRow.unit,
+          num: this.chooseRow.num,
+          remark: this.chooseRow.remark,
+          quality: this.chooseRow.quality
+        };
+        this.tdgridData.push(d);
+        setTimeout(() => {
+          this.$refs.tdgridTable.setCurrentRow(d);
+        }, 10);
+        // }
       } else if (this.ordertype == "jg") {
         this.jggridData.splice(this.chooseRowIndex, 1);
         d = {
@@ -2597,7 +2692,7 @@ export default {
           productmark: this.chooseRow.productmark,
           weight: this.chooseRow.weight,
           actualweight: row.weight,
-          finalweight: 0,
+          finalweight: row.weight,
           stockid: row.id,
           price: this.chooseRow.price,
           unit: this.chooseRow.unit,
@@ -2612,6 +2707,35 @@ export default {
       }
       this.stockVisible = false;
       // this.chooseRow.actualweight = 2332;
+    },
+
+    handleCurrentChange1(val) {
+      let isval = val;
+      if (!isval && typeof isval != "undefined" && isval != 0) {
+        //true
+      } else {
+        this.inputProcessDetail(val.id);
+      }
+    },
+
+    inputProcessDetail(stockid) {
+      let params = new FormData();
+      params.append("stockid", stockid);
+      this.axios
+        .post(
+          process.env.API_ROOT + "/ProcessOrderApi/v1/getProcessOrderFinish",
+          params
+        )
+        .then(response => {
+          if (response.data && response.data.status === 200) {
+            this.jgdetailData = response.data.data;
+            this.total = response.data.total;
+          } else {
+            this.message(true, response.data.msg, "error");
+            this.jgdetailData = [];
+          }
+          this.listLoading = false;
+        });
     },
     delTemplate(selVal) {
       this.$confirm("是否确定继续?", "提示", {
@@ -2797,6 +2921,7 @@ export default {
     importFrom(index, row, orderType) {
       let _this = this;
       _this.listLoading = true;
+      this.jgdetailData = [];
       this.ordertype = orderType;
       let params = new FormData();
       this.chooseRow = row;
@@ -2853,6 +2978,75 @@ export default {
       if (columnIndex === 9) {
         row.total = (row.price * row.weight).toFixed(2);
       }
+    },
+    getJgSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "总计";
+          return;
+        } else if (index === 1) {
+          sums[index] = "";
+          return;
+        } else if (index === 2) {
+          sums[index] = "";
+          return;
+        } else if (index === 3) {
+          sums[index] = "";
+          return;
+        } else if (index === 4) {
+          sums[index] = "";
+          return;
+        } else if (index === 6) {
+          sums[index] = "";
+          return;
+        } else if (index === 7) {
+          sums[index] = "";
+          return;
+        } else if (index === 8) {
+          sums[index] = "";
+          return;
+        } else if (index === 10) {
+          sums[index] = "";
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+
+          if (index === 8) {
+            sums[index] += "";
+            return;
+          } else if (index === 5) {
+            sums[index] = sums[index].toFixed(3);
+            this.totalWeight = sums[index];
+            sums[index] += "吨";
+          } else if (index === 9) {
+            sums[index] = sums[index].toFixed(2);
+            this.totalAmount = sums[index];
+            sums[index] += "元";
+          } else if (index === 13) {
+            sums[index] = sums[index].toFixed(2);
+            this.stockoutTotalFee = sums[index];
+            sums[index] += "元";
+          } else if (index === 15) {
+            sums[index] = sums[index].toFixed(2);
+            this.shorttransportTotalFee = sums[index];
+            sums[index] += "元";
+          }
+        } else {
+          sums[index] = "";
+        }
+      });
+      return sums;
     },
     getSummaries(param) {
       const { columns, data } = param;
@@ -3886,18 +4080,18 @@ export default {
           return;
         }
 
-        if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.price)) {
-          this.$message("单价只能为数字");
-          return;
-        }
-        if (item.price === "") {
-          this.$message("单价不能为空");
-          return;
-        }
-        if (item.price.length > 9) {
-          this.$message("单价字数不能超过9个字符");
-          return;
-        }
+        // if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.price)) {
+        //   this.$message("单价只能为数字");
+        //   return;
+        // }
+        // if (item.price === "") {
+        //   this.$message("单价不能为空");
+        //   return;
+        // }
+        // if (item.price.length > 9) {
+        //   this.$message("单价字数不能超过9个字符");
+        //   return;
+        // }
         if (!/^\d+$/.test(item.num)) {
           this.$message("数量只能为数字");
           return;
@@ -3993,6 +4187,7 @@ export default {
 
     handleItemSelectionChange(val) {
       this.selectedIds = [];
+      this.multipleSelection = [];
       if (val) {
         val.forEach(row => {
           this.selectedIds.push(row.id);
@@ -4060,6 +4255,7 @@ export default {
           if (response.data.status === 200) {
             this.tdgridData = [];
             var tabledata = response.data.data.saleContractDetail;
+            this.gridDataCopy = JSON.parse(JSON.stringify(tabledata));
             for (var i in tabledata) {
               this.tdgridData.push(tabledata[i]);
             }

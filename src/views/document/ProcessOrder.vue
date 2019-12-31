@@ -288,10 +288,20 @@
                     <span>{{scope.row.num}}</span>
                   </template>
                 </el-table-column>
-
+                <el-table-column property="price" label="价格" width="80">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.price}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="warehousename" label="所在仓库" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.warehousename}}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="scope">
                     <el-button
+                      v-show="addDetailIsshow"
                       @click.native.prevent="addDetailRow(scope.row)"
                       type="text"
                       size="small"
@@ -319,25 +329,12 @@
                 </el-table-column>
                 <el-table-column property="productname" label="名称" width="200">
                   <template slot-scope="scope">
-                    <el-autocomplete
-                      class="autoInputwidth"
-                      ref="productnameInput"
-                      v-model="scope.row.productname"
-                      placeholder="请输入商品名称"
-                    >
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.value }}</div>
-                        <span hidden>{{ item.id }}</span>
-                        <el-tooltip content="删除后重新点击输入框刷新" placement="bottom" effect="light">
-                          <span class="addr" @click.stop="delProductname(item.id)">删除</span>
-                        </el-tooltip>
-                      </template>
-                    </el-autocomplete>
+                    <el-input size="mini" v-model="scope.row.productname" placeholder="请输入商品名称"></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column property="productspec" label="规格" width="200">
                   <template slot-scope="scope">
-                    <el-input size="mini" v-model="scope.row.productspec" placeholder="请输入内容"></el-input>
+                    <el-input size="mini" v-model="scope.row.productspec" placeholder="请输入商品规格"></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column property="productfactory" label="钢厂" width="160">
@@ -363,6 +360,16 @@
                 <el-table-column property="num" label="数量" width="80">
                   <template slot-scope="scope">
                     <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column property="price" label="价格" width="80">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.price}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="warehousename" label="所在仓库" width="80">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.warehousename}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="remark" label="备注" width="300">
@@ -406,6 +413,7 @@ export default {
       readonly: false,
       isshow: false,
       producer: "",
+      addDetailIsshow: false,
       filters: {
         keyword: "",
         validateTime: []
@@ -528,6 +536,7 @@ export default {
         });
     },
     deleteRow(index, rows) {
+      this.delids = [];
       let x = rows[index].id;
 
       if (x !== void 0 || x !== null) {
@@ -543,6 +552,8 @@ export default {
         productspec: row.productspec,
         productfactory: row.productfactory,
         productmark: row.productmark,
+        price: row.price,
+        warehousename: row.warehousename,
         weight: row.weight,
         unit: row.unit,
         num: row.num
@@ -657,6 +668,7 @@ export default {
         //true
       } else {
         this.inputProcessDetail(val.stockid);
+        this.addDetailIsshow = true;
       }
     },
     submitForm() {
@@ -814,13 +826,14 @@ export default {
           if (response.data && response.data.status === 200) {
             this.processOrders1 = response.data.data;
             this.total = response.data.total;
-            if (this.processOrders1.length > 0) {
-              setTimeout(() => {
-                this.$refs.processTable.setCurrentRow(this.processOrders1[0]);
-                this.selectsockid = this.processOrders1[0].stockid;
-                this.inputProcessDetail(this.selectsockid);
-              }, 10);
-            }
+            this.addDetailIsshow = false;
+            // if (this.processOrders1.length > 0) {
+            //   setTimeout(() => {
+            //     this.$refs.processTable.setCurrentRow(this.processOrders1[0]);
+            //     this.selectsockid = this.processOrders1[0].stockid;
+            //     this.inputProcessDetail(this.selectsockid);
+            //   }, 10);
+            // }
           } else {
             this.message(true, response.data.msg, "error");
             this.processOrders1 = [];
@@ -901,6 +914,8 @@ export default {
         productspec: row.productspec,
         productfactory: row.productfactory,
         productmark: row.productmark,
+        warehousename: row.warehousename,
+        price: row.price,
         weight: 0,
         unit: row.unit,
         num: row.num
