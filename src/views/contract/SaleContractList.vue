@@ -1009,9 +1009,6 @@
                 @selection-change="handleItemSelectionChange"
                 show-summary
                 :summary-method="getTdSummaries"
-                :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
-                row-key="id"
-                default-expand-all
               >
                 <el-table-column
                   type="selection"
@@ -1640,12 +1637,9 @@
                 :data="jgdetailData"
                 highlight-current-row
                 ref="jgdetailTable"
+                @selection-change="handleItemSelectionChange1"
               >
-                <el-table-column
-                  type="selection"
-                  width="80"
-                  @selection-change="handleItemSelectionChange"
-                ></el-table-column>
+                <el-table-column type="selection" width="80"></el-table-column>
                 <el-table-column property="id" label="ID" width="160" v-if="isshow">
                   <template slot-scope="scope">
                     <span>{{scope.row.id}}</span>
@@ -2091,6 +2085,7 @@ export default {
       deliverydate: "",
       depositdate: "",
       percentShow: false,
+      selectweight: 0.0,
       dateObj: {
         startTime: "",
         endTime: ""
@@ -2608,73 +2603,53 @@ export default {
     chooseThis(row) {
       let d = {};
       if (this.ordertype == "td") {
-        // if (row.status == "加工中") {
-        //   let params = new FormData();
-        //   params.append("stockid", row.id);
-        //   this.axios
-        //     .post(
-        //       process.env.API_ROOT +
-        //         "/ProcessOrderApi/v1/getProcessOrderFinish",
-        //       params
-        //     )
-        //     .then(response => {
-        //       if (response.data && response.data.status === 200) {
-        //         let jgdetailData = response.data.data;
-        //         if (jgdetailData.length > 0) {
-        //           this.tdgridData.splice(this.chooseRowIndex, 1);
-        //           this.tdgridData.push(row);
-        //           // for (let jgdetail of jgdetailData) {
-        //           //   if (jgdetail.stockid != null) {
-        //           //     d = {
-        //           //       warehousename: jgdetail.warehousename,
-        //           //       productname: jgdetail.productname,
-        //           //       productspec: jgdetail.productspec,
-        //           //       productfactory: jgdetail.productfactory,
-        //           //       productmark: jgdetail.productmark,
-        //           //       weight: jgdetail.weight,
-        //           //       actualweight: jgdetail.weight,
-        //           //       finalweight: jgdetail.weight,
-        //           //       stockid: jgdetail.id,
-        //           //       price: jgdetail.price,
-        //           //       unit: jgdetail.unit,
-        //           //       num: jgdetail.num,
-        //           //       remark: jgdetail.remark,
-        //           //       processstatus: "加工成品",
-        //           //       quality: "合格品"
-        //           //     };
-        //           //     this.tdgridData.push(d);
-        //           //   }
-        //           // }
-        //         } else {
-        //           this.message(true, response.data.msg, "error");
-        //         }
-        //       } else {
-        //         this.message(true, response.data.msg, "error");
-        //         this.jgdetailData = [];
-        //       }
-        //       this.listLoading = false;
-        //     });
-        // } else {
-        this.tdgridData.splice(this.chooseRowIndex, 1);
-        d = {
-          id: this.chooseRow.id,
-          deliverystatus: this.chooseRow.deliverystatus,
-          processstatus: this.chooseRow.processstatus,
-          warehousename: row.warehousename,
-          productname: this.chooseRow.productname,
-          productspec: this.chooseRow.productspec,
-          productfactory: this.chooseRow.productfactory,
-          productmark: this.chooseRow.productmark,
-          weight: this.chooseRow.weight,
-          actualweight: row.weight,
-          finalweight: row.weight,
-          stockid: row.id,
-          price: this.chooseRow.price,
-          unit: this.chooseRow.unit,
-          num: this.chooseRow.num,
-          remark: this.chooseRow.remark,
-          quality: this.chooseRow.quality
-        };
+        if (row.status == "加工中") {
+          if (this.selectweight == 0) {
+            this.message(true, "请勾选明细", "error");
+            return false;
+          }
+          this.tdgridData.splice(this.chooseRowIndex, 1);
+          d = {
+            id: this.chooseRow.id,
+            deliverystatus: this.chooseRow.deliverystatus,
+            processstatus: this.chooseRow.processstatus,
+            warehousename: row.warehousename,
+            productname: this.chooseRow.productname,
+            productspec: this.chooseRow.productspec,
+            productfactory: this.chooseRow.productfactory,
+            productmark: this.chooseRow.productmark,
+            weight: this.chooseRow.weight,
+            actualweight: this.numFilter(this.selectweight),
+            finalweight: row.weight,
+            stockid: row.id,
+            price: this.chooseRow.price,
+            unit: this.chooseRow.unit,
+            num: this.chooseRow.num,
+            remark: this.chooseRow.remark,
+            quality: this.chooseRow.quality
+          };
+        } else {
+          this.tdgridData.splice(this.chooseRowIndex, 1);
+          d = {
+            id: this.chooseRow.id,
+            deliverystatus: this.chooseRow.deliverystatus,
+            processstatus: this.chooseRow.processstatus,
+            warehousename: row.warehousename,
+            productname: this.chooseRow.productname,
+            productspec: this.chooseRow.productspec,
+            productfactory: this.chooseRow.productfactory,
+            productmark: this.chooseRow.productmark,
+            weight: this.chooseRow.weight,
+            actualweight: row.weight,
+            finalweight: row.weight,
+            stockid: row.id,
+            price: this.chooseRow.price,
+            unit: this.chooseRow.unit,
+            num: this.chooseRow.num,
+            remark: this.chooseRow.remark,
+            quality: this.chooseRow.quality
+          };
+        }
         this.tdgridData.push(d);
         setTimeout(() => {
           this.$refs.tdgridTable.setCurrentRow(d);
@@ -2729,7 +2704,6 @@ export default {
         .then(response => {
           if (response.data && response.data.status === 200) {
             this.jgdetailData = response.data.data;
-            this.total = response.data.total;
           } else {
             this.message(true, response.data.msg, "error");
             this.jgdetailData = [];
@@ -2921,11 +2895,11 @@ export default {
     importFrom(index, row, orderType) {
       let _this = this;
       _this.listLoading = true;
-      this.jgdetailData = [];
-      this.ordertype = orderType;
+      _this.jgdetailData = [];
+      _this.ordertype = orderType;
       let params = new FormData();
-      this.chooseRow = row;
-      this.chooseRowIndex = index;
+      _this.chooseRow = row;
+      _this.chooseRowIndex = index;
       params.append("startPage", _this.startPage);
       params.append("pageSize", _this.pageSize);
       params.append("keyword", _this.filters.keyword);
@@ -4195,6 +4169,19 @@ export default {
         this.multipleSelection = val;
       }
     },
+
+    handleItemSelectionChange1(val) {
+      this.selectedIds = [];
+      this.multipleSelection = [];
+      this.selectweight = 0.0;
+      if (val) {
+        val.forEach(row => {
+          this.selectedIds.push(row.id);
+          this.selectweight = this.selectweight + row.weight;
+        });
+        this.multipleSelection = val;
+      }
+    },
     editTerm(row) {
       this.termFormVisible = true;
       this.companyName = row.customername;
@@ -4448,6 +4435,18 @@ export default {
           this.listLoading = false;
         });
     },
+
+    numFilter(value) {
+      let realVal = "";
+      if (!isNaN(value) && value !== "") {
+        // 截取当前数据到小数点后两位
+        realVal = parseFloat(value).toFixed(2);
+      } else {
+        realVal = "--";
+      }
+      return realVal;
+    },
+
     // 每页大小改变时触发
     handleSizeChange(val) {
       this.pageSize = val;
@@ -4458,7 +4457,6 @@ export default {
       this.startPage = val;
       this.getContract();
     },
-
     // toueditor() {
     // 	this.$router.push({ path: '/ueditor' });
     // },
