@@ -78,12 +78,6 @@
         <el-table-column prop="finalweight" label="客户结算重量" width="160" sortable></el-table-column>
         <el-table-column prop="vehiclenumber" label="委托车辆号" width="400" sortable></el-table-column>
         <el-table-column prop="deliverymethod" label="提货方式" width="100" sortable></el-table-column>
-        <el-table-column prop="isItemRight" label="是否转货权" width="150" sortable>
-          <template slot-scope="scope">
-            <div v-if="scope.row.isItemRight==1">是</div>
-            <div v-else>否</div>
-          </template>
-        </el-table-column>
         <el-table-column prop="remark" label="提单备注" width="400" sortable>
           <template slot-scope="scope">
             <div v-html="scope.row.remark">{{scope.row.remark}}</div>

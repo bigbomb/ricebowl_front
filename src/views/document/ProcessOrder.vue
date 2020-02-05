@@ -347,9 +347,9 @@
                     <span>{{scope.row.productmark}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="weight" label="重量(吨)" width="120">
+                <el-table-column property="actualweight" label="重量(吨)" width="120">
                   <template slot-scope="scope">
-                    <el-input size="mini" v-model="scope.row.weight" placeholder="请输入内容"></el-input>
+                    <el-input size="mini" v-model="scope.row.actualweight" placeholder="请输入内容"></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column property="unit" label="单位" width="100">
@@ -554,7 +554,7 @@ export default {
         productmark: row.productmark,
         price: row.price,
         warehousename: row.warehousename,
-        weight: row.weight,
+        actualweight: row.actualweight,
         unit: row.unit,
         num: row.num
       };
@@ -710,15 +710,15 @@ export default {
           this.$message("材质不能为空");
           return;
         }
-        if (item.weight === "") {
+        if (item.actualweight === "") {
           this.$message("重量不能为空");
           return;
         }
-        if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.weight)) {
+        if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.actualweight)) {
           this.$message("重量只能为大于0的数字");
           return;
         }
-        if (item.weight.length > 9) {
+        if (item.actualweight.length > 9) {
           this.$message("重量字数不能超过9个字符");
           return;
         }
@@ -825,7 +825,6 @@ export default {
         .then(response => {
           if (response.data && response.data.status === 200) {
             this.processOrders1 = response.data.data;
-            this.total = response.data.total;
             this.addDetailIsshow = false;
             // if (this.processOrders1.length > 0) {
             //   setTimeout(() => {
@@ -916,7 +915,7 @@ export default {
         productmark: row.productmark,
         warehousename: row.warehousename,
         price: row.price,
-        weight: 0,
+        actualweight: 0,
         unit: row.unit,
         num: row.num
       };
@@ -974,6 +973,12 @@ export default {
           sums[index] = "";
           return;
         } else if (index === 5) {
+          sums[index] = "";
+          return;
+        } else if (index === 7) {
+          sums[index] = "";
+          return;
+        } else if (index === 9) {
           sums[index] = "";
           return;
         }

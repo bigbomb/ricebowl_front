@@ -1140,6 +1140,12 @@
                     <span>{{scope.row.stockid}}</span>
                   </template>
                 </el-table-column>
+                <el-table-column property="selectedIdss" label="选择的加工id" width="160">
+                  <template slot-scope="scope">
+                    <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
+                    <span>{{scope.row.selectedIdss}}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column property="price" label="单价(元)" width="120" v-if="isshow">
                   <template slot-scope="scope">
                     <!-- <el-input size="mini" v-model="scope.row.price" placeholder="请输入内容"></el-input> -->
@@ -1231,7 +1237,7 @@
                       size="small"
                     >复制</el-button>
                     <el-button
-                      v-if="scope.row.deliverystatus!=='提货中' && scope.row.processstatus!=='加工成品' "
+                      v-if="scope.row.deliverystatus!=='出库中'&& scope.row.processstatus!=='加工中'"
                       @click.native.prevent="importFrom(scope.$index,scope.row,'td')"
                       type="text"
                       size="small"
@@ -1665,9 +1671,15 @@
                     <span>{{scope.row.productmark}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="weight" label="重量(吨)" width="120">
+                <el-table-column property="actualweight" label="提库重量(吨)" width="120">
                   <template slot-scope="scope">
-                    <span>{{scope.row.weight}}</span>
+                    <span>{{scope.row.actualweight}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="finalweight" label="客户重量(吨)" width="120">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.finalweight" placeholder="请输入内容"></el-input>
+                    <span>{{scope.row.finalweight}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="unit" label="单位" width="100">
@@ -1818,6 +1830,7 @@ export default {
       contractAmount: 0,
       contactIds: [],
       selectedIds: [],
+      selectedIdss: [],
       contractNos: [],
       isshow: false,
       rowShow: true,
@@ -2085,7 +2098,8 @@ export default {
       deliverydate: "",
       depositdate: "",
       percentShow: false,
-      selectweight: 0.0,
+      selectactualweight: 0.0,
+      selectfinalweight: 0.0,
       dateObj: {
         startTime: "",
         endTime: ""
@@ -2603,10 +2617,28 @@ export default {
     chooseThis(row) {
       let d = {};
       if (this.ordertype == "td") {
-        if (row.status == "加工中") {
-          if (this.selectweight == 0) {
-            this.message(true, "请勾选明细", "error");
+        if (row.status == "加工完成") {
+          if (this.multipleSelection.length == 0) {
+            this.message(true, "请勾选加工明细", "error");
             return false;
+          }
+          this.selectfinalweight = 0.0;
+          for (let i = 0; i < this.multipleSelection.length; i++) {
+            let item = this.multipleSelection[i];
+            let itemdata = Number.parseFloat(item.finalweight);
+            if (itemdata === "") {
+              this.$message("客户重量不能为空");
+              return;
+            }
+            if (!/^[+]?\d*\.?\d{0,3}$/.test(itemdata)) {
+              this.$message("客户重量只能为数字或者最多小数点3位的数字");
+              return;
+            }
+            if (itemdata.length > 9) {
+              this.$message("客户重量字数不能超过9个字符");
+              return;
+            }
+            this.selectfinalweight = this.selectfinalweight + itemdata;
           }
           this.tdgridData.splice(this.chooseRowIndex, 1);
           d = {
@@ -2619,12 +2651,13 @@ export default {
             productfactory: this.chooseRow.productfactory,
             productmark: this.chooseRow.productmark,
             weight: this.chooseRow.weight,
-            actualweight: this.numFilter(this.selectweight),
-            finalweight: row.weight,
+            actualweight: this.numFilter(this.selectactualweight),
+            finalweight: this.numFilter(this.selectfinalweight),
             stockid: row.id,
             price: this.chooseRow.price,
             unit: this.chooseRow.unit,
             num: this.chooseRow.num,
+            selectedIdss: this.selectedIdss.join(","),
             remark: this.chooseRow.remark,
             quality: this.chooseRow.quality
           };
@@ -2894,6 +2927,7 @@ export default {
 
     importFrom(index, row, orderType) {
       let _this = this;
+      _this.selectedIdss = [];
       _this.listLoading = true;
       _this.jgdetailData = [];
       _this.ordertype = orderType;
@@ -2972,9 +3006,6 @@ export default {
         } else if (index === 4) {
           sums[index] = "";
           return;
-        } else if (index === 6) {
-          sums[index] = "";
-          return;
         } else if (index === 7) {
           sums[index] = "";
           return;
@@ -3001,19 +3032,16 @@ export default {
             return;
           } else if (index === 5) {
             sums[index] = sums[index].toFixed(3);
-            this.totalWeight = sums[index];
             sums[index] += "吨";
-          } else if (index === 9) {
-            sums[index] = sums[index].toFixed(2);
-            this.totalAmount = sums[index];
-            sums[index] += "元";
+          } else if (index === 6) {
+            sums[index] = sums[index].toFixed(3);
+
+            sums[index] += "吨";
           } else if (index === 13) {
             sums[index] = sums[index].toFixed(2);
-            this.stockoutTotalFee = sums[index];
             sums[index] += "元";
           } else if (index === 15) {
             sums[index] = sums[index].toFixed(2);
-            this.shorttransportTotalFee = sums[index];
             sums[index] += "元";
           }
         } else {
@@ -4142,7 +4170,6 @@ export default {
         "deliveryOrderDetail",
         JSON.stringify(_this.multipleSelection)
       );
-
       this.axios
         .post(
           process.env.API_ROOT + "/DeliveryOrderApi/v1/addDeliveryOrder",
@@ -4171,16 +4198,17 @@ export default {
     },
 
     handleItemSelectionChange1(val) {
-      this.selectedIds = [];
       this.multipleSelection = [];
-      this.selectweight = 0.0;
+      this.selectactualweight = 0.0;
+      this.selectfinalweight = 0.0;
       if (val) {
         val.forEach(row => {
-          this.selectedIds.push(row.id);
-          this.selectweight = this.selectweight + row.weight;
+          this.selectedIdss.push(row.id);
+          this.selectactualweight = this.selectactualweight + row.actualweight;
         });
         this.multipleSelection = val;
       }
+      console.log("this.selectedIdss" + this.selectedIdss);
     },
     editTerm(row) {
       this.termFormVisible = true;
@@ -4440,7 +4468,7 @@ export default {
       let realVal = "";
       if (!isNaN(value) && value !== "") {
         // 截取当前数据到小数点后两位
-        realVal = parseFloat(value).toFixed(2);
+        realVal = parseFloat(value).toFixed(3);
       } else {
         realVal = "--";
       }
