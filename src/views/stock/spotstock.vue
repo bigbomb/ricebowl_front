@@ -252,6 +252,7 @@
                   placeholder="请输入客户名称"
                   @select="handleSelectCustomer"
                   class="inputwidth"
+                  disabled="inputdisabled"
                 ></el-autocomplete>
               </el-form-item>
             </el-col>
@@ -932,6 +933,7 @@ export default {
       gridDataCopy: [],
       isshow: false,
       rowShow: true,
+      inputdisabled: true,
       chooseRow: "",
       chooseRowIndex: "",
       statusTab: "在库",

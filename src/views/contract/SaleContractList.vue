@@ -1360,13 +1360,13 @@
           <el-col :span="8">运输方式 ： {{saleContractbox.transporttype}}</el-col>
           <p>产品明细：</p>
           <!-- <el-col :span="24" class="digitUppercase"> -->
-          <div class="addorder">
+          <div class="addorder" id="addorder">
             <el-table
               :data="contractData"
               :span-method="contractSpanMethod"
               show-summary
               :summary-method="contractgetSummaries"
-              ref="gridTable"
+              ref="contractDataTable"
             >
               <el-table-column type="index" label="序号" width="60"></el-table-column>
               <el-table-column property="productname" width="100" label="产品名称"></el-table-column>
@@ -2927,7 +2927,6 @@ export default {
 
     importFrom(index, row, orderType) {
       let _this = this;
-      _this.selectedIdss = [];
       _this.listLoading = true;
       _this.jgdetailData = [];
       _this.ordertype = orderType;
@@ -3195,7 +3194,13 @@ export default {
       var div = win.document.createElement("div");
       // div.innerText = 'helloworld'
       // 插入到最前面
+      // var tabledata = this.$refs.contractDataTable.tableData;
+      // if (tabledata.length > 35) {
+      //   var newChild = document.createElement("tr");
+      //   newChild.style = "page-break-after:always;";
+      // }
       win.document.body.insertBefore(div, win.document.body.firstElementChild);
+
       win.setTimeout(function() {
         win.print();
         win.close();
@@ -4199,6 +4204,7 @@ export default {
 
     handleItemSelectionChange1(val) {
       this.multipleSelection = [];
+      this.selectedIdss = [];
       this.selectactualweight = 0.0;
       this.selectfinalweight = 0.0;
       if (val) {
