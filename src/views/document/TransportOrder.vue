@@ -58,6 +58,7 @@
       >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="id" label="id" width="80" v-if="isshow" sortable></el-table-column>
+        <el-table-column prop="status" label="发货状态" width="100" sortable></el-table-column>
         <el-table-column prop="transportno" label="发货单号" width="200" sortable></el-table-column>
         <el-table-column prop="contractno" label="销售合同号" width="200" sortable></el-table-column>
         <el-table-column prop="deliveryno" label="提单号" width="200" sortable></el-table-column>

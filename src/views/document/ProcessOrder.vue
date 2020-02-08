@@ -56,6 +56,7 @@
       >
         <el-table-column type="selection" width="55"></el-table-column>
         <el-table-column prop="id" label="id" width="80" v-if="isshow" sortable></el-table-column>
+        <el-table-column prop="status" label="加工状态" width="100" sortable></el-table-column>
         <el-table-column prop="processno" label="加工单号" width="200" sortable></el-table-column>
         <el-table-column prop="contractno" label="销售合同号" width="200" sortable></el-table-column>
         <el-table-column prop="customerName" label="客户名称" width="200" sortable></el-table-column>

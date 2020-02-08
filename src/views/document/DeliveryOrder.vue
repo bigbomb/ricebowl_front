@@ -1168,7 +1168,7 @@ export default {
         });
     },
     checkboxNum(row, rowIndex) {
-      if (row.status === "提货中") {
+      if (row.status === "已出库") {
         return false; //禁用
       } else {
         return true; //不禁用
@@ -1388,8 +1388,8 @@ export default {
     handleSelect1(item) {
       this.filters.keyword = item.value;
     },
-    checkboxTransportInit(row, index) {
-      if (row.transportstatus === "运输中") {
+    checkboxDeliveryInit(row, index) {
+      if (row.status === "已出库") {
         return 0; //不可勾选
       } else {
         return 1; //可勾选

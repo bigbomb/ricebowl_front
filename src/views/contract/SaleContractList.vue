@@ -34,11 +34,19 @@
         </el-form-item>
         <el-form-item>
           <el-button
-            type="success"
+            plain
             class="el-icon-plus"
-            @click.native="showDialogForm"
+            @click.native="showDialogForm(0)"
             v-if="addShow"
-          >新增</el-button>
+          >新增临调合同</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            plain
+            class="el-icon-plus"
+            @click.native="showDialogForm(1)"
+            v-if="addShow"
+          >新增现货合同</el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="danger" class="el-icon-delete" @click="delContract" v-if="delShow">删除</el-button>
@@ -123,7 +131,7 @@
             <span v-show="scope.row.upt!=null">{{scope.row.upt, 'yyyy-MM-dd hh:mm:ss'| dataFormat}}</span>
           </template>
         </el-table-column>
-
+        <el-table-column prop="contracttype" label="合同类型" sortable width="150" v-if="false"></el-table-column>
         <el-table-column prop="operation" fixed="right" label="操作" width="100">
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="bottom">
@@ -351,14 +359,14 @@
             </el-col>
             <el-form-item label="商品明细">
               <el-button
-                v-if="ruleForm.contractstatus==='意向临调合同'||ruleForm.contractstatus===''"
+                v-if="ruleForm.contractstatus==='意向临调合同'||ruleForm.contractstatus===''&&contracttype ==='0'"
                 size="mini"
                 @click="addRow()"
               >+</el-button>
               <el-button size="mini" @click="refreshRow()">刷新</el-button>
               <el-table
                 style="width:1100px"
-                :data="gridData"
+                :data="salegridData"
                 max-height="500"
                 :span-method="contractarraySpanMethod"
                 show-summary
@@ -596,10 +604,10 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template
                     slot-scope="scope"
-                    v-if="scope.row.status=='待审核' ||scope.row.status==undefined "
+                    v-if="(scope.row.status=='待审核' &&contracttype!=='1')||scope.row.status==undefined "
                   >
                     <el-button
-                      @click.native.prevent="deleteRow(scope.$index, gridData)"
+                      @click.native.prevent="deleteRow(scope.$index, salegridData)"
                       type="text"
                       size="small"
                     >移除</el-button>
@@ -1798,7 +1806,7 @@ export default {
       customerTemplateList: [],
       saleContractWarehouseList: [],
       timeout: null,
-      gridData: [],
+      salegridData: [],
       jggridData: [],
       contractData: [],
       warehouseGridData: [],
@@ -2387,7 +2395,7 @@ export default {
         stockouttype: row.stockouttype,
         quality: row.quality
       };
-      this.gridData.push(d);
+      this.salegridData.push(d);
       setTimeout(() => {
         this.$refs.gridTable.setCurrentRow(d);
       }, 10);
@@ -2432,7 +2440,7 @@ export default {
         quality: "合格品",
         warehousename: ""
       };
-      this.gridData.push(d);
+      this.salegridData.push(d);
       setTimeout(() => {
         this.$refs.gridTable.setCurrentRow(d);
       }, 10);
@@ -2498,12 +2506,12 @@ export default {
     },
     // 表单提交
     submitForm(formName) {
-      // console.log(this.gridData, 'this.gridData');
+      // console.log(this.salegridData, 'this.salegridData');
 
       this.$refs[formName].validate(valid => {
         if (valid) {
-          for (let i = 0; i < this.gridData.length; i++) {
-            let item = this.gridData[i];
+          for (let i = 0; i < this.salegridData.length; i++) {
+            let item = this.salegridData[i];
             if (item.productname === "") {
               this.$message("名称不能为空");
               return;
@@ -3256,9 +3264,16 @@ export default {
       this.$refs[formName].resetFields();
     },
     // 显示添加合同窗口
-    showDialogForm() {
+    showDialogForm(t) {
       this.percentShow = false;
-      this.thistitle = "新增临调销售合同";
+      if (t == 0) {
+        this.thistitle = "新增临调销售合同";
+        this.contracttype = "0";
+      } else if (t == 1) {
+        this.thistitle = "新增现货销售合同";
+        this.contracttype = "1";
+      }
+
       this.dialogFormVisible = true;
       this.ruleForm.contractstatus = "";
       this.ruleForm.id = "";
@@ -3274,8 +3289,8 @@ export default {
       this.totalWeight = "";
       this.totalAmount = "";
       this.ruleForm.remark = "";
-      if (this.gridData.length > 0) {
-        this.gridData = [];
+      if (this.salegridData.length > 0) {
+        this.salegridData = [];
       }
 
       this.getCustomerList();
@@ -3546,6 +3561,9 @@ export default {
     },
     handleSelectCustomer(item) {
       this.ruleForm.customerId = item.id;
+      if (this.contracttype == "1") {
+        this.selectStockByCustomerId(item.id);
+      }
     },
 
     handleSelectKeyword(item) {
@@ -3587,7 +3605,7 @@ export default {
       params.append("payment", _this.ruleForm.addpayment);
       params.append("settlement", _this.ruleForm.addsettlement);
       params.append("transporttype", _this.ruleForm.addtransporttype);
-      params.append("contracttype", "0");
+      params.append("contracttype", this.contracttype);
       params.append("contractweight", _this.totalWeight);
       params.append("contractamount", _this.totalAmount);
       params.append("shorttransporttotalfee", _this.shorttransportTotalFee);
@@ -3598,8 +3616,8 @@ export default {
         params.append("depositdate", new Date(_this.ruleForm.depositdate));
       }
       params.append("contractaddress", _this.ruleForm.addcontractaddress);
-      params.append("saleContractDetail", JSON.stringify(_this.gridData));
-      if (_this.gridData.length === 0) {
+      params.append("saleContractDetail", JSON.stringify(_this.salegridData));
+      if (_this.salegridData.length === 0) {
         this.message(true, "产品明细不能为空！", "error");
         return;
       }
@@ -3617,6 +3635,7 @@ export default {
           } else {
             _this.message(true, response.data.msg, "error");
           }
+          this.contracttype = "";
           this.getContract();
         });
     },
@@ -3661,6 +3680,7 @@ export default {
           } else {
             this.message(true, response.data.msg, "error");
           }
+          this.contracttype = "";
           this.getContract();
         });
     },
@@ -3669,6 +3689,7 @@ export default {
       this.$refs.contractTable.setCurrentRow(row);
       this.thistitle = "编辑" + row.contractstatus;
       this.ruleForm.id = row.id;
+      this.contracttype = row.contracttype;
       this.ruleForm.contractstatus = row.contractstatus;
       this.ruleForm.addcustomername = row.customername;
       this.ruleForm.addcontractno = row.contractno;
@@ -3698,10 +3719,10 @@ export default {
             return;
           }
           if (response.data.status === 200) {
-            this.gridData = [];
+            this.salegridData = [];
             var tabledata = response.data.data.saleContractDetail;
             for (var i in tabledata) {
-              this.gridData.push(tabledata[i]);
+              this.salegridData.push(tabledata[i]);
             }
             this.ruleForm.remark = response.data.data.saleContract.remark;
             if (response.data.data.saleContract.settlement === "预付") {
@@ -3778,6 +3799,33 @@ export default {
           }
         });
       //this.getContract()
+    },
+
+    selectStockByCustomerId(customerid) {
+      let params = new FormData();
+      params.append("customerid", customerid);
+      this.axios
+        .post(
+          process.env.API_ROOT + "/WareHouseApi/v1/findItemByCustomerId",
+          params
+        )
+        .then(response => {
+          if (!response.data) {
+            return;
+          }
+          if (response.data.status === 200) {
+            this.salegridData = [];
+            var tabledata = response.data.data;
+            for (var i in tabledata) {
+              console.log("tabledata" + typeof tabledata[i]);
+              tabledata[i].stockoutfee = 0;
+              tabledata[i].shorttransportfee = 0;
+              // tabledata[i].push("stockoutfee", 0);
+              // tabledata[i].push("shorttransportfee", 0);
+              this.salegridData.push(tabledata[i]);
+            }
+          }
+        });
     },
     handleSelectionChange(val) {
       this.contactIds = [];
