@@ -125,7 +125,7 @@
                   v-if="scope.row.purchasestatus==='待审核' && verifyShow"
                   size="small"
                   @click="verify(scope.row)"
-                >审核</el-button>
+                >审核通过</el-button>
               </div>
               <div>
                 <!-- <el-button type="text" size="small" @click='copyContract(scope.row)' v-if="copyContractShow">复制合同</el-button> -->

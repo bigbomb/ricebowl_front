@@ -74,9 +74,11 @@
         </el-table-column>
         <el-table-column prop="operation" fixed="right" label="操作">
           <template slot-scope="scope">
-            <div v-if="scope.row.invoiceStatus==='已开'||scope.row.actualamount===undefined"></div>
+            <div v-if="scope.row.invoiceStatus==='已开'">
+              <el-button type="text" size="small" @click="confirm(scope.row,'0')">撤回</el-button>
+            </div>
             <div v-else-if="submitShow">
-              <el-button type="text" size="small" @click="editShow(scope.row)">确认已开</el-button>
+              <el-button type="text" size="small" @click="confirm(scope.row,'1')">确认已开</el-button>
             </div>
           </template>
         </el-table-column>
@@ -157,9 +159,10 @@ export default {
       this.$refs[formName].resetFields();
     },
 
-    async editShow(row) {
+    async confirm(row, isornot) {
       let params = new FormData();
       params.append("id", row.id);
+      params.append("isornot", isornot);
       this.axios
         .post(
           process.env.API_ROOT + "/SaleContractApi/v1/confirmSaleContract",

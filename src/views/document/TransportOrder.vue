@@ -75,7 +75,7 @@
         </el-table-column>
         <el-table-column prop="createby" label="创建人" width="100" sortable></el-table-column>
         <el-table-column prop="remark" label="备注" sortable :show-overflow-tooltip="true"></el-table-column>
-        <el-table-column fixed="right" label="操作">
+        <el-table-column fixed="right" label="操作" width="150">
           <template slot-scope="scope">
             <el-button v-if="printShow" type="text" size="small" @click="printView(scope.row)">打印发货单</el-button>
           </template>

@@ -98,7 +98,7 @@
             <el-popover trigger="hover" placement="bottom">
               <!-- <div><el-button type="text" size="small" @click='editShow(scope.row)' v-if="detailShow">明细</el-button></div> -->
               <div>
-                <el-button type="text" size="small" @click="editShow(scope.row)">明细</el-button>
+                <el-button type="text" size="small" @click="editShow(scope.row)">编辑</el-button>
               </div>
               <!-- <div><el-button type="text" size="small" @click='printPreview(scope.row)' v-if="printShow">打印预览</el-button></div> -->
               <!-- <div><el-button type="text" size="small" @click='printPreview(scope.row)' >打印预览</el-button></div> -->
@@ -109,7 +109,7 @@
                   v-if="scope.row.purchasestatus==='待审核'"
                   size="small"
                   @click="verify(scope.row)"
-                >审核</el-button>
+                >审核通过</el-button>
               </div>
               <div>
                 <!-- <el-button type="text" size="small" @click='copyContract(scope.row)' v-if="copyContractShow">复制合同</el-button> -->

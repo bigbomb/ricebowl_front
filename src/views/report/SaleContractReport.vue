@@ -15,8 +15,8 @@
             v-model="filters.validateTime"
             type="daterange"
             range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
+            start-placeholder="合同开始日期"
+            end-placeholder="合同结束日期"
             @change="searchTime"
           ></el-date-picker>
         </el-form-item>
@@ -60,28 +60,28 @@
             <span>{{scope.row.customername}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="actualweight" label="客户结算总吨位" width="140">
+        <el-table-column property="finalweight" label="客户结算总吨位" width="140">
+          <template slot-scope="scope">
+            <span>{{scope.row.finalweight}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="finalamount" label="客户结算总金额" width="160">
+          <template slot-scope="scope">
+            <span>{{scope.row.finalamount}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="actualweight" label="采购总吨位" width="160">
           <template slot-scope="scope">
             <span>{{scope.row.actualweight}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="actualamount" label="客户结算总金额" width="160">
+        <el-table-column property="actualamount" label="采购总金额" width="160">
           <template slot-scope="scope">
             <span>{{scope.row.actualamount}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="purchaseweight" label="采购总吨位" width="160">
-          <template slot-scope="scope">
-            <span>{{scope.row.purchaseweight}}</span>
-          </template>
-        </el-table-column>
-        <el-table-column property="purchaseamount" label="采购总金额" width="160">
-          <template slot-scope="scope">
-            <span>{{scope.row.purchaseamount}}</span>
-          </template>
-        </el-table-column>
 
-        <el-table-column property="processfee" label="加工费" width="160">
+        <el-table-column property="processfee" label="加工费" width="100">
           <template slot-scope="scope">
             <span>{{scope.row.processfee}}</span>
           </template>
@@ -91,26 +91,26 @@
             <span>{{scope.row.transportweight}}</span>
           </template>
         </el-table-column>-->
-        <el-table-column property="transportfee" label="运输费" width="160">
+        <el-table-column property="transportfee" label="运输费" width="100">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.transportfee}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="stockouttotalfee" label="出库费" width="160">
+        <el-table-column property="stockouttotalfee" label="出库费" width="100">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.stockouttotalfee}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="shorttransporttotalfee" label="短驳费" width="160">
+        <el-table-column property="shorttransporttotalfee" label="短驳费" width="100">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.shorttransporttotalfee}}</span>
           </template>
         </el-table-column>
 
-        <el-table-column property="overtimefee" label="提货加班费" width="160">
+        <el-table-column property="overtimefee" label="提货加班费" width="100">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.overtimefee}}</span>
