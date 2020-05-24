@@ -451,7 +451,6 @@
             <el-col :span="7">
               <el-form-item label="运费金额" prop="transportfee">
                 <el-input
-                  :rows="5"
                   size="medium"
                   type="input"
                   placeholder="请输入运费"

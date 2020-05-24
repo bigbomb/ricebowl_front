@@ -42,7 +42,7 @@
         <el-table-column prop="id" label="id" width="60" sortable></el-table-column>
         <el-table-column prop="companyname" label="客户名称" width="200" sortable></el-table-column>
         <el-table-column prop="companyaddress" label="客户地址" width="400" sortable></el-table-column>
-        <el-table-column prop="companyphone" label="会员手机号" width="200" sortable></el-table-column>
+        <!-- <el-table-column prop="companyphone" label="会员手机号" width="200" sortable></el-table-column> -->
         <el-table-column prop="fax" label="电话/传真" width="200" sortable></el-table-column>
         <el-table-column prop="bankname" label="开户行" width="200" sortable></el-table-column>
 
@@ -96,14 +96,14 @@
             label-width="120px"
             class="customer-ruleForm"
           >
-            <el-form-item label="会员手机号" prop="companyPhone">
+            <!-- <el-form-item label="会员手机号" prop="companyPhone">
               <el-input
                 ref="companyPhone"
                 v-model="customerRuleForm.companyPhone"
                 :readonly="readonly"
                 placeholder="请输入会员手机号"
               ></el-input>
-            </el-form-item>
+            </el-form-item>-->
             <el-form-item label="公司名称" prop="companyName">
               <el-input v-model="customerRuleForm.companyName" placeholder="请输入公司名称"></el-input>
             </el-form-item>
@@ -213,9 +213,9 @@ export default {
       active: 1,
       // 表单验证
       rules: {
-        companyPhone: [
-          { required: true, validator: validatePhone, trigger: "blur" }
-        ],
+        // companyPhone: [
+        //   { required: true, validator: validatePhone, trigger: "blur" }
+        // ],
         companyName: [
           { required: true, message: "请输入公司名称" },
           { min: 5, max: 30, message: "长度在 5 到 30 个字符" }
@@ -287,7 +287,7 @@ export default {
       let _this = this;
       _this.readonly = false;
       _this.thistitle = "新增客户";
-      _this.customerRuleForm.companyPhone = "";
+      // _this.customerRuleForm.companyPhone = "";
       _this.customerRuleForm.companyName = "";
       _this.customerRuleForm.companyAddress = "";
       _this.customerRuleForm.fax = "";
@@ -302,7 +302,7 @@ export default {
     async addCustomer() {
       let _this = this;
       let params = new FormData();
-      params.append("companyphone", _this.customerRuleForm.companyPhone);
+      // params.append("companyphone", _this.customerRuleForm.companyPhone);
       params.append("companyname", _this.customerRuleForm.companyName);
       params.append("companyaddress", _this.customerRuleForm.companyAddress);
       params.append("fax", _this.customerRuleForm.fax);

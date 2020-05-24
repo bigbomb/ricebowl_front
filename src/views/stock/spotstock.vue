@@ -4,8 +4,20 @@
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters">
         <el-form-item>
+          <el-input v-model="searchRuleForm.purchaseno" placeholder="请输入采购入库单号"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-date-picker
+            v-model="filters.validateTime"
+            type="daterange"
+            placeholder="请输入采购入库创建时间"
+            range-separator="至"
+            start-placeholder="入库日期开始日期"
+            end-placeholder="入库日期结束日期"
+            @change="searchTime"
+          ></el-date-picker>
+
           <el-autocomplete
-            class="autoInputwidth"
             v-model="searchRuleForm.productname"
             :fetch-suggestions="queryProductNameSearchAsync"
             placeholder="请输入商品名称"
@@ -16,7 +28,6 @@
             </template>
           </el-autocomplete>
           <el-autocomplete
-            class="autoInputwidth"
             v-model="searchRuleForm.warehousename"
             :fetch-suggestions="querySaleContractWarehouseSearchAsync"
             placeholder="请输入仓库名称"
@@ -27,7 +38,6 @@
             </template>
           </el-autocomplete>
           <el-autocomplete
-            class="autoInputwidth"
             v-model="searchRuleForm.productspec"
             :fetch-suggestions="queryProductspecSearchAsync"
             placeholder="请输入商品规格"
@@ -38,7 +48,6 @@
             </template>
           </el-autocomplete>
           <el-autocomplete
-            class="autoInputwidth"
             v-model="searchRuleForm.productfactory"
             :fetch-suggestions="queryProductfactorySearchAsync"
             placeholder="请输入钢厂"
@@ -49,7 +58,6 @@
             </template>
           </el-autocomplete>
           <el-autocomplete
-            class="autoInputwidth"
             v-model="searchRuleForm.productmark"
             :fetch-suggestions="queryProductmarkSearchAsync"
             placeholder="请输入材质"
@@ -175,7 +183,17 @@
             <span>{{scope.row.quality}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="status" label="状态">
+        <el-table-column property="purchaseno" label="采购入库单号" width="160" fixed="right">
+          <template slot-scope="scope">
+            <span>{{scope.row.purchaseno}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="crt" label="入库时间" width="160" fixed="right">
+          <template slot-scope="scope">
+            <span v-show="scope.row.crt!=null">{{scope.row.crt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="status" label="状态" fixed="right">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.status}}</span>
@@ -808,6 +826,7 @@ export default {
         depositdate: ""
       },
       searchRuleForm: {
+        purchaseno: "",
         productname: "",
         warehousename: "",
         productspec: "",
@@ -937,6 +956,10 @@ export default {
       chooseRow: "",
       chooseRowIndex: "",
       statusTab: "在库",
+      dateObj: {
+        startTime: "",
+        endTime: ""
+      },
       // 表单验证
       rules: {
         addcustomername: [
@@ -1260,11 +1283,17 @@ export default {
       params.append("startPage", _this.startPage);
       params.append("pageSize", _this.pageSize);
       params.append("memberid", _this.memberId);
+      if (_this.searchRuleForm.purchaseno) {
+        params.append("purchaseno", _this.searchRuleForm.purchaseno);
+      }
+
       params.append("productname", _this.searchRuleForm.productname);
       params.append("productspec", _this.searchRuleForm.productspec);
       params.append("productfactory", _this.searchRuleForm.productfactory);
       params.append("productmark", _this.searchRuleForm.productmark);
       params.append("warehousename", _this.searchRuleForm.warehousename);
+      params.append("startTime", _this.dateObj.startTime);
+      params.append("endTime", _this.dateObj.endTime);
       params.append("stockstatus", _this.statusTab);
       this.axios
         .post(process.env.API_ROOT + "/WareHouseApi/v1/findItemByPage", params)
@@ -2059,6 +2088,21 @@ export default {
             this.findSaleContractWarehouse();
           }
         });
+    },
+    searchTime() {
+      if (
+        this.filters.validateTime &&
+        this.filters.validateTime[0] &&
+        this.filters.validateTime[1]
+      ) {
+        this.dateObj.startTime = this.filters.validateTime[0];
+        this.dateObj.endTime = this.filters.validateTime[1];
+      } else {
+        this.dateObj = {
+          startTime: "",
+          endTime: ""
+        };
+      }
     }
   },
 

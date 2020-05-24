@@ -932,7 +932,7 @@
                       @click.native.prevent="addTdJgRow(scope.row,'jg')"
                       type="text"
                       size="small"
-                    >增加明细</el-button>
+                    >拆解明细</el-button>
                     <!-- <el-button
                       v-if="scope.row.id===null"
                       @click.native.prevent="deleteRow(scope.$index, tdgridData)"
@@ -1109,10 +1109,9 @@
                 ></el-date-picker>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
+            <el-col :span="6">
               <el-form-item label="仓库名" prop="warehouseName">
                 <el-autocomplete
-                  class="widthInput"
                   v-model="tdruleForm.warehouseName"
                   :fetch-suggestions="queryWarehouseSearchAsync"
                   placeholder="请输入仓库名"
@@ -1121,10 +1120,15 @@
                 <!-- <el-input type="text" placeholder="请输入仓库全称" auto-complete="off" v-model="jgruleForm.warehouse" ></el-input> -->
               </el-form-item>
             </el-col>
+            <el-col :span="6">
+              <el-form-item>
+                <el-button type="text" size="small" @click="warehouseShow">仓库管理</el-button>
+              </el-form-item>
+            </el-col>
             <el-col :span="12">
               <el-form-item label="委托车辆号" prop="vehicleNumber">
                 <el-input
-                  :rows="7"
+                  :rows="8"
                   class="vehiclewidth"
                   type="textarea"
                   placeholder="请输入车辆牌照"
@@ -1135,7 +1139,7 @@
             </el-col>
             <el-col :span="12">
               <el-form-item label="提货方式" prop="deliverymethod">
-                <el-select class="inputwidth" v-model="tdruleForm.deliverymethod" placeholder="请选择">
+                <el-select v-model="tdruleForm.deliverymethod" placeholder="请选择">
                   <el-option label="汽运" value="汽运"></el-option>
                   <el-option label="船运" value="船运"></el-option>
                   <el-option label="汽运+船运" value="汽运+船运"></el-option>
@@ -1147,14 +1151,21 @@
                 <el-checkbox v-model="tdruleForm.isItemRight">是</el-checkbox>
               </el-form-item>
             </el-col>
+            <el-col :span="7">
+              <el-form-item label="吊费类型" prop="feeoption">
+                <el-select v-model="tdruleForm.feeoption" placeholder="请选择吊费类型">
+                  <el-option
+                    v-for="item in freightoptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
             <el-col :span="12">
-              <el-form-item label="提货加班费" prop="overtimefee">
-                <el-input
-                  type="text"
-                  placeholder="请输入提货加班费"
-                  auto-complete="off"
-                  v-model="tdruleForm.overtimefee"
-                ></el-input>
+              <el-form-item label="吊费金额" prop="transportfee">
+                <el-input placeholder="请输入吊费" v-model="tdruleForm.liftingfee"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="24">
@@ -1371,7 +1382,7 @@
                       @click.native.prevent="addTdJgRow(scope.row,'td')"
                       type="text"
                       size="small"
-                    >增加明细</el-button>
+                    >拆解明细</el-button>
                     <!-- <el-button
                       v-if="scope.row.id===null"
                       @click.native.prevent="deleteRow(scope.$index, tdgridData)"
@@ -1666,15 +1677,15 @@
               ref="contractDataTable"
             >
               <el-table-column type="index" label="序号" width="60"></el-table-column>
-              <el-table-column property="productname" width="100" label="产品名称"></el-table-column>
-              <el-table-column property="productspec" width="140" label="规格型号"></el-table-column>
+              <el-table-column property="productname" width="120" label="产品名称"></el-table-column>
+              <el-table-column property="productspec" width="158" label="规格型号"></el-table-column>
               <el-table-column property="productmark" width="110" label="牌号"></el-table-column>
-              <el-table-column property="weight" width="100" label="重量(吨)"></el-table-column>
-              <el-table-column property="price" width="110" label="单价(元/吨)"></el-table-column>
+              <el-table-column property="weight" width="110" label="重量(吨)"></el-table-column>
+              <el-table-column property="price" width="100" label="单价(元/吨)"></el-table-column>
               <el-table-column property="unit" width="50" label="单位"></el-table-column>
-              <el-table-column property="total" width="100" label="金额(元)"></el-table-column>
+              <el-table-column property="total" width="150" label="金额(元)"></el-table-column>
               <el-table-column property="stockouttype" width="90" label="出库方式"></el-table-column>
-              <el-table-column property="warehousename" label="所在仓库" width="88"></el-table-column>
+              <!-- <el-table-column property="warehousename" label="所在仓库" width="88"></el-table-column> -->
               <!-- <el-table-column property="quality" width="100" label="品级"></el-table-column> -->
             </el-table>
             <div class="footeremark">
@@ -2085,7 +2096,9 @@ export default {
         deliverymethod: "",
         vehicleuser: "",
         overtimefee: "",
-        isItemRight: false
+        isItemRight: false,
+        feeoption: "",
+        liftingfee: ""
       },
 
       termRuleForm: {},
@@ -2239,6 +2252,24 @@ export default {
         {
           value: "100%",
           label: "100%"
+        }
+      ],
+      freightoptions: [
+        {
+          value: 1,
+          label: "不含税元/吨"
+        },
+        {
+          value: 2,
+          label: "含税元/吨"
+        },
+        {
+          value: 3,
+          label: "不含税整车吊费"
+        },
+        {
+          value: 4,
+          label: "含税整车吊费"
         }
       ],
       // 表单验证
