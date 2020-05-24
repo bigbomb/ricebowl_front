@@ -172,7 +172,7 @@
               <el-table-column prop="productspec" label="规格" width="220"></el-table-column>
               <el-table-column prop="productfactory" label="钢厂" width="190"></el-table-column>
               <el-table-column prop="productmark" label="材质" width="180"></el-table-column>
-              <el-table-column prop="weight" label="重量" width="127"></el-table-column>
+              <el-table-column prop="actualweight" label="重量" width="127"></el-table-column>
               <el-table-column prop="num" label="数量" width="100"></el-table-column>
               <!-- <el-table-column prop="remark" label="备注" width="200">
               </el-table-column>-->
@@ -274,9 +274,9 @@
                     <span>{{scope.row.productmark}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="weight" label="重量(吨)" width="120">
+                <el-table-column property="actualweight" label="重量(吨)" width="120">
                   <template slot-scope="scope">
-                    <span>{{scope.row.weight}}</span>
+                    <span>{{scope.row.actualweight}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="unit" label="单位" width="100">
