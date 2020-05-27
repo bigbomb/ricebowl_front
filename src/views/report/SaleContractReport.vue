@@ -55,6 +55,11 @@
             <span>{{scope.row.contractno}}</span>
           </template>
         </el-table-column>
+        <el-table-column property="transportno" label="发货单号" width="180">
+          <template slot-scope="scope">
+            <span>{{scope.row.transportno}}</span>
+          </template>
+        </el-table-column>
         <el-table-column property="customername" label="客户名称" width="200">
           <template slot-scope="scope">
             <span>{{scope.row.customername}}</span>
@@ -107,13 +112,6 @@
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.shorttransporttotalfee}}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column property="overtimefee" label="提货加班费" width="100">
-          <template slot-scope="scope">
-            <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
-            <span>{{scope.row.overtimefee}}</span>
           </template>
         </el-table-column>
 

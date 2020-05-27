@@ -1164,7 +1164,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="吊费金额" prop="transportfee">
+              <el-form-item label="吊费金额" prop="liftingfee">
                 <el-input placeholder="请输入吊费" v-model="tdruleForm.liftingfee"></el-input>
               </el-form-item>
             </el-col>
@@ -4646,7 +4646,9 @@ export default {
 
       params.append("weight", _this.totalWeight);
       params.append("finalweight", _this.finalWeight);
-      params.append("overtimefee", _this.tdruleForm.overtimefee);
+      params.append("liftingfee", _this.tdruleForm.liftingfee);
+      params.append("feeoption", _this.tdruleForm.feeoption);
+      // params.append("overtimefee", _this.tdruleForm.overtimefee);
       params.append(
         "deliveryOrderDetail",
         JSON.stringify(_this.multipleSelection)

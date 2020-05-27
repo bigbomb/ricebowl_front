@@ -107,14 +107,23 @@
         <el-table-column prop="operation" fixed="right" width="100" label="操作">
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="bottom">
-              <!-- <div><el-button type="text" size="small" @click='editShow(scope.row)' v-if="detailShow">明细</el-button></div> -->
+              <!-- <div><el-button type="text" size="small" @click='editShow(scope.row)' v-if="detailShow">编辑</el-button></div> -->
               <div>
                 <el-button
                   type="text"
                   size="small"
-                  v-if="detailShow"
-                  @click="editShow(scope.row)"
-                >明细</el-button>
+                  v-if="detailShow&&scope.row.purchasestatus==='待审核'"
+                  @click="editShow(scope.row,'1')"
+                >编辑</el-button>
+              </div>
+              <div>
+                <el-button
+                  type="text"
+                  v-if="scope.row.purchasestatus==='已审核'"
+                  size="small"
+                  @click="editShow(scope.row,'2')"
+                >变更</el-button>
+                <!-- v-if="changeShow" -->
               </div>
               <!-- <div><el-button type="text" size="small" @click='printPreview(scope.row)' v-if="printShow">打印预览</el-button></div> -->
               <!-- <div><el-button type="text" size="small" @click='printPreview(scope.row)' >打印预览</el-button></div> -->
@@ -146,7 +155,7 @@
 
         <!-- <el-table-column fixed="right" label="操作" width="200">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click='editShow(scope.row)'>明细</el-button>
+            <el-button type="text" size="small" @click='editShow(scope.row)'>编辑</el-button>
             <el-button type="text" size="small" @click='editTerm(scope.row)'>条款</el-button>
             <el-button type="text" size="small" @click='printPreview(scope.row)'>打印预览</el-button>
             <el-button type="text" v-if="scope.row.contractstatus==='正式合同'||scope.row.contractstatus==='加工中'" size="small" @click='jgorder(scope.row)'>生成加工单</el-button>
@@ -344,12 +353,7 @@
                 </el-table-column>
                 <el-table-column property="weight" label="重量(吨)" width="120">
                   <template slot-scope="scope">
-                    <el-input
-                      size="mini"
-                      v-if="scope.row.status!=='在库'"
-                      v-model="scope.row.weight"
-                      placeholder="请输入内容"
-                    ></el-input>
+                    <el-input size="mini" v-model="scope.row.weight" placeholder="请输入内容"></el-input>
                     <span>{{scope.row.weight}}</span>
                   </template>
                 </el-table-column>
@@ -368,7 +372,6 @@
                   <template slot-scope="scope">
                     <el-select
                       size="mini"
-                      v-if="scope.row.status!=='在库'"
                       class="inputwidth"
                       v-model="scope.row.unit"
                       placeholder="请选择"
@@ -420,7 +423,6 @@
                   <template slot-scope="scope">
                     <el-select
                       size="mini"
-                      v-if="scope.row.status!=='在库'"
                       class="inputwidth"
                       v-model="scope.row.stockouttype"
                       placeholder="请选择"
@@ -469,7 +471,16 @@
         <div slot="footer" class="dialog-footer">
           <el-button @click="closeDialog('supplyerForm')">取 消</el-button>
           <!-- <el-button @click="resetForm('supplyerForm')">重置</el-button> -->
-          <el-button type="primary" @click="submitForm('supplyerForm')">确 定</el-button>
+          <el-button
+            v-if="this.supplyerForm.purchasestatus==='待审核'"
+            type="primary"
+            @click="submitForm('supplyerForm')"
+          >保存</el-button>
+          <el-button
+            v-if="this.supplyerForm.purchasestatus==='已审核'"
+            type="primary"
+            @click="submitForm('supplyerForm',1)"
+          >保存</el-button>
         </div>
       </el-dialog>
     </el-col>
@@ -895,7 +906,7 @@ export default {
         });
     },
     // 表单提交
-    submitForm(formName) {
+    submitForm(formName, type) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           for (let i = 0; i < this.productGridData.length; i++) {
@@ -990,7 +1001,7 @@ export default {
               return;
             }
           }
-          this.addContract();
+          this.addPurchaseContract(type);
         } else {
           console.log("error submit!!");
           return false;
@@ -1076,7 +1087,13 @@ export default {
         } else if (index === 4) {
           sums[index] = "";
           return;
+        } else if (index === 5) {
+          sums[index] = "";
+          return;
         } else if (index === 7) {
+          sums[index] = "";
+          return;
+        } else if (index === 11) {
           sums[index] = "";
           return;
         }
@@ -1091,6 +1108,8 @@ export default {
             }
           }, 0);
           if (index === 8) {
+            sums[index] += "";
+          } else if (index === 9) {
             sums[index] += "";
           } else if (index === 6) {
             sums[index] = sums[index].toFixed(3);
@@ -1383,7 +1402,7 @@ export default {
       }, 500);
     },
     // 添加合同
-    async addContract() {
+    async addPurchaseContract(type) {
       let _this = this;
       let memberId = "";
       var usr = this.usr;
@@ -1391,6 +1410,9 @@ export default {
         memberId = usr.memberId;
       }
       let params = new FormData();
+      if (type) {
+        params.append("change", type);
+      }
       params.append("id", _this.supplyerForm.id);
       params.append("memberid", memberId);
       params.append("contractno", _this.supplyerForm.contractno);
@@ -1493,9 +1515,14 @@ export default {
         });
     },
 
-    async editShow(row) {
+    async editShow(row, type) {
       this.$refs.purchaseTable.setCurrentRow(row);
-      this.thistitle = "采购合同明细";
+      if (type === "1") {
+        this.thistitle = "采购入库明细";
+      } else {
+        this.thistitle = "采购入库变更单";
+      }
+
       this.supplyerForm.id = row.id;
       this.supplyerForm.purchaseno = row.purchaseno;
       this.supplyerForm.supplyername = row.supplyername;
