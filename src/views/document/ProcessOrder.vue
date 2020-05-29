@@ -299,6 +299,16 @@
                     <span>{{scope.row.warehousename}}</span>
                   </template>
                 </el-table-column>
+                <el-table-column
+                  property="saleDetailId"
+                  label="saleDetailId"
+                  width="200"
+                  v-if="false"
+                >
+                  <template slot-scope="scope">
+                    <span>{{scope.row.saleDetailId}}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="scope">
                     <el-button
@@ -328,6 +338,7 @@
                     <span>{{scope.row.id}}</span>
                   </template>
                 </el-table-column>
+
                 <el-table-column property="productname" label="名称" width="200">
                   <template slot-scope="scope">
                     <el-input size="mini" v-model="scope.row.productname" placeholder="请输入商品名称"></el-input>
@@ -376,6 +387,11 @@
                 <el-table-column property="remark" label="备注" width="300">
                   <template slot-scope="scope">
                     <el-input size="mini" v-model="scope.row.remark" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column property="saledetailid" label="销售明细id" width="100" v-if="false">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.saledetailid"></el-input>
                   </template>
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="120">
@@ -549,6 +565,7 @@ export default {
       let d = {
         id: null,
         stockid: row.stockid,
+        saledetailid: row.saledetailid,
         productname: row.productname,
         productspec: row.productspec,
         productfactory: row.productfactory,
@@ -910,6 +927,7 @@ export default {
       let d = {
         id: null,
         stockid: row.stockid,
+        saledetailid: row.saleDetailId,
         productname: row.productname,
         productspec: row.productspec,
         productfactory: row.productfactory,
