@@ -472,7 +472,7 @@
           <el-button @click="closeDialog('supplyerForm')">取 消</el-button>
           <!-- <el-button @click="resetForm('supplyerForm')">重置</el-button> -->
           <el-button
-            v-if="this.supplyerForm.purchasestatus==='待审核'"
+            v-if="this.supplyerForm.purchasestatus==='待审核'||this.supplyerForm.purchasestatus==''"
             type="primary"
             @click="submitForm('supplyerForm')"
           >保存</el-button>
@@ -1065,7 +1065,7 @@ export default {
     },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 8) {
-        row.total = (row.price * row.weight).toFixed(2);
+        row.total = (row.price * row.weight).toFixed(3);
       }
     },
     getSummaries(param) {
@@ -1116,7 +1116,7 @@ export default {
             this.totalWeight = sums[index];
             sums[index] += "吨";
           } else {
-            sums[index] = sums[index].toFixed(2);
+            sums[index] = sums[index].toFixed(3);
             this.totalAmount = sums[index];
             sums[index] += "元";
           }

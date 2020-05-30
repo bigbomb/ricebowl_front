@@ -83,9 +83,9 @@
         <el-form-item v-if="unlockShow&&activeName=='已锁货'">
           <el-button type="primary" v-on:click="unlock">解锁</el-button>
         </el-form-item>
-        <el-form-item v-if="addShow&&activeName=='已锁货'">
+        <!-- <el-form-item v-if="addShow&&activeName=='已锁货'">
           <el-button type="success" @click.native="showDialogForm">生成现货销售订单</el-button>
-        </el-form-item>
+        </el-form-item>-->
         <!-- <el-form-item>
           <el-button type="danger" class="el-icon-delete" @click="delContract" v-if="delShow">删除</el-button>
         </el-form-item>-->

@@ -751,7 +751,7 @@ export default {
           }
           if (response.data.status === 200) {
             this.message(true, response.data.msg, "success");
-            this.$router.push({ path: "/transportOrderList" });
+            this.transportFormVisible = false;
           }
         });
     },
