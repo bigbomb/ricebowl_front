@@ -564,7 +564,7 @@
                   </template>
                 </el-table-column>
 
-                <el-table-column property="stockoutfee" label="出库费/吨" width="150">
+                <!-- <el-table-column property="stockoutfee" label="出库费/吨" width="150">
                   <template slot-scope="scope">
                     <el-input size="mini" v-model="scope.row.stockoutfee" placeholder="请输入内容"></el-input>
                     <span>{{scope.row.stockoutfee}}</span>
@@ -588,7 +588,7 @@
                   <template slot-scope="scope">
                     <span>{{scope.row.shorttransporttotal}}</span>
                   </template>
-                </el-table-column>
+                </el-table-column>-->
 
                 <el-table-column property="quality" label="品级" width="150">
                   <template slot-scope="scope">
