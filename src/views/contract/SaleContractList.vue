@@ -5403,7 +5403,7 @@ export default {
       return this.getHasRule("合同查询");
     },
     detailShow() {
-      return this.getHasRule("查看明细");
+      return this.getHasRule("编辑");
     },
     termShow() {
       return this.getHasRule("条款");

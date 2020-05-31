@@ -1808,7 +1808,7 @@ export default {
       return this.getHasRule("查询采购入库单");
     },
     detailShow() {
-      return this.getHasRule("采购入库单明细");
+      return this.getHasRule("采购入库单变更");
     },
     verifyShow() {
       return this.getHasRule("审核采购入库单");
