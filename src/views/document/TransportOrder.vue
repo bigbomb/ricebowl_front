@@ -27,7 +27,7 @@
             type="primary"
             class="el-icon-search"
             :loading="selLoading"
-            v-on:click="getDeliveryOrders"
+            v-on:click="getTransportOrders"
           >查询</el-button>
         </el-form-item>
         <!-- <el-form-item v-if='addShow'>
@@ -598,7 +598,7 @@ export default {
       }
     },
     // 获取运输单列表
-    async getDeliveryOrders() {
+    async getTransportOrders() {
       let _this = this;
       _this.listLoading = true;
       let params = new FormData();
@@ -752,6 +752,7 @@ export default {
           if (response.data.status === 200) {
             this.message(true, response.data.msg, "success");
             this.transportFormVisible = false;
+            this.getTransportOrders();
           }
         });
     },
@@ -776,7 +777,7 @@ export default {
           } else {
             this.message(true, response.data.msg, "error");
           }
-          this.getDeliveryOrders();
+          this.getTransportOrders();
         });
     },
     // 获取选中集
@@ -801,12 +802,12 @@ export default {
     // 每页大小改变时触发
     handleSizeChange(val) {
       this.pageSize = val;
-      this.getDeliveryOrders();
+      this.getTransportOrders();
     },
     // 当前页码改变时触发
     handleCurrentChange(val) {
       this.startPage = val;
-      this.getDeliveryOrders();
+      this.getTransportOrders();
     },
     getCustomerList() {
       let _this = this;
@@ -1037,7 +1038,7 @@ export default {
     this.usr = JSON.parse(this.$cookie.get("user"));
     this.memberId = this.usr.memberId;
     this.producer = this.usr.userName;
-    this.getDeliveryOrders();
+    this.getTransportOrders();
     this.getCustomerList();
   },
   computed: {

@@ -3,9 +3,12 @@
     <!--工具条-->
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters">
-        <el-form-item>
-          <el-input v-model="filters.keyword" placeholder="姓名"></el-input>
-        </el-form-item>
+        <el-autocomplete
+          v-model="filters.keyword"
+          :fetch-suggestions="querySearchAsync"
+          placeholder="请输入客户名称"
+          @select="handleSelectKeyword"
+        ></el-autocomplete>
         <el-form-item v-if="findShow">
           <el-button
             type="primary"
@@ -203,6 +206,7 @@ export default {
       pageSize: 30,
       total: 0,
       customers: [],
+      customerList: [],
       customerIds: [],
       page: 1,
       listLoading: false,
@@ -252,6 +256,17 @@ export default {
           if (response.data && response.data.status === 200) {
             _this.customers = response.data.data;
             _this.total = response.data.total;
+            let customerdata = response.data.data;
+            this.customerList = [];
+            for (let lcustomer of customerdata) {
+              if (lcustomer.companyname != null) {
+                let jsoncompany = {
+                  value: lcustomer.companyname,
+                  id: lcustomer.id
+                };
+                this.customerList.push(jsoncompany);
+              }
+            }
           } else {
             _this.message(true, response.data.msg, "error");
             _this.customers = [];
@@ -388,6 +403,22 @@ export default {
           this.getCustomers();
         });
     },
+    querySearchAsync(queryString, cb) {
+      var customerList = this.customerList;
+      var results = queryString
+        ? customerList.filter(this.createStateFilter(queryString))
+        : customerList;
+
+      clearTimeout(this.timeout);
+      this.timeout = setTimeout(() => {
+        cb(results);
+      }, 500);
+    },
+
+    handleSelectKeyword(item) {
+      this.filters.keyword = item.value;
+    },
+
     switchChange(status, id) {
       this.editCustomerStatus(status, id);
     },

@@ -108,12 +108,12 @@
             <span>{{scope.row.stockouttotalfee}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="shorttransporttotalfee" label="短驳费" width="100">
+        <!-- <el-table-column property="shorttransporttotalfee" label="短驳费" width="100">
           <template slot-scope="scope">
-            <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
+            <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> 
             <span>{{scope.row.shorttransporttotalfee}}</span>
           </template>
-        </el-table-column>
+        </el-table-column>-->
 
         <el-table-column property="grossprofit" label="所得毛利">
           <template slot-scope="scope">
