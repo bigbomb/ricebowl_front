@@ -27,7 +27,8 @@
             :loading="selLoading"
             v-on:click="getContract"
             v-if="findShow"
-          >查询</el-button>
+            >查询</el-button
+          >
         </el-form-item>
 
         <!-- <el-form-item>
@@ -52,43 +53,59 @@
         </el-table-column>-->
         <el-table-column property="contractno" label="合同号" width="180">
           <template slot-scope="scope">
-            <span>{{scope.row.contractno}}</span>
+            <span>{{ scope.row.contractno }}</span>
           </template>
         </el-table-column>
         <el-table-column property="transportno" label="发货单号" width="180">
           <template slot-scope="scope">
-            <span>{{scope.row.transportno}}</span>
+            <span>{{ scope.row.transportno }}</span>
           </template>
         </el-table-column>
         <el-table-column property="customername" label="客户名称" width="200">
           <template slot-scope="scope">
-            <span>{{scope.row.customername}}</span>
+            <span>{{ scope.row.customername }}</span>
           </template>
         </el-table-column>
-        <el-table-column property="finalweight" label="客户结算总吨位" width="140">
+        <el-table-column
+          property="finalweight"
+          label="客户结算重量(吨)"
+          width="140"
+        >
           <template slot-scope="scope">
-            <span>{{scope.row.finalweight}}</span>
+            <span>{{ scope.row.finalweight }}</span>
           </template>
         </el-table-column>
-        <el-table-column property="finalamount" label="客户结算总金额" width="160">
+        <el-table-column
+          property="finalamount"
+          label="客户结算金额(元)"
+          width="160"
+        >
           <template slot-scope="scope">
-            <span>{{scope.row.finalamount}}</span>
+            <span>{{ scope.row.finalamount }}</span>
           </template>
         </el-table-column>
-        <el-table-column property="actualweight" label="采购总吨位" width="160">
+        <el-table-column
+          property="actualweight"
+          label="采购总吨位(吨)"
+          width="160"
+        >
           <template slot-scope="scope">
-            <span>{{scope.row.actualweight}}</span>
+            <span>{{ scope.row.actualweight }}</span>
           </template>
         </el-table-column>
-        <el-table-column property="actualamount" label="采购总金额" width="160">
+        <el-table-column
+          property="actualamount"
+          label="采购总金额(元)"
+          width="160"
+        >
           <template slot-scope="scope">
-            <span>{{scope.row.actualamount}}</span>
+            <span>{{ scope.row.actualamount }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column property="processfee" label="加工费" width="100">
+        <el-table-column property="processfee" label="加工费(元)" width="100">
           <template slot-scope="scope">
-            <span>{{scope.row.processfee}}</span>
+            <span>{{ scope.row.processfee }}</span>
           </template>
         </el-table-column>
         <!-- <el-table-column property="transportweight" label="运输吨位" width="160">
@@ -96,16 +113,20 @@
             <span>{{scope.row.transportweight}}</span>
           </template>
         </el-table-column>-->
-        <el-table-column property="transportfee" label="运输费" width="100">
+        <el-table-column property="transportfee" label="运输费(元)" width="100">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
-            <span>{{scope.row.transportfee}}</span>
+            <span>{{ scope.row.transportfee }}</span>
           </template>
         </el-table-column>
-        <el-table-column property="stockouttotalfee" label="出库费" width="100">
+        <el-table-column
+          property="stockouttotalfee"
+          label="出库费(元)"
+          width="100"
+        >
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
-            <span>{{scope.row.stockouttotalfee}}</span>
+            <span>{{ scope.row.stockouttotalfee }}</span>
           </template>
         </el-table-column>
         <!-- <el-table-column property="shorttransporttotalfee" label="短驳费" width="100">
@@ -115,10 +136,10 @@
           </template>
         </el-table-column>-->
 
-        <el-table-column property="grossprofit" label="所得毛利">
+        <el-table-column property="grossprofit" label="所得毛利(元)">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
-            <span>{{scope.row.grossprofit}}</span>
+            <span>{{ scope.row.grossprofit }}</span>
           </template>
         </el-table-column>
         <!-- <el-table-column property="status" label="状态">
@@ -139,11 +160,11 @@ export default {
   data() {
     return {
       filters: {
-        keyword: "",
+        keyword: '',
         validateTime: []
       },
-      value: "",
-      multipleSelection: "",
+      value: '',
+      multipleSelection: '',
       customerList: [],
       timeout: null,
       contractGridData: [],
@@ -155,27 +176,27 @@ export default {
       listLoading: false,
       selLoading: false,
       dialogFormVisible: false,
-      formLabelWidth: "120px",
+      formLabelWidth: '120px',
       currentRow: null,
       contactIds: [],
       selectedIds: [],
       addstock: [],
       isshow: false,
       rowShow: true,
-      chooseRow: "",
-      chooseRowIndex: "",
+      chooseRow: '',
+      chooseRowIndex: '',
       // 表单验证
-      uploadUrl: "",
-      name: "base-example",
-      theme: "snow",
+      uploadUrl: '',
+      name: 'base-example',
+      theme: 'snow',
       heights: document.documentElement.clientHeight - 200,
-      currentLength: "",
-      leftLength: "",
+      currentLength: '',
+      leftLength: '',
       dateObj: {
-        startTime: "",
-        endTime: ""
+        startTime: '',
+        endTime: ''
       }
-    };
+    }
   },
 
   methods: {
@@ -185,229 +206,229 @@ export default {
         this.filters.validateTime[0] &&
         this.filters.validateTime[1]
       ) {
-        this.dateObj.startTime = this.filters.validateTime[0];
-        this.dateObj.endTime = this.filters.validateTime[1];
+        this.dateObj.startTime = this.filters.validateTime[0]
+        this.dateObj.endTime = this.filters.validateTime[1]
       } else {
         this.dateObj = {
-          startTime: "",
-          endTime: ""
-        };
+          startTime: '',
+          endTime: ''
+        }
       }
     },
 
     // 切换tab数据
     handleItemSelectionChange(val) {
-      this.selectedIds = [];
+      this.selectedIds = []
       if (val) {
         val.forEach(row => {
-          this.selectedIds.push(row.id);
-        });
-        this.multipleSelection = val;
+          this.selectedIds.push(row.id)
+        })
+        this.multipleSelection = val
       }
     },
 
     // 查询合同
     async getContract() {
-      let _this = this;
-      _this.listLoading = true;
-      let params = new FormData();
-      params.append("startPage", _this.startPage);
-      params.append("pageSize", _this.pageSize);
-      params.append("memberid", _this.memberId);
-      params.append("keyword", _this.filters.keyword);
-      params.append("startTime", _this.dateObj.startTime);
-      params.append("endTime", _this.dateObj.endTime);
+      let _this = this
+      _this.listLoading = true
+      let params = new FormData()
+      params.append('startPage', _this.startPage)
+      params.append('pageSize', _this.pageSize)
+      params.append('memberid', _this.memberId)
+      params.append('keyword', _this.filters.keyword)
+      params.append('startTime', _this.dateObj.startTime)
+      params.append('endTime', _this.dateObj.endTime)
       this.axios
         .post(
-          process.env.API_ROOT + "/SaleContractApi/v1/findSaleContractAnalyse",
+          process.env.API_ROOT + '/SaleContractApi/v1/findSaleContractAnalyse',
           params
         )
         .then(response => {
           if (!response.data) {
-            _this.listLoading = false;
-            return;
+            _this.listLoading = false
+            return
           }
           if (response.data && response.data.status === 200) {
             _this.contractGridData =
-              response.data.data.saleContractAnalyseDtoList;
-            _this.total = response.data.total;
+              response.data.data.saleContractAnalyseDtoList
+            _this.total = response.data.total
           } else {
-            _this.message(true, response.data.msg, "error");
-            _this.contractGridData = [];
+            _this.message(true, response.data.msg, 'error')
+            _this.contractGridData = []
           }
-          _this.listLoading = false;
+          _this.listLoading = false
         })
         .catch(err => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     },
 
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 10) {
-        row.total = (row.price * row.weight).toFixed(2);
+        row.total = (row.price * row.weight).toFixed(2)
       }
     },
     getSummaries(param) {
-      const { columns, data } = param;
-      const sums = [];
+      const { columns, data } = param
+      const sums = []
       columns.forEach((column, index) => {
         if (index === 0) {
-          sums[index] = "总计";
-          return;
+          sums[index] = '总计'
+          return
         } else if (index === 1) {
-          sums[index] = "";
-          return;
+          sums[index] = ''
+          return
         } else if (index === 2) {
-          sums[index] = "";
-          return;
+          sums[index] = ''
+          return
         } else if (index === 3) {
-          sums[index] = "";
-          return;
+          sums[index] = ''
+          return
         } else if (index === 4) {
-          sums[index] = "";
-          return;
+          sums[index] = ''
+          return
         } else if (index === 6) {
-          sums[index] = "";
-          return;
+          sums[index] = ''
+          return
         } else if (index === 8) {
-          sums[index] = "";
-          return;
+          sums[index] = ''
+          return
         }
-        const values = data.map(item => Number(item[column.property]));
+        const values = data.map(item => Number(item[column.property]))
         if (!values.every(value => isNaN(value))) {
           sums[index] = values.reduce((prev, curr) => {
-            const value = Number(curr);
+            const value = Number(curr)
             if (!isNaN(value)) {
-              return prev + curr;
+              return prev + curr
             } else {
-              return prev;
+              return prev
             }
-          }, 0);
+          }, 0)
 
           if (index === 5) {
-            sums[index] = sums[index].toFixed(3);
-            this.totalWeight = sums[index];
-            sums[index] += "吨";
+            sums[index] = sums[index].toFixed(3)
+            this.totalWeight = sums[index]
+            sums[index] += '吨'
           } else if (index === 9) {
-            sums[index] = sums[index].toFixed(2);
-            this.totalAmount = sums[index];
-            sums[index] += "元";
+            sums[index] = sums[index].toFixed(2)
+            this.totalAmount = sums[index]
+            sums[index] += '元'
           }
         } else {
-          sums[index] = "";
+          sums[index] = ''
         }
-      });
-      return sums;
+      })
+      return sums
     },
 
     // 重置
     resetForm(formName) {
-      this.$refs[formName].resetFields();
+      this.$refs[formName].resetFields()
     },
 
     getCustomerList() {
-      let _this = this;
-      var usr = this.usr;
-      let memberId = "";
+      let _this = this
+      var usr = this.usr
+      let memberId = ''
       if (usr) {
-        memberId = usr.memberId;
+        memberId = usr.memberId
       }
-      let params = new FormData();
-      params.append("memberId", memberId);
+      let params = new FormData()
+      params.append('memberId', memberId)
       this.axios
-        .post(process.env.API_ROOT + "/CustomerApi/v1/getCustomerList", params)
+        .post(process.env.API_ROOT + '/CustomerApi/v1/getCustomerList', params)
         .then(response => {
           if (!response.data) {
-            return;
+            return
           }
-          let customerdata = response.data.data;
-          this.customerList = [];
+          let customerdata = response.data.data
+          this.customerList = []
           for (let lcustomer of customerdata) {
             if (lcustomer.companyname != null) {
               let jsoncompany = {
                 value: lcustomer.companyname,
                 id: lcustomer.id
-              };
-              this.customerList.push(jsoncompany);
+              }
+              this.customerList.push(jsoncompany)
             }
           }
         })
         .catch(err => {
-          console.log(err);
-        });
+          console.log(err)
+        })
     },
 
     querySearchAsync(queryString, cb) {
-      var customerList = this.customerList;
+      var customerList = this.customerList
       var results = queryString
         ? customerList.filter(this.createStateFilter(queryString))
-        : customerList;
+        : customerList
 
-      clearTimeout(this.timeout);
+      clearTimeout(this.timeout)
       this.timeout = setTimeout(() => {
-        cb(results);
-      }, 500);
+        cb(results)
+      }, 500)
     },
 
     createStateFilter(queryString) {
       return state => {
-        return state.value.indexOf(queryString) >= 0;
-      };
+        return state.value.indexOf(queryString) >= 0
+      }
     },
     handleSelectCustomer(item) {
-      this.ruleForm.customerId = item.id;
+      this.ruleForm.customerId = item.id
     },
 
     handleSelectKeyword(item) {
-      this.filters.keyword = item.value;
+      this.filters.keyword = item.value
     },
 
     handleRowChange() {
-      this.rowShow = false;
+      this.rowShow = false
     },
 
     onEditorBlur(editor) {
-      this.editor = editor;
+      this.editor = editor
     },
     message(ifshow, msg, type) {
       this.$message({
         showClose: ifshow,
         message: msg,
         type: type
-      });
+      })
     },
     onEditorFocus(editor) {
-      this.editor = editor;
-      editor.root.contentEditable = true;
+      this.editor = editor
+      editor.root.contentEditable = true
     },
     onEditorReady(editor) {
-      this.editor = editor;
+      this.editor = editor
     },
     onEditorChange(editor) {
-      this.editor = editor;
-      this.currentLength = editor.text.replace("\n", "").length;
-      this.content = editor.html;
+      this.editor = editor
+      this.currentLength = editor.text.replace('\n', '').length
+      this.content = editor.html
     },
     timestampToTime: function(timestamp) {
-      var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
-      var Y = date.getFullYear() + "-";
+      var date = new Date(timestamp) //时间戳为10位需*1000，时间戳为13位的话不需乘1000
+      var Y = date.getFullYear() + '-'
       var M =
         (date.getMonth() + 1 < 10
-          ? "0" + (date.getMonth() + 1)
-          : date.getMonth() + 1) + "-";
-      var D = date.getDate() + " ";
-      return Y + M + D;
+          ? '0' + (date.getMonth() + 1)
+          : date.getMonth() + 1) + '-'
+      var D = date.getDate() + ' '
+      return Y + M + D
     },
 
     // 每页大小改变时触发
     handleSizeChange(val) {
-      this.pageSize = val;
-      this.getContract();
+      this.pageSize = val
+      this.getContract()
     },
     // 当前页码改变时触发
     handleCurrentChange(val) {
-      this.startPage = val;
-      this.getContract();
+      this.startPage = val
+      this.getContract()
     },
 
     // toueditor() {
@@ -421,59 +442,59 @@ export default {
         showClose: ifshow,
         message: msg,
         type: type
-      });
+      })
     }
   },
 
   mounted() {
-    if (this.$cookie.get("user") !== null) {
-      this.usr = JSON.parse(this.$cookie.get("user"));
+    if (this.$cookie.get('user') !== null) {
+      this.usr = JSON.parse(this.$cookie.get('user'))
     }
 
-    this.memberId = this.usr.memberId;
-    this.getContract();
-    this.getCustomerList();
+    this.memberId = this.usr.memberId
+    this.getContract()
+    this.getCustomerList()
   },
   computed: {
     inputdisable: function() {
       if (
-        this.ruleForm.contractstatus === "意向合同" ||
-        this.ruleForm.contractstatus === ""
+        this.ruleForm.contractstatus === '意向合同' ||
+        this.ruleForm.contractstatus === ''
       ) {
-        return false;
+        return false
       } else {
-        return true;
+        return true
       }
     },
     nowLength: function() {
       if (Number(this.currentLength) - this.maxLength >= 0) {
-        this.$refs.myTextEditor.quill.root.contentEditable = false;
-        let currentText = this.$refs.myTextEditor.quill.root.innerText;
+        this.$refs.myTextEditor.quill.root.contentEditable = false
+        let currentText = this.$refs.myTextEditor.quill.root.innerText
 
-        this.content = currentText.substring(0, this.maxLength);
-        this.$refs.myTextEditor.quill.root.innerText = this.content;
+        this.content = currentText.substring(0, this.maxLength)
+        this.$refs.myTextEditor.quill.root.innerText = this.content
       }
 
-      return this.currentLength;
+      return this.currentLength
     },
     SurplusLength: function() {
       // 计算属性 获得当前输入字符长度
-      let num = this.maxLength - Number(this.currentLength);
+      let num = this.maxLength - Number(this.currentLength)
       if (num > 0) {
-        return num;
+        return num
       } else {
-        return 0;
+        return 0
       }
     },
 
     addShow() {
-      return this.getHasRule("生成现货销售合同");
+      return this.getHasRule('生成现货销售合同')
     },
     findShow() {
-      return this.getHasRule("查询库存");
+      return this.getHasRule('查询库存')
     }
   }
-};
+}
 </script>
 
 <style>

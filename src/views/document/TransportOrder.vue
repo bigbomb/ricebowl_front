@@ -63,8 +63,8 @@
         <el-table-column prop="contractno" label="销售合同号" width="200" sortable></el-table-column>
         <el-table-column prop="deliveryno" label="提单号" width="200" sortable></el-table-column>
         <el-table-column prop="carrier" label="承运方" width="120" sortable></el-table-column>
-        <el-table-column prop="transporttotalfee" label="运费" width="100" sortable></el-table-column>
-        <el-table-column prop="transportweight" label="重量" width="160" sortable></el-table-column>
+        <el-table-column prop="transporttotalfee" label="运费(元)" width="100" sortable></el-table-column>
+        <el-table-column prop="transportweight" label="重量(吨)" width="160" sortable></el-table-column>
         <el-table-column prop="vehiclenumber" label="提货车号" width="120" sortable></el-table-column>
         <el-table-column prop="transportaddress" label="到货地址" width="500" sortable></el-table-column>
         <!-- <el-table-column prop="warehouse" label="提货仓库" width="100" sortable></el-table-column> -->

@@ -10,7 +10,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-    "@form-create/element-ui": "^1.0.5",
+    "@form-create/element-ui": "^1.0.15",
     "async-validator": "^1.8.2",
     "axios": ">=0.18.1",
     "cnpm": "^6.1.0",

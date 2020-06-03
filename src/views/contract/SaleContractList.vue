@@ -108,19 +108,19 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="contractweight" label="合同重量" sortable width="150"></el-table-column>
-        <el-table-column prop="actualweight" label="客户结算重量" sortable width="150"></el-table-column>
+        <el-table-column prop="contractweight" label="合同重量(吨)" sortable width="160"></el-table-column>
+        <el-table-column prop="actualweight" label="客户结算重量(吨)" sortable width="160"></el-table-column>
 
-        <el-table-column prop="contractamount" label="合同金额" sortable width="150"></el-table-column>
-        <el-table-column prop="actualamount" label="客户结算金额" sortable width="150"></el-table-column>
+        <el-table-column prop="contractamount" label="合同金额(元)" sortable width="160"></el-table-column>
+        <el-table-column prop="actualamount" label="客户结算金额(元)" sortable width="160"></el-table-column>
 
         <el-table-column prop="payment" label="付款方式" sortable width="150"></el-table-column>
 
         <el-table-column prop="settlement" label="结算方式" sortable width="150"></el-table-column>
 
-        <el-table-column prop="transporttype" label="运输方式" sortable width="150"></el-table-column>
-        <el-table-column prop="createBy" label="创建人" sortable width="150"></el-table-column>
-        <el-table-column prop="verifyBy" label="审核人" sortable width="150"></el-table-column>
+        <el-table-column prop="transporttype" label="运输方式" sortable width="100"></el-table-column>
+        <el-table-column prop="createBy" label="创建人" sortable width="100"></el-table-column>
+        <el-table-column prop="verifyBy" label="审核人" sortable width="100"></el-table-column>
         <el-table-column prop="crt" label="创建日期" sortable width="180">
           <template slot-scope="scope">
             <span v-show="scope.row.crt!=null">{{scope.row.crt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
@@ -369,7 +369,7 @@
                 size="mini"
                 @click="addRow()"
               >+</el-button>
-              <el-button size="mini" @click="refreshRow()">刷新</el-button>
+              <!-- <el-button size="mini" @click="refreshRow()">刷新</el-button> -->
               <el-table
                 style="width:1100px"
                 :data="salegridData"
@@ -761,7 +761,7 @@
             </el-col>
             <el-form-item label="合同明细">
               <!-- <el-button size="mini" @click="addTdJgRow()">+</el-button> -->
-              <el-button size="mini" @click="refreshRow()">刷新</el-button>
+              <!-- <el-button size="mini" @click="refreshRow()">刷新</el-button> -->
               <el-table
                 style="width:1100px"
                 :data="contractGridData"
@@ -945,6 +945,7 @@
             </el-form-item>
 
             <el-form-item label="商品明细">
+              <el-button size="mini" @click="refreshRow('jg')">重置</el-button>
               <el-table
                 style="width:1100px"
                 :data="jggridData"
@@ -1211,7 +1212,7 @@
             </el-col>
             <el-form-item label="合同明细">
               <!-- <el-button size="mini" @click="addTdJgRow()">+</el-button> -->
-              <el-button size="mini" @click="refreshRow()">刷新</el-button>
+
               <el-table
                 style="width:1100px"
                 :data="contractGridData"
@@ -1397,6 +1398,7 @@
             <el-form-item label="商品明细">
               <!-- <el-button size="mini" @click="addTdJgRow()">+</el-button>
               <el-button size="mini" @click="refreshRow()">刷新</el-button>-->
+              <el-button size="mini" @click="refreshRow('td')">重置</el-button>
               <el-table
                 style="width:1100px"
                 :data="tdgridData"
@@ -1725,6 +1727,12 @@
             <p>开户银行 ：{{informationdata.bankname}}</p>
             <p>账 号 ：{{informationdata.bankaccount}}</p>
             <p>税 号 :{{informationdata.taxnumber}}</p>
+            <img
+              v-if="saleContractbox.verifyBy"
+              :src="informationdata.contractsealurl"
+              style="position:relative;
+    top:-300px;left:80px;width:175px;height:175px;"
+            />
           </el-col>
         </div>
         <div slot="footer" class="dialog-footer">
@@ -1933,7 +1941,7 @@
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="scope">
                     <el-button
-                      @click.native.prevent="chooseThis(scope.row)"
+                      @click.native.prevent="chooseThis(scope.row,scope.$index)"
                       type="text"
                       size="small"
                     >选取</el-button>
@@ -2153,6 +2161,7 @@ export default {
       statusTab: "",
       chooseRow: "",
       chooseRowIndex: "",
+      tempchoose: [],
       freightoptions: [
         {
           value: 1,
@@ -2699,11 +2708,18 @@ export default {
           console.log(err);
         });
     },
-    refreshRow() {
-      this.tdgridData = [];
-      for (var i in this.gridDataCopy) {
-        this.tdgridData.push(this.gridDataCopy[i]);
+    refreshRow(status) {
+      if (status == "td") {
+        this.tdgridData = [];
+        this.tempchoose = [];
+      } else if ((status = "jg")) {
+        this.tempchoose = [];
+        this.jggridData = [];
       }
+
+      // for (var i in this.gridDataCopy) {
+      //   this.tdgridData.push(this.gridDataCopy[i]);
+      // }
     },
     copyRow(row) {
       let d = {
@@ -2978,7 +2994,7 @@ export default {
         }
       });
     },
-    chooseThis(row) {
+    chooseThis(row, index) {
       let d = {};
       if (this.ordertype == "td") {
         if (row.status == "加工完成") {
@@ -3004,7 +3020,7 @@ export default {
             }
             this.selectfinalweight = this.selectfinalweight + itemdata;
           }
-          // this.tdgridData.splice(this.chooseRowIndex, 1);
+
           d = {
             id: this.chooseRow.id,
             deliverystatus: this.chooseRow.deliverystatus,
@@ -3025,11 +3041,14 @@ export default {
             remark: this.chooseRow.remark,
             quality: this.chooseRow.quality
           };
+
           this.$set(this.$refs.tdgridTable.tableData, this.chooseRowIndex, d);
           // this.tdgridData.push(d);
           setTimeout(() => {
             this.$refs.tdgridTable.setCurrentRow(d);
           }, 10);
+          this.stockGridData.splice(index, 1);
+          this.tempchoose.push(row.id);
         } else {
           // this.tdgridData.splice(this.chooseRowIndex, 1);
           d = {
@@ -3052,11 +3071,14 @@ export default {
             quality: this.chooseRow.quality
           };
         }
+
         this.$set(this.$refs.tdgridTable.tableData, this.chooseRowIndex, d);
         // this.tdgridData.push(d);
         setTimeout(() => {
           this.$refs.tdgridTable.setCurrentRow(d);
         }, 10);
+        this.stockGridData.splice(index, 1);
+        this.tempchoose.push(row.id);
         // }
       } else if (this.ordertype == "jg") {
         // this.jggridData.splice(this.chooseRowIndex, 1);
@@ -3078,11 +3100,14 @@ export default {
           remark: this.chooseRow.remark,
           quality: this.chooseRow.quality
         };
+
         this.$set(this.$refs.jggridTable.tableData, this.chooseRowIndex, d);
         // this.jggridData.push(d);
         setTimeout(() => {
           this.$refs.jggridTable.setCurrentRow(d);
         }, 10);
+        this.stockGridData.splice(index, 1);
+        this.tempchoose.push(row.id);
       }
       this.stockVisible = false;
       // this.chooseRow.actualweight = 2332;
@@ -3297,6 +3322,13 @@ export default {
     },
 
     importFrom(index, row, orderType) {
+      // if (orderType === "jg") {
+      //   params.append("customerid", _this.jgruleForm.customerId);
+      // } else if (orderType === "td") {
+      //   params.append("customerid", _this.tdruleForm.customerid);
+      // }
+
+      // params.append("warehousename", row.warehousename);
       let _this = this;
       _this.listLoading = true;
       _this.jgdetailData = [];
@@ -3304,6 +3336,7 @@ export default {
       let params = new FormData();
       _this.chooseRow = row;
       _this.chooseRowIndex = index;
+
       params.append("startPage", _this.startPage);
       params.append("pageSize", _this.pageSize);
       params.append("keyword", _this.filters.keyword);
@@ -3313,29 +3346,28 @@ export default {
       params.append("productfactory", row.productfactory);
       params.append("productmark", row.productmark);
       params.append("stockstatus", orderType);
-      // if (orderType === "jg") {
-      //   params.append("customerid", _this.jgruleForm.customerId);
-      // } else if (orderType === "td") {
-      //   params.append("customerid", _this.tdruleForm.customerid);
-      // }
-
-      // params.append("warehousename", row.warehousename);
-      this.axios
-        .post(process.env.API_ROOT + "/WareHouseApi/v1/findItemByPage", params)
-        .then(response => {
-          if (!response.data) {
+      if (this.tempchoose.length == 0) {
+        _this.axios
+          .post(
+            process.env.API_ROOT + "/WareHouseApi/v1/findItemByPage",
+            params
+          )
+          .then(response => {
+            if (!response.data) {
+              _this.listLoading = false;
+              return;
+            }
+            if (response.data && response.data.status === 200) {
+              _this.stockGridData = response.data.data;
+              _this.total = response.data.total;
+            } else {
+              _this.message(true, response.data.msg, "error");
+              _this.stockGridData = [];
+            }
             _this.listLoading = false;
-            return;
-          }
-          if (response.data && response.data.status === 200) {
-            _this.stockGridData = response.data.data;
-            _this.total = response.data.total;
-          } else {
-            _this.message(true, response.data.msg, "error");
-            _this.stockGridData = [];
-          }
-          _this.listLoading = false;
-        });
+          });
+      }
+
       this.stockVisible = true;
     },
 
@@ -4732,6 +4764,7 @@ export default {
       this.findProductFactory();
       this.findProductMark();
       this.findSaleContractWarehouse();
+      this.tempchoose = [];
       this.tdruleForm.contractno = row.contractno;
       this.tdruleForm.id = row.id;
       this.tdruleForm.customername = row.customername;
@@ -4797,6 +4830,7 @@ export default {
       this.jgruleForm.id = row.id;
       this.jgruleForm.customername = row.customername;
       this.jgruleForm.customerId = row.customerid;
+      this.tempchoose = [];
       let params = new FormData();
       params.append("keyword", row.contractno);
       params.append("memberId", this.memberId);

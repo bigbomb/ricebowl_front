@@ -63,7 +63,7 @@
         <el-table-column prop="processtype" label="加工类型" width="100" sortable></el-table-column>
         <el-table-column prop="warehouseName" label="加工厂名称" width="200" sortable></el-table-column>
         <el-table-column prop="warehouseId" label="加工厂id" width="200" v-if="isshow" sortable></el-table-column>
-        <el-table-column prop="processfee" label="加工费" width="100" sortable></el-table-column>
+        <el-table-column prop="processfee" label="加工费(元)" width="120" sortable></el-table-column>
         <el-table-column prop="remark" label="加工备注" width="300" sortable>
           <template slot-scope="scope">
             <div v-html="scope.row.remark">{{scope.row.remark}}</div>

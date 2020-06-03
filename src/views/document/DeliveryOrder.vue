@@ -74,9 +74,9 @@
         <el-table-column prop="warehouseaddress" label="仓库地址" v-if="isshow" width="100" sortable></el-table-column>
         <el-table-column prop="warehousephone" label="仓库电话" v-if="isshow" width="100" sortable></el-table-column>
         <el-table-column prop="warehousefax" label="仓库传真" v-if="isshow" width="100" sortable></el-table-column>
-        <el-table-column prop="weight" label="提库重量" width="100" sortable></el-table-column>
-        <el-table-column prop="finalweight" label="客户结算重量" width="150" sortable></el-table-column>
-        <el-table-column prop="liftingfee" label="出库费" width="100" sortable></el-table-column>
+        <el-table-column prop="weight" label="提库重量(吨)" width="130" sortable></el-table-column>
+        <el-table-column prop="finalweight" label="客户结算重量(吨)" width="160" sortable></el-table-column>
+        <el-table-column prop="liftingfee" label="出库费(元)" width="120" sortable></el-table-column>
         <el-table-column prop="vehiclenumber" label="委托车辆号" width="400" sortable></el-table-column>
         <el-table-column prop="deliverymethod" label="提货方式" width="100" sortable></el-table-column>
         <el-table-column prop="remark" label="提单备注" width="400" sortable>
