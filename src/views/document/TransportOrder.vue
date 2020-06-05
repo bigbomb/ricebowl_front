@@ -79,7 +79,7 @@
           <template slot-scope="scope">
             <el-button v-if="printShow" type="text" size="small" @click="printView(scope.row)">打印发货单</el-button>
             <el-button
-              v-if="printShow"
+              v-if="submitShow"
               type="text"
               size="small"
               @click="transportorderedit(scope.row)"
@@ -922,7 +922,7 @@ export default {
         )
         .then(response => {
           if (response.data && response.data.status === 200) {
-            this.tableData1 = response.data.data;
+            this.tableData1 = response.data.data.transportOrderDetailDtoList;
             this.total = response.data.total;
           } else {
             this.message(true, response.data.msg, "error");
@@ -1043,13 +1043,16 @@ export default {
   },
   computed: {
     findShow() {
-      return this.getHasRule("查询提单");
+      return this.getHasRule("查询发货单");
     },
     delShow() {
-      return this.getHasRule("删除提单");
+      return this.getHasRule("删除发货单");
     },
     printShow() {
-      return this.getHasRule("提单打印");
+      return this.getHasRule("打印发货单");
+    },
+    submitShow() {
+      return this.getHasRule("结算确认");
     }
   }
 };

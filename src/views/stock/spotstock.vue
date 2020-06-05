@@ -643,6 +643,7 @@
                 <el-table-column property="weight" label="重量(吨)" width="120">
                   <template slot-scope="scope">
                     <!-- <el-input size="mini" v-if="scope.row.status=='待审核' ||scope.row.status==undefined " v-model="scope.row.weight" placeholder="请输入内容"></el-input> -->
+                    <el-input size="mini" v-model="scope.row.weight" placeholder="请输入内容"></el-input>
                     <span>{{scope.row.weight}}</span>
                   </template>
                 </el-table-column>
@@ -1183,6 +1184,7 @@ export default {
       let _this = this;
       let ids = [];
       let nums = [];
+      let weights = [];
       let productids = [];
       if (!_this.ruleForm.customerId) {
         _this.message(true, "请选择已存在的客户！", "error");
@@ -1205,16 +1207,33 @@ export default {
             "error"
           );
           return;
+        } else if (
+          !/^(([^0][0-9]+|0)\.([0-9]{1,5})$)|^([^0][0-9]+|0)$/.test(c.weight)
+        ) {
+          _this.message(true, "重量只能为正整数或者最多带5位小数", "error");
+          return;
+        } else if (c.weight.length > 11) {
+          _this.message(true, "重量不能超过11个字符", "error");
+          return;
+        } else if (c.weight > _this.gridDataCopy[index].weight) {
+          _this.message(
+            true,
+            "重量不能超过" + _this.gridDataCopy[index].weight,
+            "error"
+          );
+          return;
         } else {
           productids.push(c.productid);
           ids.push(c.stockid);
           nums.push(c.num);
+          weights.push(c.weight);
         }
       });
       if (ids.length === _this.gridData.length) {
         let params = new FormData();
         params.append("ids", ids);
         params.append("nums", nums);
+        params.append("weights", weights);
         params.append("customerId", _this.ruleForm.customerId);
         params.append("customerName", _this.ruleForm.addcustomername);
         this.axios
@@ -1245,6 +1264,7 @@ export default {
       let productids = [];
       let ids = [];
       let nums = [];
+      let weights = [];
       if (_this.addstock.length === 0) {
         this.message(true, "请选择需要解锁的货", "error");
         return;
@@ -1253,11 +1273,13 @@ export default {
         productids.push(c.productid);
         ids.push(c.stockid);
         nums.push(c.num);
+        weights.push(c.weight);
       });
       let params = new FormData();
       params.append("productids", productids);
       params.append("ids", ids);
       params.append("nums", nums);
+      params.append("weights", weights);
       this.axios
         .post(process.env.API_ROOT + "/WareHouseApi/v1/unlock", params)
         .then(response => {

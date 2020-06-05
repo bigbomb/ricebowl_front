@@ -199,8 +199,10 @@
             <el-col :span="24">
               <el-form-item label="附加条款" prop="remark">
                 <el-input
-                  :rows="3"
-                  class="inputwidth"
+                  :rows="10"
+                  style="width:500px"
+                  maxlength="200"
+                  show-word-limit
                   type="textarea"
                   placeholder="请输入备注"
                   auto-complete="off"

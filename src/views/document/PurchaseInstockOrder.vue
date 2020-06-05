@@ -119,7 +119,7 @@
               <div>
                 <el-button
                   type="text"
-                  v-if="scope.row.purchasestatus==='已审核'"
+                  v-if="detailModi&&scope.row.purchasestatus==='已审核'"
                   size="small"
                   @click="editShow(scope.row,'2')"
                 >变更</el-button>
@@ -229,10 +229,12 @@
             <el-col :span="24">
               <el-form-item label="附加条款" prop="remark">
                 <el-input
-                  :rows="8"
-                  class="inputwidth"
+                  :rows="10"
+                  style="width:500px"
+                  maxlength="200"
+                  show-word-limit
                   type="textarea"
-                  placeholder="请输入备注"
+                  placeholder="请填写附加条款"
                   auto-complete="off"
                   v-model="supplyerForm.remark"
                 ></el-input>
@@ -1552,6 +1554,9 @@ export default {
             for (var i in tabledata) {
               this.productGridData.push(tabledata[i]);
             }
+            setTimeout(() => {
+              this.$refs.gridTable.setCurrentRow(this.productGridData[0]);
+            }, 10);
             this.message(true, response.data.msg, "success");
           } else {
             this.message(true, response.data.msg, "error");
@@ -1803,7 +1808,10 @@ export default {
       return this.getHasRule("查询采购入库单");
     },
     detailShow() {
-      return this.getHasRule("采购入库单变更");
+      return this.getHasRule("编辑采购入库单");
+    },
+    detailModi() {
+      return this.getHasRule("变更采购入库单");
     },
     verifyShow() {
       return this.getHasRule("审核采购入库单");

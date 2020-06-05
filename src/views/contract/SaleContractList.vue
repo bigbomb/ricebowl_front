@@ -1,5 +1,5 @@
 <template>
-  <el-row id="salecontractList">
+  <el-row>
     <!--工具条-->
     <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
       <el-form :inline="true" :model="filters">
@@ -230,6 +230,7 @@
         :close-on-click-modal="false"
         :title="thistitle"
         :visible.sync="dialogFormVisible"
+        :append-to-body="true"
         width="1250px"
       >
         <div>
@@ -250,7 +251,7 @@
                   :fetch-suggestions="querySearchAsync"
                   placeholder="请输入客户名称"
                   @select="handleSelectCustomer"
-                  class="inputwidth"
+                  style="width:300px"
                 ></el-autocomplete>
               </el-form-item>
             </el-col>
@@ -292,7 +293,7 @@
             <el-col :span="12">
               <el-form-item label="结算方式" prop="addsettlement">
                 <el-select
-                  class="settleinputwidth"
+                  class="inputwidth"
                   v-model="ruleForm.addsettlement"
                   :disabled="inputdisable"
                   placeholder="请选择"
@@ -353,8 +354,10 @@
             <el-col :span="12">
               <el-form-item label="附加条款" prop="remark">
                 <el-input
-                  :rows="3"
-                  class="inputwidth"
+                  :rows="10"
+                  style="width:500px"
+                  maxlength="200"
+                  show-word-limit
                   :disabled="inputdisable"
                   type="textarea"
                   placeholder="请输入备注"
@@ -638,10 +641,12 @@
 
     <el-col :span="2">
       <el-dialog
+        id="salecontractList"
         :close-on-click-modal="false"
         title="加工单"
         :visible.sync="jgdialogFormVisible"
         width="1250px"
+        :append-to-body="true"
       >
         <div>
           <el-form
@@ -708,10 +713,10 @@
             </el-col>
 
             <el-col :span="12">
-              <el-form-item label="加工费" prop="processfee">
+              <el-form-item label="加工费/吨" prop="processfee">
                 <el-input
                   type="text"
-                  placeholder="请输入加工费"
+                  placeholder="请输入加工费单价"
                   auto-complete="off"
                   v-model="jgruleForm.processfee"
                 ></el-input>
@@ -872,7 +877,7 @@
                     <span>{{scope.row.num}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="warehousename" label="所在仓库" width="160">
+                <!-- <el-table-column property="warehousename" label="所在仓库" width="160">
                   <template slot-scope="scope">
                     <el-autocomplete
                       class="autoInputwidth"
@@ -891,7 +896,7 @@
                     </el-autocomplete>
                     <span>{{scope.row.warehousename}}</span>
                   </template>
-                </el-table-column>
+                </el-table-column>-->
 
                 <el-table-column property="quality" label="品级" width="150">
                   <template slot-scope="scope">
@@ -909,7 +914,7 @@
                     <span>{{scope.row.quality}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="remark" label="备注" width="300">
+                <!-- <el-table-column property="remark" label="备注" width="300">
                   <template slot-scope="scope">
                     <el-input
                       size="mini"
@@ -919,7 +924,7 @@
                     ></el-input>
                     <span>{{scope.row.remark}}</span>
                   </template>
-                </el-table-column>
+                </el-table-column>-->
                 <el-table-column fixed="right" label="操作" width="120">
                   <template slot-scope="scope">
                     <!-- <el-button
@@ -1087,6 +1092,8 @@
         title="提单"
         :visible.sync="tddialogFormVisible"
         width="1250px"
+        :append-to-body="true"
+        id="salecontractList"
       >
         <div>
           <el-form
@@ -1573,7 +1580,12 @@
     </el-col>
 
     <el-col :span="2">
-      <el-dialog title="合同条款" :visible.sync="termFormVisible" :close-on-click-modal="false">
+      <el-dialog
+        title="合同条款"
+        :visible.sync="termFormVisible"
+        :close-on-click-modal="false"
+        :append-to-body="true"
+      >
         <div>
           <el-form
             ref="termRuleForm"
@@ -1743,7 +1755,7 @@
       </el-dialog>
     </el-col>
     <el-col :span="2">
-      <el-dialog title="仓库管理" :visible.sync="warehouseVisible">
+      <el-dialog title="仓库管理" :visible.sync="warehouseVisible" :append-to-body="true">
         <div>
           <el-button size="mini" @click="addwarehouseRow()">+</el-button>
           <el-table
@@ -1800,7 +1812,7 @@
       </el-dialog>
     </el-col>
     <el-col :span="2">
-      <el-dialog title="承运方管理" :visible.sync="carrierVisible" width="880px">
+      <el-dialog title="承运方管理" :visible.sync="carrierVisible" width="880px" :append-to-body="true">
         <div>
           <el-button size="mini" @click="addcarrierRow()">+</el-button>
           <el-table
@@ -1850,7 +1862,7 @@
       </el-dialog>
     </el-col>
     <el-col :span="2">
-      <el-dialog title="库存管理" :visible.sync="stockVisible">
+      <el-dialog title="库存管理" :visible.sync="stockVisible" :append-to-body="true">
         <div>
           <el-form>
             <!-- <el-form>
@@ -2924,8 +2936,12 @@ export default {
               this.$message("重量不能为空");
               return;
             }
-            if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.weight)) {
-              this.$message("重量只能为数字");
+            if (
+              !/^(([^0][0-9]+|0)\.([0-9]{1,5})$)|^([^0][0-9]+|0)$/.test(
+                item.weight
+              )
+            ) {
+              this.$message("重量只能为正整数或者最多带5位小数");
               return;
             }
             if (item.weight.length > 9) {
@@ -3333,6 +3349,7 @@ export default {
       _this.listLoading = true;
       _this.jgdetailData = [];
       _this.ordertype = orderType;
+
       let params = new FormData();
       _this.chooseRow = row;
       _this.chooseRowIndex = index;
@@ -3341,6 +3358,11 @@ export default {
       params.append("pageSize", _this.pageSize);
       params.append("keyword", _this.filters.keyword);
       params.append("memberid", _this.memberId);
+      if (orderType === "jg") {
+        params.append("warehousename", _this.jgruleForm.warehouseName);
+      } else if (orderType === "td") {
+        params.append("warehousename", _this.tdruleForm.warehouseName);
+      }
       params.append("productname", row.productname);
       params.append("productspec", row.productspec);
       params.append("productfactory", row.productfactory);
@@ -3725,6 +3747,7 @@ export default {
     // 显示添加合同窗口
     showDialogForm(t) {
       this.percentShow = false;
+      this.dialogFormVisible = true;
       if (t == 0) {
         this.thistitle = "新增临调销售合同";
         this.contracttype = "0";
@@ -3733,7 +3756,6 @@ export default {
         this.contracttype = "1";
       }
 
-      this.dialogFormVisible = true;
       this.ruleForm.contractstatus = "";
       this.ruleForm.id = "";
       this.ruleForm.addcontractno = "";
@@ -4276,7 +4298,6 @@ export default {
             this.salegridData = [];
             var tabledata = response.data.data;
             for (var i in tabledata) {
-              console.log("tabledata" + typeof tabledata[i]);
               tabledata[i].stockoutfee = 0;
               tabledata[i].shorttransportfee = 0;
               tabledata[i].price = "";
@@ -4724,7 +4745,6 @@ export default {
         });
         this.multipleSelection = val;
       }
-      console.log("this.selectedIdss" + this.selectedIdss);
     },
     editTerm(row) {
       this.termFormVisible = true;
@@ -5360,7 +5380,6 @@ export default {
     },
     saveData() {
       this.$f.validate(this.successValidate, this.errorValidate);
-      console.log(this.submitData);
     },
     successValidate(bool = false) {
       !bool ? this.$f.submit() : "";
@@ -5584,7 +5603,7 @@ export default {
   text-align: left;
 }
 #salecontractList .inputwidth {
-  width: 320px;
+  width: 200px;
 }
 #salecontractList .selectwidth {
   width: 280px;
