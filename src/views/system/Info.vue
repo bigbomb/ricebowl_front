@@ -161,7 +161,6 @@ export default {
           params.append("id", this.corpRuleForm.id);
 
           params.append("picFile", this.fileLists[0]);
-          debugger;
           this.axios
             .post(process.env.API_ROOT + "/SysApi/v1/saveCorpInfo", params, {
               headers: {
@@ -209,7 +208,6 @@ export default {
       const isPNG = file.type === "image/png";
       const isBMP = file.type === "image/jpg";
       const isLt2M = file.size / 1024 / 1024 < 2;
-      debugger;
       if (!isJPG && !isGIF && !isPNG && !isBMP) {
         this.$message({
           message: "上传图片必须是JPG/GIF/PNG/JPEG 格式!",

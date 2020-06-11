@@ -64,8 +64,9 @@
         <el-table-column prop="deliveryno" label="提单号" width="200" sortable></el-table-column>
         <el-table-column prop="carrier" label="承运方" width="120" sortable></el-table-column>
         <el-table-column prop="transporttotalfee" label="运费(元)" width="100" sortable></el-table-column>
-        <el-table-column prop="transportweight" label="重量(吨)" width="160" sortable></el-table-column>
-        <el-table-column prop="vehiclenumber" label="提货车号" width="120" sortable></el-table-column>
+        <el-table-column prop="transportactualweight" label="运输重量(吨)" width="160" sortable></el-table-column>
+        <el-table-column prop="transportfinalweight" label="客户确认重量(吨)" width="160" sortable></el-table-column>
+        <!-- <el-table-column prop="vehiclenumber" label="提货车号" width="120" sortable></el-table-column> -->
         <el-table-column prop="transportaddress" label="到货地址" width="500" sortable></el-table-column>
         <!-- <el-table-column prop="warehouse" label="提货仓库" width="100" sortable></el-table-column> -->
         <el-table-column prop="crt" label="创建时间" sortable width="160">
@@ -523,6 +524,8 @@ export default {
       memberId: "",
       billVisible: false, // 提单
       exbillVisible: false,
+      totalfinalWeight: 0,
+      totalactualWeight: 0,
       transportFormVisible: false,
       dateObj: {
         startTime: "",
@@ -734,7 +737,8 @@ export default {
       params.append("id", _this.tpruleFormtransport.id);
       params.append("transportfee", _this.tpruleFormtransport.transportfee);
       params.append("feeoption", _this.tpruleFormtransport.freightoption);
-      params.append("actualTotalWeight", _this.totalWeight);
+      params.append("transportfinalweight", _this.totalfinalWeight);
+      params.append("transportactualweight", _this.totalactualWeight);
       params.append(
         "transportOrderDetail",
         JSON.stringify(_this.transportgridData)
@@ -857,7 +861,7 @@ export default {
         } else if (index === 3) {
           sums[index] = "";
           return;
-        } else if (index === 11) {
+        } else if (index === 10) {
           sums[index] = "";
           return;
         } else if (index === 12) {
@@ -875,12 +879,15 @@ export default {
             }
           }, 0);
           if (index === 4) {
-            sums[index] = sums[index].toFixed(3);
+            sums[index] = sums[index].toFixed(5);
+            this.totalactualWeight = sums[index];
             sums[index] += "吨";
           } else if (index === 5) {
-            sums[index] = sums[index].toFixed(3);
-            this.totalWeight = sums[index];
+            sums[index] = sums[index].toFixed(5);
+            this.totalfinalWeight = sums[index];
             sums[index] += "吨";
+          } else if (index === 7) {
+            sums[index] += "";
           } else {
             sums[index] = sums[index].toFixed(2);
             this.totalAmount = sums[index];

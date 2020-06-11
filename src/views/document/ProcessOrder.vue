@@ -249,27 +249,27 @@
                 highlight-current-row
                 @current-change="handleCurrentChange1"
               >
-                <el-table-column property="stockid" label="库存id" v-if="isshow" width="200">
+                <el-table-column property="stockid" label="库存id" v-if="isshow" width="100">
                   <template slot-scope="scope">
                     <span>{{scope.row.stockid}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="productname" label="名称" width="200">
+                <el-table-column property="productname" label="名称" width="120">
                   <template slot-scope="scope">
                     <span>{{scope.row.productname}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="productspec" label="规格" width="200">
+                <el-table-column property="productspec" label="规格" width="120">
                   <template slot-scope="scope">
                     <span>{{scope.row.productspec}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="productfactory" label="钢厂" width="160">
+                <el-table-column property="productfactory" label="钢厂" width="120">
                   <template slot-scope="scope">
                     <span>{{scope.row.productfactory}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="productmark" label="材质" width="160">
+                <el-table-column property="productmark" label="材质" width="120">
                   <template slot-scope="scope">
                     <span>{{scope.row.productmark}}</span>
                   </template>
@@ -297,6 +297,11 @@
                 <el-table-column property="warehousename" label="所在仓库" width="100">
                   <template slot-scope="scope">
                     <span>{{scope.row.warehousename}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="remark" label="备注" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.remark}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column
@@ -570,6 +575,7 @@ export default {
         productspec: row.productspec,
         productfactory: row.productfactory,
         productmark: row.productmark,
+        remark: row.remark,
         price: row.price,
         warehousename: row.warehousename,
         actualweight: row.actualweight,
@@ -773,6 +779,7 @@ export default {
 
           if (response.data.status === 200) {
             this.message(true, response.data.msg, "success");
+            this.getProcessOrders();
           } else {
             this.message(true, response.data.msg, "error");
           }
@@ -933,6 +940,7 @@ export default {
         productfactory: row.productfactory,
         productmark: row.productmark,
         warehousename: row.warehousename,
+        remark: row.remark,
         price: row.price,
         actualweight: 0,
         unit: row.unit,

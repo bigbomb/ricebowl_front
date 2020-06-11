@@ -1207,9 +1207,7 @@ export default {
             "error"
           );
           return;
-        } else if (
-          !/^(([^0][0-9]+|0)\.([0-9]{1,5})$)|^([^0][0-9]+|0)$/.test(c.weight)
-        ) {
+        } else if (!/^[+-]?((\d*(\.\d{1,5})$)|(\d+$))/.test(c.weight)) {
           _this.message(true, "重量只能为正整数或者最多带5位小数", "error");
           return;
         } else if (c.weight.length > 11) {

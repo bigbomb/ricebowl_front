@@ -269,7 +269,6 @@
                     <el-autocomplete
                       class="autoInputwidth"
                       v-model="scope.row.productname"
-                      v-if="scope.row.status!=='在库'||scope.row.status==undefined"
                       :fetch-suggestions="queryProductNameSearchAsync"
                       placeholder="请输入商品名称"
                     >
@@ -290,7 +289,6 @@
                     <el-autocomplete
                       class="autoInputwidth"
                       v-model="scope.row.productspec"
-                      v-if="scope.row.status!=='在库'||scope.row.status==undefined"
                       :fetch-suggestions="queryProductspecSearchAsync"
                       placeholder="请输入商品规格"
                     >
@@ -317,7 +315,6 @@
                     <el-autocomplete
                       class="autoInputwidth"
                       v-model="scope.row.productfactory"
-                      v-if="scope.row.status!=='在库'||scope.row.status==undefined"
                       :fetch-suggestions="queryProductfactorySearchAsync"
                       placeholder="请输入钢厂"
                     >
@@ -338,7 +335,6 @@
                     <el-autocomplete
                       class="autoInputwidth"
                       v-model="scope.row.productmark"
-                      v-if="scope.row.status!=='在库'||scope.row.status==undefined"
                       :fetch-suggestions="queryProductmarkSearchAsync"
                       placeholder="请输入商品材质"
                     >
@@ -361,12 +357,7 @@
                 </el-table-column>
                 <el-table-column property="price" label="单价(元)" width="100">
                   <template slot-scope="scope">
-                    <el-input
-                      size="mini"
-                      v-if="scope.row.status!=='在库'"
-                      v-model="scope.row.price"
-                      placeholder="请输入内容"
-                    ></el-input>
+                    <el-input size="mini" v-model="scope.row.price" placeholder="请输入内容"></el-input>
                     <span>{{scope.row.price}}</span>
                   </template>
                 </el-table-column>
@@ -401,7 +392,6 @@
                     <el-autocomplete
                       class="autoInputwidth"
                       v-model="scope.row.warehousename"
-                      v-if="scope.row.status!=='在库'||scope.row.status==undefined"
                       :fetch-suggestions="querySaleContractWarehouseSearchAsync"
                       placeholder="请输入仓库名称"
                     >
@@ -435,7 +425,6 @@
                   <template slot-scope="scope">
                     <el-select
                       size="mini"
-                      v-if="scope.row.status!=='在库'"
                       class="inputwidth"
                       v-model="scope.row.quality"
                       placeholder="请选择"
@@ -649,7 +638,8 @@ export default {
       dateObj: {
         startTime: "",
         endTime: ""
-      }
+      },
+      saleContractWarehouseList: []
     };
   },
 
@@ -1534,6 +1524,7 @@ export default {
       this.findProductSpec();
       this.findProductFactory();
       this.findProductMark();
+      this.findSaleContractWarehouse();
       let params = new FormData();
       params.append("keyword", row.contractno);
       params.append("memberId", this.memberId);

@@ -27,8 +27,7 @@
             class="el-icon-search"
             :loading="selLoading"
             v-on:click="getContract"
-            >查询</el-button
-          >
+          >查询</el-button>
         </el-form-item>
       </el-form>
     </el-col>
@@ -48,111 +47,47 @@
         element-loading-text="拼命加载中"
         style="width: 100%;"
       >
-        <el-table-column
-          prop="id"
-          label="id"
-          sortable
-          fixed="left"
-          width="80"
-        ></el-table-column>
-        <el-table-column
-          prop="purchasestatus"
-          label="采购单状态"
-          sortable
-          fixed="left"
-          width="120"
-        ></el-table-column>
-        <el-table-column
-          prop="memberid"
-          label="id"
-          sortable
-          fixed="left"
-          width="150"
-          v-if="isshow"
-        ></el-table-column>
-        <el-table-column
-          prop="supplyername"
-          label="供应商名称"
-          sortable
-          fixed="left"
-          width="250"
-        ></el-table-column>
-        <el-table-column
-          prop="purchaseno"
-          label="采购合同号"
-          sortable
-          width="200"
-        ></el-table-column>
-        <el-table-column
-          prop="purchaseweight"
-          label="采购入库重量(吨)"
-          sortable
-          width="200"
-        ></el-table-column>
-        <el-table-column
-          prop="purchaseamount"
-          label="采购金额(元)"
-          sortable
-          width="150"
-        ></el-table-column>
-        <el-table-column
-          prop="purchasedate"
-          label="入库日期"
-          sortable
-          width="150"
-        >
+        <el-table-column prop="id" label="id" sortable fixed="left" width="80"></el-table-column>
+        <el-table-column prop="purchasestatus" label="采购单状态" sortable fixed="left" width="120"></el-table-column>
+        <el-table-column prop="memberid" label="id" sortable fixed="left" width="150" v-if="isshow"></el-table-column>
+        <el-table-column prop="supplyername" label="供应商名称" sortable fixed="left" width="250"></el-table-column>
+        <el-table-column prop="purchaseno" label="采购合同号" sortable width="200"></el-table-column>
+        <el-table-column prop="purchaseweight" label="采购入库重量(吨)" sortable width="200"></el-table-column>
+        <el-table-column prop="purchaseamount" label="采购金额(元)" sortable width="150"></el-table-column>
+        <el-table-column prop="purchasedate" label="入库日期" sortable width="150">
           <template slot-scope="scope">
-            <span>{{
-              (scope.row.purchasedate, 'yyyy-MM-dd' | dataFormat)
-            }}</span>
+            <span>
+              {{
+              scope.row.purchasedate, 'yyyy-MM-dd' | dataFormat
+              }}
+            </span>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="invoicestatus"
-          label="发票状态"
-          sortable
-          width="200"
-        ></el-table-column>
-        <el-table-column
-          prop="createby"
-          label="创建人"
-          sortable
-          width="100"
-        ></el-table-column>
+        <el-table-column prop="invoicestatus" label="发票状态" sortable width="200"></el-table-column>
+        <el-table-column prop="createby" label="创建人" sortable width="100"></el-table-column>
         <el-table-column prop="crt" label="创建日期" sortable width="300">
           <template slot-scope="scope">
-            <span v-show="scope.row.crt != null">{{
-              (scope.row.crt, 'yyyy-MM-dd hh:mm:ss' | dataFormat)
-            }}</span>
+            <span v-show="scope.row.crt != null">
+              {{
+              scope.row.crt, 'yyyy-MM-dd hh:mm:ss' | dataFormat
+              }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column prop="operation" fixed="right" label="操作">
           <template slot-scope="scope">
             <div v-if="scope.row.invoicestatus === '未收到' && submitShow">
-              <el-button
-                type="text"
-                size="small"
-                @click="editShow(scope.row, '1')"
-                >确认收到</el-button
-              >
+              <el-button type="text" size="small" @click="editShow(scope.row, '1')">确认收到</el-button>
             </div>
             <div v-else-if="scope.row.invoicestatus === '已收到'">
-              <el-button
-                type="text"
-                size="small"
-                @click="editShow(scope.row, '0')"
-                >撤回</el-button
-              >
+              <el-button type="text" size="small" @click="editShow(scope.row, '0')">撤回</el-button>
             </div>
           </template>
         </el-table-column>
       </el-table>
     </el-col>
     <el-col>
-      <div
-        class="block"
-        style="float: right;margin-right: 10px;margin-top: 10px;"
-      >
+      <div class="block" style="float: right;margin-right: 10px;margin-top: 10px;">
         <el-pagination
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
@@ -171,19 +106,19 @@
 export default {
   data() {
     return {
-      thistitle: '新增用户',
+      thistitle: "新增用户",
       readonly: false,
       isshow: false,
-      producer: '',
+      producer: "",
       filters: {
-        keyword: '',
+        keyword: "",
         validateTime: []
       },
-      activeName: '未收到',
-      statusTab: '未收到',
+      activeName: "未收到",
+      statusTab: "未收到",
       dateObj: {
-        startTime: '',
-        endTime: ''
+        startTime: "",
+        endTime: ""
       },
       customerList: [],
       tableData1: [],
@@ -197,18 +132,18 @@ export default {
       listLoading: false,
       selLoading: false,
       dialogFormVisible: false,
-      formLabelWidth: '120px',
+      formLabelWidth: "120px",
       deliveryOrderIds: [], // 加工单ids
       deliveryOrderNos: [], //加工单Nos
-      memberId: '',
+      memberId: "",
       saleContractNos: [],
-      memberId: ''
-    }
+      memberId: ""
+    };
   },
   methods: {
     handleClick(tab, event) {
-      this.statusTab = tab.name
-      this.getContract()
+      this.statusTab = tab.name;
+      this.getContract();
     },
     searchTime() {
       if (
@@ -216,165 +151,165 @@ export default {
         this.filters.validateTime[0] &&
         this.filters.validateTime[1]
       ) {
-        this.dateObj.startTime = this.filters.validateTime[0]
-        this.dateObj.endTime = this.filters.validateTime[1]
+        this.dateObj.startTime = this.filters.validateTime[0];
+        this.dateObj.endTime = this.filters.validateTime[1];
       } else {
         this.dateObj = {
-          startTime: '',
-          endTime: ''
-        }
+          startTime: "",
+          endTime: ""
+        };
       }
     },
     async editShow(row, isornot) {
-      let params = new FormData()
-      params.append('id', row.id)
-      params.append('isornot', isornot)
+      let params = new FormData();
+      params.append("id", row.id);
+      params.append("isornot", isornot);
       this.axios
         .post(
           process.env.API_ROOT +
-            '/PurchaseContractApi/v1/confirmPurchaseContract',
+            "/PurchaseContractApi/v1/confirmPurchaseContract",
           params
         )
         .then(response => {
           if (!response.data) {
-            return
+            return;
           }
           if (response.data.status === 200) {
-            this.message(true, response.data.msg, 'success')
-            this.getContract()
+            this.message(true, response.data.msg, "success");
+            this.getContract();
           } else {
-            this.message(true, response.data.msg, 'error')
+            this.message(true, response.data.msg, "error");
           }
-        })
+        });
       //this.getContract()
     },
     // 查询合同
     async getContract() {
-      let _this = this
-      _this.listLoading = true
-      let params = new FormData()
-      params.append('startPage', _this.startPage)
-      params.append('pageSize', _this.pageSize)
-      params.append('keyword', _this.filters.keyword)
-      params.append('memberId', _this.memberId)
-      params.append('invoiceStatus', _this.statusTab)
-      params.append('startTime', _this.dateObj.startTime)
-      params.append('endTime', _this.dateObj.endTime)
+      let _this = this;
+      _this.listLoading = true;
+      let params = new FormData();
+      params.append("startPage", _this.startPage);
+      params.append("pageSize", _this.pageSize);
+      params.append("keyword", _this.filters.keyword);
+      params.append("memberId", _this.memberId);
+      params.append("invoiceStatus", _this.statusTab);
+      params.append("startTime", _this.dateObj.startTime);
+      params.append("endTime", _this.dateObj.endTime);
       this.axios
         .post(
           process.env.API_ROOT +
-            '/PurchaseContractApi/v1/findPurchaseContractByPage',
+            "/PurchaseContractApi/v1/findPurchaseContractByPage",
           params
         )
         .then(response => {
           if (!response.data) {
-            _this.listLoading = false
-            return
+            _this.listLoading = false;
+            return;
           }
           if (response.data && response.data.status === 200) {
-            _this.purchaseContracts = response.data.data
-            _this.total = response.data.total
+            _this.purchaseContracts = response.data.data;
+            _this.total = response.data.total;
           } else {
-            _this.message(true, response.data.msg, 'error')
-            _this.purchaseContracts = []
+            _this.message(true, response.data.msg, "error");
+            _this.purchaseContracts = [];
           }
-          _this.listLoading = false
+          _this.listLoading = false;
         })
         .catch(err => {
-          console.log(err)
-        })
+          console.log(err);
+        });
     },
 
     // 重置
     resetForm(formName) {
-      this.$refs[formName].resetFields()
+      this.$refs[formName].resetFields();
     },
     // 每页大小改变时触发
     handleSizeChange(val) {
-      this.pageSize = val
-      this.getContract()
+      this.pageSize = val;
+      this.getContract();
     },
     // 当前页码改变时触发
     handleCurrentChange(val) {
-      this.startPage = val
-      this.getContract()
+      this.startPage = val;
+      this.getContract();
     },
     getCustomerList() {
-      let _this = this
-      var usr = this.usr
-      let memberId = ''
+      let _this = this;
+      var usr = this.usr;
+      let memberId = "";
       if (usr) {
-        memberId = usr.memberId
+        memberId = usr.memberId;
       }
-      let params = new FormData()
-      params.append('memberId', memberId)
+      let params = new FormData();
+      params.append("memberId", memberId);
       this.axios
-        .post(process.env.API_ROOT + '/CustomerApi/v1/getCustomerList', params)
+        .post(process.env.API_ROOT + "/CustomerApi/v1/getCustomerList", params)
         .then(response => {
           if (!response.data) {
-            return
+            return;
           }
-          let customerdata = response.data.data
-          this.customerList = []
+          let customerdata = response.data.data;
+          this.customerList = [];
           for (let lcustomer of customerdata) {
             if (lcustomer.companyname != null) {
               let jsoncompany = {
                 value: lcustomer.companyname,
                 id: lcustomer.id
-              }
-              this.customerList.push(jsoncompany)
+              };
+              this.customerList.push(jsoncompany);
             }
           }
         })
         .catch(err => {
-          console.log(err)
-        })
+          console.log(err);
+        });
     },
     supplyerSelect() {
-      let params = new FormData()
-      let memberId = this.memberId
-      params.append('memberId', memberId)
+      let params = new FormData();
+      let memberId = this.memberId;
+      params.append("memberId", memberId);
       this.axios
         .post(
-          process.env.API_ROOT + '/PurchaseContractApi/v1/findSupplyerByNoPage',
+          process.env.API_ROOT + "/PurchaseContractApi/v1/findSupplyerByNoPage",
           params
         )
         .then(response => {
-          let supplyerdata = response.data.data
-          this.supplyerList = []
+          let supplyerdata = response.data.data;
+          this.supplyerList = [];
           for (let supplyer of supplyerdata) {
             if (supplyer.supplyername != null) {
               let jsonsupplyer = {
                 value: supplyer.supplyername,
                 id: supplyer.id
-              }
-              this.supplyerList.push(jsonsupplyer)
+              };
+              this.supplyerList.push(jsonsupplyer);
             }
           }
         })
         .catch(err => {
-          console.log(err)
-        })
+          console.log(err);
+        });
     },
     querySearchAsync(queryString, cb) {
-      var supplyerList = this.supplyerList
+      var supplyerList = this.supplyerList;
       var results = queryString
         ? supplyerList.filter(this.createStateFilter(queryString))
-        : supplyerList
+        : supplyerList;
 
-      clearTimeout(this.timeout)
+      clearTimeout(this.timeout);
       this.timeout = setTimeout(() => {
-        cb(results)
-      }, 500)
+        cb(results);
+      }, 500);
     },
 
     createStateFilter(queryString) {
       return state => {
-        return state.value.indexOf(queryString) >= 0
-      }
+        return state.value.indexOf(queryString) >= 0;
+      };
     },
     handleSelect1(item) {
-      this.filters.keyword = item.value
+      this.filters.keyword = item.value;
     },
 
     /**
@@ -385,23 +320,23 @@ export default {
         showClose: ifshow,
         message: msg,
         type: type
-      })
+      });
     }
   },
   mounted() {
-    this.usr = JSON.parse(this.$cookie.get('user'))
-    this.memberId = this.usr.memberId
-    this.producer = this.usr.userName
-    this.getContract()
-    this.supplyerSelect()
-    this.getCustomerList()
+    this.usr = JSON.parse(this.$cookie.get("user"));
+    this.memberId = this.usr.memberId;
+    this.producer = this.usr.userName;
+    this.getContract();
+    this.supplyerSelect();
+    this.getCustomerList();
   },
   computed: {
     submitShow() {
-      return this.getHasRule('确认已收')
+      return this.getHasRule("确认已收");
     }
   }
-}
+};
 </script>
 
 <style scoped>

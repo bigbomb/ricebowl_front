@@ -1194,6 +1194,9 @@ export default {
         } else if (index === 3) {
           sums[index] = "";
           return;
+        } else if (index === 9) {
+          sums[index] = "";
+          return;
         } else if (index === 11) {
           sums[index] = "";
           return;
@@ -1218,6 +1221,8 @@ export default {
             sums[index] = sums[index].toFixed(3);
             this.totalWeight = sums[index];
             sums[index] += "吨";
+          } else if (index === 7) {
+            sums[index] += "";
           } else {
             sums[index] = sums[index].toFixed(2);
             this.totalAmount = sums[index];

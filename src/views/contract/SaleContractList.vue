@@ -86,7 +86,7 @@
           v-if="isshow"
         ></el-table-column>
         <el-table-column prop="contractstatus" label="合同类型" sortable fixed="left" width="150"></el-table-column>
-        <el-table-column prop="customername" label="客户名称" sortable fixed="left" width="200"></el-table-column>
+        <el-table-column prop="customername" label="客户名称" sortable fixed="left" width="250"></el-table-column>
 
         <el-table-column prop="contractno" label="合同号" sortable width="150"></el-table-column>
         <el-table-column prop="contractaddress" label="签约地点" sortable width="150"></el-table-column>
@@ -108,13 +108,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="contractweight" label="合同重量(吨)" sortable width="160"></el-table-column>
-        <el-table-column prop="actualweight" label="客户结算重量(吨)" sortable width="160"></el-table-column>
+        <el-table-column prop="contractweight" label="合同重量(吨)" sortable width="135"></el-table-column>
+        <el-table-column prop="actualweight" label="客户结算重量(吨)" sortable width="155"></el-table-column>
 
         <el-table-column prop="contractamount" label="合同金额(元)" sortable width="160"></el-table-column>
         <el-table-column prop="actualamount" label="客户结算金额(元)" sortable width="160"></el-table-column>
 
-        <el-table-column prop="payment" label="付款方式" sortable width="150"></el-table-column>
+        <el-table-column prop="payment" label="付款方式" sortable width="130"></el-table-column>
 
         <el-table-column prop="settlement" label="结算方式" sortable width="150"></el-table-column>
 
@@ -397,7 +397,7 @@
                       class="autoInputwidth"
                       ref="productnameInput"
                       v-model="scope.row.productname"
-                      v-if="scope.row.status=='待审核'||scope.row.status==undefined"
+                      v-if="(scope.row.status=='待审核'||scope.row.status==undefined)&&contracttype=='0'"
                       :fetch-suggestions="queryProductNameSearchAsync"
                       placeholder="请输入商品名称"
                     >
@@ -409,7 +409,7 @@
                         </el-tooltip>
                       </template>
                     </el-autocomplete>
-                    <span>{{scope.row.productname}}</span>
+                    <span v-if="contracttype=='1'">{{scope.row.productname}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="productspec" label="规格" width="200">
@@ -417,7 +417,7 @@
                     <el-autocomplete
                       class="autoInputwidth"
                       v-model="scope.row.productspec"
-                      v-if="scope.row.status=='待审核'||scope.row.status==undefined"
+                      v-if="(scope.row.status=='待审核'||scope.row.status==undefined)&&contracttype=='0'"
                       :fetch-suggestions="queryProductspecSearchAsync"
                       placeholder="请输入商品规格"
                     >
@@ -429,7 +429,7 @@
                         </el-tooltip>
                       </template>
                     </el-autocomplete>
-                    <span>{{scope.row.productspec}}</span>
+                    <span v-if="contracttype=='1'">{{scope.row.productspec}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="productfactory" label="钢厂" width="160">
@@ -437,7 +437,7 @@
                     <el-autocomplete
                       class="autoInputwidth"
                       v-model="scope.row.productfactory"
-                      v-if="scope.row.status=='待审核'||scope.row.status==undefined"
+                      v-if="(scope.row.status=='待审核'||scope.row.status==undefined)&&contracttype=='0'"
                       :fetch-suggestions="queryProductfactorySearchAsync"
                       placeholder="请输入钢厂"
                     >
@@ -449,7 +449,7 @@
                         </el-tooltip>
                       </template>
                     </el-autocomplete>
-                    <span>{{scope.row.productfactory}}</span>
+                    <span v-if="contracttype=='1'">{{scope.row.productfactory}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="productmark" label="材质" width="160">
@@ -457,7 +457,7 @@
                     <el-autocomplete
                       class="autoInputwidth"
                       v-model="scope.row.productmark"
-                      v-if="scope.row.status=='待审核'||scope.row.status==undefined"
+                      v-if="(scope.row.status=='待审核'||scope.row.status==undefined)&&contracttype=='0'"
                       :fetch-suggestions="queryProductmarkSearchAsync"
                       placeholder="请输入材质"
                     >
@@ -469,18 +469,18 @@
                         </el-tooltip>
                       </template>
                     </el-autocomplete>
-                    <span>{{scope.row.productmark}}</span>
+                    <span v-if="contracttype=='1'">{{scope.row.productmark}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="weight" label="重量(吨)" width="120">
                   <template slot-scope="scope">
                     <el-input
                       size="mini"
-                      v-if="scope.row.status=='待审核' ||scope.row.status==undefined "
+                      v-if="(scope.row.status=='待审核' ||scope.row.status==undefined)&&contracttype=='0'"
                       v-model="scope.row.weight"
                       placeholder="请输入内容"
                     ></el-input>
-                    <span>{{scope.row.weight}}</span>
+                    <span v-if="contracttype=='1'">{{scope.row.weight}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="price" label="单价(元)" width="150">
@@ -491,14 +491,13 @@
                       v-model="scope.row.price"
                       placeholder="请输入内容"
                     ></el-input>
-                    <span>{{scope.row.price}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="unit" label="单位" width="100">
                   <template slot-scope="scope">
                     <el-select
                       size="mini"
-                      v-if="scope.row.status=='待审核' ||scope.row.status==undefined "
+                      v-if="(scope.row.status=='待审核' ||scope.row.status==undefined) &&contracttype=='0'"
                       filterable
                       class="inputwidth"
                       v-model="scope.row.unit"
@@ -508,18 +507,19 @@
                       <el-option label="支" value="支"></el-option>
                       <el-option label="张" value="张"></el-option>
                     </el-select>
-                    <span>{{scope.row.unit}}</span>
+
+                    <span v-if="contracttype=='1'">{{scope.row.unit}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="num" label="数量" width="80">
                   <template slot-scope="scope">
                     <el-input
                       size="mini"
-                      v-if="scope.row.status=='待审核' ||scope.row.status==undefined "
+                      v-if="(scope.row.status=='待审核' ||scope.row.status==undefined )&&contracttype=='0'"
                       v-model="scope.row.num"
                       placeholder="请输入内容"
                     ></el-input>
-                    <span>{{scope.row.num}}</span>
+                    <span v-if="contracttype=='1'">{{scope.row.num}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="total" label="合计(元)" width="150">
@@ -528,33 +528,12 @@
                   </template>
                 </el-table-column>
 
-                <!-- <el-table-column property="warehousename" label="所在仓库" width="200">
-                  <template slot-scope="scope">
-                    <el-autocomplete
-                      class="autoInputwidth"
-                      v-model="scope.row.warehousename"
-                      v-if="scope.row.status=='待审核'||scope.row.status==undefined"
-                      :fetch-suggestions="querySaleContractWarehouseSearchAsync"
-                      placeholder="请输入仓库名称"
-                    >
-                      <template slot-scope="{ item }">
-                        <div class="name">{{ item.value }}</div>
-                        <span hidden>{{ item.id }}</span>
-                        <el-tooltip content="删除后重新点击输入框刷新" placement="bottom" effect="light">
-                          <span class="addr" @click.stop="delSaleContractWarehouse(item.id)">删除</span>
-                        </el-tooltip>
-                      </template>
-                    </el-autocomplete>
-                    <span>{{scope.row.warehousename}}</span>
-                  </template>
-                </el-table-column>-->
-
                 <el-table-column property="stockouttype" label="出库方式" width="150">
                   <template slot-scope="scope">
                     <el-select
                       size="mini"
                       filterable
-                      v-if="scope.row.status=='待审核' ||scope.row.status==undefined "
+                      v-if="(scope.row.status=='待审核' ||scope.row.status==undefined)&& contracttype=='0'"
                       class="inputwidth"
                       v-model="scope.row.stockouttype"
                       placeholder="请选择"
@@ -563,42 +542,15 @@
                       <el-option label="理算" value="理算"></el-option>
                       <el-option label="抄码" value="抄码"></el-option>
                     </el-select>
-                    <span>{{scope.row.stockouttype}}</span>
+                    <span v-if="contracttype=='1'">{{scope.row.stockouttype}}</span>
                   </template>
                 </el-table-column>
-
-                <!-- <el-table-column property="stockoutfee" label="出库费/吨" width="150">
-                  <template slot-scope="scope">
-                    <el-input size="mini" v-model="scope.row.stockoutfee" placeholder="请输入内容"></el-input>
-                    <span>{{scope.row.stockoutfee}}</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column property="stockouttotal" label="出库费合计(元)" width="150">
-                  <template slot-scope="scope">
-                    <span>{{scope.row.stockouttotal}}</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column property="shorttransportfee" label="短驳费/吨" width="150">
-                  <template slot-scope="scope">
-                    <el-input size="mini" v-model="scope.row.shorttransportfee" placeholder="请输入内容"></el-input>
-                    <span>{{scope.row.shorttransportfee}}</span>
-                  </template>
-                </el-table-column>
-
-                <el-table-column property="shorttransporttotal" label="短驳费合计(元)" width="150">
-                  <template slot-scope="scope">
-                    <span>{{scope.row.shorttransporttotal}}</span>
-                  </template>
-                </el-table-column>-->
-
                 <el-table-column property="quality" label="品级" width="150">
                   <template slot-scope="scope">
                     <el-select
                       size="mini"
                       filterable
-                      v-if="scope.row.status=='待审核' ||scope.row.status==undefined "
+                      v-if="(scope.row.status=='待审核' ||scope.row.status==undefined )&&contracttype=='0'"
                       class="inputwidth"
                       v-model="scope.row.quality"
                       placeholder="请选择"
@@ -606,7 +558,7 @@
                       <el-option label="合格品" value="合格品"></el-option>
                       <el-option label="协议品" value="协议品"></el-option>
                     </el-select>
-                    <span>{{scope.row.quality}}</span>
+                    <span v-if="contracttype=='1'">{{scope.row.quality}}</span>
                   </template>
                 </el-table-column>
 
@@ -959,10 +911,12 @@
                 ref="jggridTable"
                 highlight-current-row
                 @selection-change="handleItemSelectionChange"
+                show-summary
+                :summary-method="getSaleJgSummaries"
               >
                 <el-table-column
                   type="selection"
-                  width="55"
+                  width="80"
                   @selection-change="handleItemSelectionChange"
                   :selectable="checkboxProcessInit"
                 ></el-table-column>
@@ -974,7 +928,13 @@
                   v-if="isshow"
                   width="80"
                 ></el-table-column>
-                <el-table-column prop="deliverystatus" label="提货状态" sortable hidden width="100">
+                <el-table-column
+                  prop="deliverystatus"
+                  label="提货状态"
+                  sortable
+                  v-if="isshow"
+                  width="100"
+                >
                   <template slot-scope="scope">
                     <span>{{scope.row.deliverystatus}}</span>
                   </template>
@@ -984,7 +944,7 @@
                   label="加工状态"
                   sortable
                   fixed="left"
-                  hidden
+                  v-if="isshow"
                   width="100"
                 >
                   <template slot-scope="scope">
@@ -1432,8 +1392,20 @@
                   width="80"
                 ></el-table-column>
                 <el-table-column prop="stockid" label="stockid" sortable v-if="isshow" width="80"></el-table-column>
-                <el-table-column prop="processstatus" label="加工状态" sortable width="100"></el-table-column>
-                <el-table-column prop="deliverystatus" label="提货状态" sortable width="100"></el-table-column>
+                <el-table-column
+                  prop="processstatus"
+                  label="加工状态"
+                  sortable
+                  width="100"
+                  v-if="isshow"
+                ></el-table-column>
+                <el-table-column
+                  prop="deliverystatus"
+                  label="提货状态"
+                  sortable
+                  width="100"
+                  v-if="isshow"
+                ></el-table-column>
 
                 <el-table-column property="productname" label="名称" width="200">
                   <template slot-scope="scope">
@@ -1537,12 +1509,7 @@
                 </el-table-column>
                 <el-table-column property="remark" label="备注" width="300">
                   <template slot-scope="scope">
-                    <el-input
-                      size="mini"
-                      v-model="scope.row.remark"
-                      placeholder="请输入内容"
-                      v-if="scope.row.id===null"
-                    ></el-input>
+                    <el-input size="mini" v-model="scope.row.remark" placeholder="请输入内容"></el-input>
                     <span>{{scope.row.remark}}</span>
                   </template>
                 </el-table-column>
@@ -1692,12 +1659,13 @@
             >
               <el-table-column type="index" label="序号" width="60"></el-table-column>
               <el-table-column property="productname" width="120" label="产品名称"></el-table-column>
-              <el-table-column property="productspec" width="158" label="规格型号"></el-table-column>
+              <el-table-column property="productspec" width="110" label="规格型号"></el-table-column>
               <el-table-column property="productmark" width="110" label="牌号"></el-table-column>
               <el-table-column property="weight" width="110" label="重量(吨)"></el-table-column>
-              <el-table-column property="price" width="100" label="单价(元/吨)"></el-table-column>
-              <el-table-column property="unit" width="50" label="单位"></el-table-column>
-              <el-table-column property="total" width="150" label="金额(元)"></el-table-column>
+              <el-table-column property="price" width="110" label="单价(元/吨)"></el-table-column>
+              <el-table-column property="unit" width="60" label="单位"></el-table-column>
+              <el-table-column property="num" width="58" label="数量"></el-table-column>
+              <el-table-column property="total" width="120" label="金额(元)"></el-table-column>
               <el-table-column property="stockouttype" width="90" label="出库方式"></el-table-column>
               <!-- <el-table-column property="warehousename" label="所在仓库" width="88"></el-table-column> -->
               <!-- <el-table-column property="quality" width="100" label="品级"></el-table-column> -->
@@ -1771,25 +1739,25 @@
             <el-table-column property="warehousename" label="仓库名称" width="100">
               <template slot-scope="scope">
                 <el-input size="mini" v-model="scope.row.warehousename" placeholder="请输入内容"></el-input>
-                <span>{{scope.row.warehousename}}</span>
+                <!-- <span>{{scope.row.warehousename}}</span> -->
               </template>
             </el-table-column>
             <el-table-column property="warehouseaddress" label="仓库地址" width="200">
               <template slot-scope="scope">
                 <el-input size="mini" v-model="scope.row.warehouseaddress" placeholder="请输入内容"></el-input>
-                <span>{{scope.row.warehouseaddress}}</span>
+                <!-- <span>{{scope.row.warehouseaddress}}</span> -->
               </template>
             </el-table-column>
             <el-table-column property="warehousephone" label="仓库电话" width="200">
               <template slot-scope="scope">
                 <el-input size="mini" v-model="scope.row.warehousephone" placeholder="请输入内容"></el-input>
-                <span>{{scope.row.warehousephone}}</span>
+                <!-- <span>{{scope.row.warehousephone}}</span> -->
               </template>
             </el-table-column>
             <el-table-column property="warehousefax" label="仓库传真" width="200">
               <template slot-scope="scope">
                 <el-input size="mini" v-model="scope.row.warehousefax" placeholder="请输入内容"></el-input>
-                <span>{{scope.row.warehousefax}}</span>
+                <!-- <span>{{scope.row.warehousefax}}</span> -->
               </template>
             </el-table-column>
 
@@ -2009,10 +1977,9 @@
                     <span>{{scope.row.actualweight}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="finalweight" label="客户重量(吨)" width="120">
+                <el-table-column property="finalweight" label="客户结算重量(吨)" width="130">
                   <template slot-scope="scope">
                     <el-input size="mini" v-model="scope.row.finalweight" placeholder="请输入内容"></el-input>
-                    <span>{{scope.row.finalweight}}</span>
                   </template>
                 </el-table-column>
                 <el-table-column property="unit" label="单位" width="100">
@@ -2936,11 +2903,7 @@ export default {
               this.$message("重量不能为空");
               return;
             }
-            if (
-              !/^(([^0][0-9]+|0)\.([0-9]{1,5})$)|^([^0][0-9]+|0)$/.test(
-                item.weight
-              )
-            ) {
+            if (!/^[+-]?((\d*(\.\d{1,5})$)|(\d+$))/.test(item.weight)) {
               this.$message("重量只能为正整数或者最多带5位小数");
               return;
             }
@@ -3052,7 +3015,7 @@ export default {
             stockid: row.id,
             price: this.chooseRow.price,
             unit: this.chooseRow.unit,
-            num: this.chooseRow.num,
+            num: row.num,
             selectedIdss: this.selectedIdss.join(","),
             remark: this.chooseRow.remark,
             quality: this.chooseRow.quality
@@ -3082,7 +3045,7 @@ export default {
             stockid: row.id,
             price: this.chooseRow.price,
             unit: this.chooseRow.unit,
-            num: this.chooseRow.num,
+            num: row.num,
             remark: this.chooseRow.remark,
             quality: this.chooseRow.quality
           };
@@ -3112,7 +3075,7 @@ export default {
           stockid: row.id,
           price: this.chooseRow.price,
           unit: this.chooseRow.unit,
-          num: this.chooseRow.num,
+          num: row.num,
           remark: this.chooseRow.remark,
           quality: this.chooseRow.quality
         };
@@ -3411,6 +3374,74 @@ export default {
         row.total = (row.price * row.weight).toFixed(2);
       }
     },
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "总计";
+          return;
+        } else if (index === 1) {
+          sums[index] = "";
+          return;
+        } else if (index === 2) {
+          sums[index] = "";
+          return;
+        } else if (index === 3) {
+          sums[index] = "";
+          return;
+        } else if (index === 4) {
+          sums[index] = "";
+          return;
+        } else if (index === 6) {
+          sums[index] = "";
+          return;
+        } else if (index === 10) {
+          sums[index] = "";
+          return;
+        } else if (index === 11) {
+          sums[index] = "";
+          return;
+        } else if (index === 16) {
+          sums[index] = "";
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          if (index === 8) {
+            sums[index] += "";
+            return;
+          } else if (index === 5) {
+            sums[index] = sums[index].toFixed(3);
+            this.totalWeight = sums[index];
+            sums[index] += "吨";
+          } else if (index === 9) {
+            sums[index] = sums[index].toFixed(2);
+            this.totalAmount = sums[index];
+            sums[index] += "元";
+          } else if (index === 12) {
+            sums[index] = sums[index].toFixed(2);
+            this.stockoutTotalFee = sums[index];
+            sums[index] += "元";
+          } else if (index === 15) {
+            sums[index] = sums[index].toFixed(2);
+            this.shorttransportTotalFee = sums[index];
+            sums[index] += "元";
+          }
+        } else {
+          sums[index] = "";
+        }
+      });
+      return sums;
+    },
     getJgSummaries(param) {
       const { columns, data } = param;
       const sums = [];
@@ -3455,10 +3486,10 @@ export default {
             sums[index] += "";
             return;
           } else if (index === 5) {
-            sums[index] = sums[index].toFixed(3);
+            sums[index] = sums[index].toFixed(5);
             sums[index] += "吨";
           } else if (index === 6) {
-            sums[index] = sums[index].toFixed(3);
+            sums[index] = sums[index].toFixed(5);
 
             sums[index] += "吨";
           } else if (index === 13) {
@@ -3474,7 +3505,71 @@ export default {
       });
       return sums;
     },
-    getSummaries(param) {
+    //提单的商品明细累计
+    getTdSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "总计";
+          return;
+        } else if (index === 1) {
+          sums[index] = "";
+          return;
+        } else if (index === 2) {
+          sums[index] = "";
+          return;
+        } else if (index === 3) {
+          sums[index] = "";
+          return;
+        } else if (index === 4) {
+          sums[index] = "";
+          return;
+        } else if (index === 9) {
+          sums[index] = "";
+          return;
+        } else if (index === 11) {
+          sums[index] = "";
+          return;
+        } else if (index === 12) {
+          sums[index] = "";
+          return;
+        } else if (index === 13) {
+          sums[index] = "";
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          if (index === 5) {
+            sums[index] = sums[index].toFixed(5);
+            this.totalWeight = sums[index];
+            sums[index] += "吨";
+          } else if (index === 6) {
+            sums[index] = sums[index].toFixed(5);
+            this.finalWeight = sums[index];
+            sums[index] += "吨";
+          } else {
+            sums[index] = sums[index].toFixed(2);
+            this.totalAmount = sums[index];
+            sums[index] += "";
+          }
+        } else {
+          sums[index] = "";
+        }
+      });
+      return sums;
+    },
+
+    //合同生成加工单，商品明细的合计
+    getSaleJgSummaries(param) {
       const { columns, data } = param;
       const sums = [];
       columns.forEach((column, index) => {
@@ -3494,6 +3589,9 @@ export default {
           sums[index] = "";
           return;
         } else if (index === 6) {
+          sums[index] = "";
+          return;
+        } else if (index === 8) {
           sums[index] = "";
           return;
         } else if (index === 10) {
@@ -3521,24 +3619,12 @@ export default {
             sums[index] += "";
             return;
           } else if (index === 5) {
-            sums[index] = sums[index].toFixed(3);
-            this.totalWeight = sums[index];
+            sums[index] = sums[index].toFixed(5);
             sums[index] += "吨";
-          } else if (index === 9) {
+          } else if (index === 7) {
             sums[index] = sums[index].toFixed(2);
-            this.totalAmount = sums[index];
-            sums[index] += "元";
-          } else if (index === 12) {
-            sums[index] = sums[index].toFixed(2);
-            this.stockoutTotalFee = sums[index];
-            sums[index] += "元";
-          } else if (index === 15) {
-            sums[index] = sums[index].toFixed(2);
-            this.shorttransportTotalFee = sums[index];
-            sums[index] += "元";
+            sums[index] += "";
           }
-        } else {
-          sums[index] = "";
         }
       });
       return sums;
@@ -3581,14 +3667,14 @@ export default {
             }
           }, 0);
           if (index === 4) {
-            sums[index] = sums[index].toFixed(3);
+            sums[index] = sums[index].toFixed(5);
             sums[index] += "吨";
           } else if (index === 5) {
-            sums[index] = sums[index].toFixed(3);
+            sums[index] = sums[index].toFixed(5);
             this.totalWeight = sums[index];
             sums[index] += "吨";
           } else if (index === 6) {
-            sums[index] = sums[index].toFixed(3);
+            sums[index] = sums[index].toFixed(5);
             this.finalWeight = sums[index];
             sums[index] += "吨";
           } else {
@@ -3623,7 +3709,7 @@ export default {
         } else if (index === 4) {
           sums[index] = "";
           return;
-        } else if (index === 5) {
+        } else if (index === 9) {
           sums[index] = "";
           return;
         } else if (index === 11) {
@@ -3646,15 +3732,12 @@ export default {
               return prev;
             }
           }, 0);
-          if (index === 7) {
-            sums[index] = sums[index].toFixed(3);
-            sums[index] += "吨";
-          } else if (index === 8) {
-            sums[index] = sums[index].toFixed(3);
+          if (index === 5) {
+            sums[index] = sums[index].toFixed(5);
             this.totalWeight = sums[index];
             sums[index] += "吨";
-          } else if (index === 9) {
-            sums[index] = sums[index].toFixed(3);
+          } else if (index === 6) {
+            sums[index] = sums[index].toFixed(5);
             this.finalWeight = sums[index];
             sums[index] += "吨";
           } else {
@@ -3723,13 +3806,15 @@ export default {
             }
           }, 0);
           if (index === 4) {
-            sums[index] = sums[index].toFixed(3);
+            sums[index] = sums[index].toFixed(5);
             this.contractWeight = sums[index];
             // sums[index] +='吨'
-          } else if (index == 7) {
+          } else if (index == 8) {
             sums[index] = sums[index].toFixed(2);
             this.contractAmount = sums[index];
             // sums[index] +='元'
+          } else if (index == 7) {
+            sums[index] += "";
           } else {
             sums[index] = "";
           }
@@ -4454,8 +4539,8 @@ export default {
           this.$message("材质不能为空");
           return;
         }
-        if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.weight)) {
-          this.$message("重量只能为数字");
+        if (!/^[+-]?((\d*(\.\d{1,5})$)|(\d+$))/.test(item.weight)) {
+          this.$message("重量只能为正整数或者最多带5位小数");
           return;
         }
         if (item.weight === "") {
@@ -4578,37 +4663,12 @@ export default {
           this.$message("材质不能为空");
           return;
         }
-        // if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.weight)) {
-        //   this.$message("重量只能为数字");
-        //   return;
-        // }
-        // if (item.weight === "") {
-        //   this.$message("重量不能为空");
-        //   return;
-        // }
-        // if (item.weight.length > 9) {
-        //   this.$message("重量字数不能超过9个字符");
-        //   return;
-        // }
-        // if (item.actualweight === "") {
-        //   this.$message("库提重量不能为空,请从库存提取");
-        //   return;
-        // }
-        // if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.actualweight)) {
-        //   this.$message("库提重量只能为数字");
-        //   return;
-        // }
-        // if (item.actualweight.length > 9) {
-        //   this.$message("实提重量字数不能超过9个字符");
-        //   return;
-        // }
-
         if (item.finalweight === "") {
           this.$message("客户结算重量不能为空,请从库存提取");
           return;
         }
-        if (!/^[1-9]\d*\,\d*|[1-9]\d*$/.test(item.finalweight)) {
-          this.$message("客户结算重量只能为数字");
+        if (!/^[+-]?((\d*(\.\d{1,5})$)|(\d+$))/.test(item.finalweight)) {
+          this.$message("客户结算重量只能为正整数或者最多带5位小数");
           return;
         }
         if (item.finalweight.length > 9) {
@@ -5006,7 +5066,7 @@ export default {
       let realVal = "";
       if (!isNaN(value) && value !== "") {
         // 截取当前数据到小数点后两位
-        realVal = parseFloat(value).toFixed(3);
+        realVal = parseFloat(value).toFixed(5);
       } else {
         realVal = "--";
       }
