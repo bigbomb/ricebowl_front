@@ -98,7 +98,28 @@
             <el-popover trigger="hover" placement="bottom">
               <!-- <div><el-button type="text" size="small" @click='editShow(scope.row)' v-if="detailShow">明细</el-button></div> -->
               <div>
-                <el-button type="text" size="small" @click="editShow(scope.row)">编辑</el-button>
+                <el-button
+                  v-if=" scope.row.purchasestatus==='待审核'"
+                  type="text"
+                  size="small"
+                  @click="editShow(scope.row)"
+                >编辑</el-button>
+              </div>
+              <div>
+                <el-button
+                  v-if=" scope.row.purchasestatus==='已审核'"
+                  type="text"
+                  size="small"
+                  @click="editShow(scope.row)"
+                >变更</el-button>
+              </div>
+              <div>
+                <el-button
+                  v-if=" scope.row.purchasestatus==='已审核'"
+                  type="text"
+                  size="small"
+                  @click="purchaseInstockShow(scope.row)"
+                >生成采购入库单</el-button>
               </div>
               <!-- <div><el-button type="text" size="small" @click='printPreview(scope.row)' v-if="printShow">打印预览</el-button></div> -->
               <!-- <div><el-button type="text" size="small" @click='printPreview(scope.row)' >打印预览</el-button></div> -->
@@ -1434,10 +1455,12 @@ export default {
       this.supplyerForm.remark = row.remark;
       this.supplyerForm.purchasestatus = row.purchasestatus;
       this.supplyDialogFormVisible = true;
+      this.supplyerSelect();
       this.findProduct();
       this.findProductSpec();
       this.findProductFactory();
       this.findProductMark();
+      this.findSaleContractWarehouse();
       let params = new FormData();
       params.append("keyword", row.contractno);
       params.append("memberId", this.memberId);

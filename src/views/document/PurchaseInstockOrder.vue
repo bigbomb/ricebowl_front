@@ -16,7 +16,7 @@
           <el-date-picker
             v-model="filters.validateTime"
             type="daterange"
-            placeholder="请输入加工单生成时间"
+            placeholder
             range-separator="至"
             start-placeholder="入库开始日期"
             end-placeholder="入库结束日期"
@@ -1421,7 +1421,7 @@ export default {
       }
       this.axios
         .post(
-          process.env.API_ROOT + "/PurchaseContractApi/v1/addConstract",
+          process.env.API_ROOT + "/PurchaseContractApi/v1/addinstockConstract",
           params
         )
         .then(response => {
