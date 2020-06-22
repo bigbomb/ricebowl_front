@@ -156,6 +156,278 @@
         </el-table-column>-->
       </el-table>
     </el-col>
+    <el-col :span="2">
+      <el-dialog
+        :title="thistitle"
+        :visible.sync="puchaseinstockVisible"
+        width="1250px"
+        :append-to-body="true"
+      >
+        <div>
+          <el-form
+            :model="puchaseinstockForm"
+            status-icon
+            ref="puchaseinstockForm"
+            :inline="true"
+            label-width="100px"
+            class="demo-form-inline"
+          >
+            <el-col :span="6">
+              <el-form-item label="采购合同号" prop="purchaseno">
+                <span>{{puchaseinstockForm.purchaseno}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="供应商名称" prop="supplyername">
+                <span>{{puchaseinstockForm.supplyername}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="采购日期" prop="purchasedate">
+                <span>{{puchaseinstockForm.purchasedate, 'yyyy-MM-dd' | dataFormat}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="付款方式" prop="payment">
+                <span>{{puchaseinstockForm.payment}}</span>
+                <!-- <el-select class="autoinputwidth" v-model="supplyerForm.payment" placeholder="请选择">
+                  <el-option label="电汇" value="电汇"></el-option>
+                  <el-option label="支票" value="支票"></el-option>
+                  <el-option label="承兑" value="承兑"></el-option>
+                </el-select>-->
+              </el-form-item>
+            </el-col>
+            <el-form-item label="采购合同明细">
+              <el-table
+                style="width:1100px"
+                :data="purchaseContractGridData"
+                max-height="500"
+                show-summary
+                class="el-tb-edit"
+                ref="purchaseContractGridTable"
+                highlight-current-row
+                :summary-method="getpurchaseSummaries"
+              >
+                <!-- :summary-method="getpurchaseSummaries" -->
+                <!-- <el-table-column property="status" label="状态" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.status}}</span>
+                  </template>
+                </el-table-column>-->
+
+                <el-table-column property="productname" label="名称" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productname}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productspec" label="规格" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productspec}}</span>
+                  </template>
+                </el-table-column>
+                <!-- <el-table-column property="packingno" label="捆包号" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.packingno}}</span>
+                  </template>
+                </el-table-column>-->
+                <el-table-column property="productfactory" label="钢厂" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productfactory}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productmark" label="材质" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productmark}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="unit" label="单位" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.unit}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column property="price" label="单价(元)" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.price}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="weight" label="采购重量(吨)" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.weight}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="instockweight" label="入库重量(吨)" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.instockweight}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column property="num" label="采购数量" width="80">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.num}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="instocknum" label="入库数量" width="80">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.instocknum}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="totalamount" label="采购合计(元)" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.totalamount}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="instocktotalamount" label="入库合计(元)" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.instocktotalamount}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="stockouttype" label="出库方式" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.stockouttype}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="quality" label="品级" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.quality}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="scope" v-if="scope.row.status!=='在库'">
+                    <el-button
+                      @click.native.prevent="addpruchaseinstockRow(scope.row)"
+                      type="text"
+                      size="small"
+                    >入库</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+
+            <el-form-item label="入库明细">
+              <el-table
+                style="width:1100px"
+                :data="instockGridData"
+                max-height="500"
+                show-summary
+                :summary-method="getinstockSummaries"
+                class="el-tb-edit"
+                ref="instockGridTable"
+                highlight-current-row
+                :span-method="instockarraySpanMethod"
+              >
+                <!-- :summary-method="getpurchaseSummaries" -->
+                <!-- <el-table-column property="status" label="状态" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.status}}</span>
+                  </template>
+                </el-table-column>-->
+
+                <el-table-column property="productname" label="名称" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productname}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productspec" label="规格" width="200">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productspec}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productfactory" label="钢厂" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productfactory}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="productmark" label="材质" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.productmark}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="packingno" label="捆包号" width="200">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.packingno" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column property="unit" label="单位" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.unit}}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column property="price" label="单价(元)" width="100">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.price}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="weight" label="入库重量(吨)" width="150">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.weight" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column property="num" label="入库数量" width="80">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column property="total" label="入库合计(元)" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.total}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="warehousename" label="所在仓库" width="160">
+                  <template slot-scope="scope">
+                    <el-autocomplete
+                      class="autoInputwidth"
+                      v-model="scope.row.warehousename"
+                      :fetch-suggestions="querySaleContractWarehouseSearchAsync"
+                      placeholder="请输入仓库名称"
+                    >
+                      <template slot-scope="{ item }">
+                        <div class="name">{{ item.value }}</div>
+                        <span hidden>{{ item.id }}</span>
+                        <el-tooltip content="删除后重新点击输入框刷新" placement="bottom" effect="light">
+                          <span class="addr" @click.stop="delSaleContractWarehouse(item.id)">删除</span>
+                        </el-tooltip>
+                      </template>
+                    </el-autocomplete>
+                  </template>
+                </el-table-column>
+                <el-table-column property="stockouttype" label="出库方式" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.stockouttype}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="quality" label="品级" width="150">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.quality}}</span>
+                  </template>
+                </el-table-column>
+                <el-table-column property="remark" label="备注" width="200">
+                  <template slot-scope="scope">
+                    <el-input size="mini" v-model="scope.row.remark" placeholder="请输入内容"></el-input>
+                  </template>
+                </el-table-column>
+                <el-table-column fixed="right" label="操作" width="120">
+                  <template slot-scope="scope">
+                    <el-button
+                      @click.native.prevent="delinstockRow(scope.row,instockGridData)"
+                      type="text"
+                      size="small"
+                    >移除</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-form-item>
+          </el-form>
+        </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="closeDialog('puchaseinstockForm')">取 消</el-button>
+
+          <el-button>保存</el-button>
+        </div>
+      </el-dialog>
+    </el-col>
     <el-col>
       <div class="block" style="float: right;margin-right: 10px;margin-top: 10px;">
         <el-pagination
@@ -549,12 +821,31 @@ export default {
         remark: "",
         purchasestatus: ""
       },
+
+      puchaseinstockForm: {
+        id: "",
+        contractno: "",
+        purchaseno: "",
+        memberId: "",
+        supplyername: "",
+        purchaseweight: "",
+        purchaseamount: "",
+        instockweight: "",
+        instockamount: "",
+        instockdate: "",
+        payment: "",
+        remark: "",
+        purchasestatus: ""
+      },
       // purchaseStatus: false,
+      puchaseinstockVisible: false,
       supplyerVisible: false,
       customerList: [],
       timeout: null,
       productGridData: [],
       supplyerGridData: [],
+      purchaseContractGridData: [],
+      instockGridData: [],
       contractData: [],
       multipleSelection: "",
       pageSizes: [15, 50, 80, 100],
@@ -569,7 +860,11 @@ export default {
       formLabelWidth: "120px",
       currentRow: null,
       totalWeight: 0,
+      instocktotalWeight: 0,
+      instocktotalNum: 0,
+      totalNum: 0,
       totalAmount: 0,
+      instocktotalAmount: 0,
       contractWeight: 0,
       contractAmount: 0,
       contactIds: [],
@@ -691,6 +986,8 @@ export default {
         this.jgdialogFormVisible = false;
       } else if (formName === "tdruleForm") {
         this.tddialogFormVisible = false;
+      } else if (formName === "puchaseinstockForm") {
+        this.puchaseinstockVisible = false;
       }
 
       this.$refs[formName].resetFields();
@@ -740,6 +1037,9 @@ export default {
         .catch(err => {
           console.log(err);
         });
+    },
+    delinstockRow(index, rows) {
+      rows.splice(index, 1);
     },
     handleCurrentChange(val) {
       this.currentRow = val;
@@ -827,6 +1127,24 @@ export default {
       this.productGridData.push(d);
       setTimeout(() => {
         this.$refs.gridTable.setCurrentRow(d);
+      }, 10);
+    },
+    addpruchaseinstockRow(row) {
+      let d = {
+        productname: row.productname,
+        productspec: row.productspec,
+        productfactory: row.productfactory,
+        productmark: row.productmark,
+        weight: row.weight,
+        price: row.price,
+        unit: row.unit,
+        num: row.num,
+        stockouttype: row.stockouttype,
+        quality: row.quality
+      };
+      this.instockGridData.push(d);
+      setTimeout(() => {
+        this.$refs.instockGridTable.setCurrentRow(d);
       }, 10);
     },
     // 查询合同
@@ -1004,8 +1322,55 @@ export default {
         });
       this.supplyerVisible = true;
     },
+    purchaseInstockShow(row) {
+      this.puchaseinstockVisible = true;
+      this.thistitle = "新增采购入库单";
+      this.puchaseinstockForm.id = row.id;
+      this.puchaseinstockForm.purchaseno = row.purchaseno;
+      this.puchaseinstockForm.supplyername = row.supplyername;
+      this.puchaseinstockForm.purchaseweight = row.purchaseweight;
+      this.puchaseinstockForm.purchaseamount = row.purchaseamount;
+      this.puchaseinstockForm.purchasedate = row.purchasedate;
+      this.puchaseinstockForm.payment = row.payment;
+      this.puchaseinstockForm.remark = row.remark;
+      this.puchaseinstockForm.purchasestatus = row.purchasestatus;
+      if (this.purchaseContractGridData.length > 0) {
+        this.purchaseContractGridData = [];
+      }
+      let params = new FormData();
+      params.append("keyword", row.contractno);
+      params.append("memberId", this.memberId);
+      params.append("purchaseno", row.purchaseno);
+      this.axios
+        .post(
+          process.env.API_ROOT +
+            "/PurchaseContractApi/v1/findPurchaseContractDetailByPage",
+          params
+        )
+        .then(response => {
+          if (!response.data) {
+            return;
+          }
+          if (response.data.status === 200) {
+            this.findSaleContractWarehouse();
+            this.purchaseContractGridData = [];
+            var tabledata = response.data.data.purchaseContractDetail;
+            for (var i in tabledata) {
+              this.purchaseContractGridData.push(tabledata[i]);
+            }
+            this.message(true, response.data.msg, "success");
+          } else {
+            this.message(true, response.data.msg, "error");
+          }
+        });
+    },
     arraySpanMethod({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 8) {
+        row.total = (row.price * row.weight).toFixed(2);
+      }
+    },
+    instockarraySpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 9) {
         row.total = (row.price * row.weight).toFixed(2);
       }
     },
@@ -1049,6 +1414,124 @@ export default {
             this.totalWeight = sums[index];
             sums[index] += "吨";
           } else {
+            sums[index] = sums[index].toFixed(2);
+            this.totalAmount = sums[index];
+            sums[index] += "元";
+          }
+        } else {
+          sums[index] = "";
+        }
+      });
+      return sums;
+    },
+    getpurchaseSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "总计";
+          return;
+        } else if (index === 1) {
+          sums[index] = "";
+          return;
+        } else if (index === 2) {
+          sums[index] = "";
+          return;
+        } else if (index === 3) {
+          sums[index] = "";
+          return;
+        } else if (index === 4) {
+          sums[index] = "";
+          return;
+        } else if (index === 5) {
+          sums[index] = "";
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          if (index === 6) {
+            sums[index] = sums[index].toFixed(5);
+            this.totalWeight = sums[index];
+            sums[index] += "吨";
+          } else if (index === 7) {
+            sums[index] = sums[index].toFixed(5);
+            this.instocktotalWeight = sums[index];
+            sums[index] += "吨";
+          } else if (index === 8) {
+            this.totalNum = sums[index];
+            sums[index] += "";
+          } else if (index === 9) {
+            this.instocktotalNum = sums[index];
+            sums[index] += "";
+          } else if (index === 10) {
+            sums[index] = sums[index].toFixed(2);
+            this.totalAmount = sums[index];
+            sums[index] += "元";
+          } else if (index === 11) {
+            sums[index] = sums[index].toFixed(2);
+            this.instocktotalAmount = sums[index];
+            sums[index] += "元";
+          } else {
+          }
+        } else {
+          sums[index] = "";
+        }
+      });
+      return sums;
+    },
+
+    getinstockSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = "总计";
+          return;
+        } else if (index === 1) {
+          sums[index] = "";
+          return;
+        } else if (index === 2) {
+          sums[index] = "";
+          return;
+        } else if (index === 3) {
+          sums[index] = "";
+          return;
+        } else if (index === 4) {
+          sums[index] = "";
+          return;
+        } else if (index === 5) {
+          sums[index] = "";
+          return;
+        } else if (index === 6) {
+          sums[index] = "";
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (!values.every(value => isNaN(value))) {
+          sums[index] = values.reduce((prev, curr) => {
+            const value = Number(curr);
+            if (!isNaN(value)) {
+              return prev + curr;
+            } else {
+              return prev;
+            }
+          }, 0);
+          if (index === 7) {
+            sums[index] = sums[index].toFixed(5);
+            this.instocktotalWeight = sums[index];
+            sums[index] += "吨";
+          } else if (index === 8) {
+            this.instocktotalNum = sums[index];
+            sums[index] += "";
+          } else if (index === 9) {
             sums[index] = sums[index].toFixed(2);
             this.totalAmount = sums[index];
             sums[index] += "元";
@@ -1488,6 +1971,7 @@ export default {
         });
       //this.getContract()
     },
+
     handleSelectionChange(val) {
       this.contactIds = [];
       this.contractNos = [];
