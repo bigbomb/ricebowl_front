@@ -42,6 +42,7 @@ let router = [
   //{ path: '/main', component: Main },
   {
     path: '/',
+    redirect: '/saleContractList',
     component: Home,
     name: '用户管理',
     iconCls: 'icon iconfont icon-yonghurenxiang', //图标样式class

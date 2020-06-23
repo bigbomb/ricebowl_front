@@ -1459,7 +1459,7 @@ export default {
           return;
         }
       }
-      // this.addContract();
+      this.addInstock();
 
     },
 
@@ -1731,7 +1731,7 @@ export default {
             sums[index] += "";
           } else if (index === 9) {
             sums[index] = sums[index].toFixed(2);
-            this.totalAmount = sums[index];
+            this.instocktotalAmount = sums[index];
             sums[index] += "元";
           }
         } else {
@@ -2060,8 +2060,58 @@ export default {
           this.getContract();
         });
     },
-    // 删除销售合同
 
+    async addInstock () {
+      let _this = this;
+      let memberId = "";
+      var usr = this.usr;
+      if (usr) {
+        memberId = usr.memberId;
+      }
+      let params = new FormData();
+      params.append("memberid", memberId);
+      params.append("contractno", _this.puchaseinstockForm.contractno);
+      params.append("purchaseno", _this.puchaseinstockForm.purchaseno);
+      params.append("supplyerid", _this.puchaseinstockForm.id);
+      params.append("supplyername", _this.puchaseinstockForm.supplyername);
+      // params.append("purchasedate", new Date(_this.puchaseinstockForm.purchasedate));
+      params.append("payment", _this.puchaseinstockForm.payment);
+      params.append("instocktotalweight", _this.instocktotalWeight);
+      params.append("instocktotalamount", _this.instocktotalAmount);
+      params.append("instocktotalnum", _this.instocktotalNum);
+      params.append("remark", _this.supplyerForm.remark);
+      params.append(
+        "purchaseContractDetail",
+        JSON.stringify(_this.instockGridData)
+      );
+      if (_this.instockGridData.length === 0) {
+        this.message(true, "商品明细不能为空！", "error");
+        return;
+      }
+      this.axios
+        .post(
+          process.env.API_ROOT + "/PurchaseContractApi/v1/addinstockConstract",
+          params
+        )
+        .then(response => {
+          if (!response.data) {
+            return;
+          }
+
+          if (response.data.status === 200) {
+            this.message(true, response.data.msg, "success");
+            _this.resetForm("supplyerForm");
+            _this.supplyDialogFormVisible = false;
+          } else {
+            _this.message(true, response.data.msg, "error");
+          }
+          this.getContract();
+        });
+    },
+
+
+
+    // 删除销售合同
     delContract (id) {
       if (this.contactIds.length === 0) {
         this.message(true, "请选择需要删除的用户", "error");
