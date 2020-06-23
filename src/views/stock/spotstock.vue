@@ -1,67 +1,59 @@
 <template>
   <el-row id="spotstock">
     <!--工具条-->
-    <el-col :span="24" class="toolbar" style="padding-bottom: 0px;">
-      <el-form :inline="true" :model="filters">
+    <el-col :span="24"
+            class="toolbar"
+            style="padding-bottom: 0px;">
+      <el-form :inline="true"
+               :model="filters">
         <el-form-item>
-          <el-input v-model="searchRuleForm.purchaseno" placeholder="请输入采购入库单号"></el-input>
+          <el-input v-model="searchRuleForm.purchaseno"
+                    placeholder="请输入采购入库单号"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-date-picker
-            v-model="filters.validateTime"
-            type="daterange"
-            placeholder="请输入采购入库创建时间"
-            range-separator="至"
-            start-placeholder="入库日期开始日期"
-            end-placeholder="入库日期结束日期"
-            @change="searchTime"
-          ></el-date-picker>
+          <el-date-picker v-model="filters.validateTime"
+                          type="daterange"
+                          placeholder="请输入采购入库创建时间"
+                          range-separator="至"
+                          start-placeholder="入库日期开始日期"
+                          end-placeholder="入库日期结束日期"
+                          @change="searchTime"></el-date-picker>
 
-          <el-autocomplete
-            v-model="searchRuleForm.productname"
-            :fetch-suggestions="queryProductNameSearchAsync"
-            placeholder="请输入商品名称"
-          >
+          <el-autocomplete v-model="searchRuleForm.productname"
+                           :fetch-suggestions="queryProductNameSearchAsync"
+                           placeholder="请输入商品名称">
             <template slot-scope="{ item }">
               <div class="name">{{ item.value }}</div>
               <span hidden>{{ item.id }}</span>
             </template>
           </el-autocomplete>
-          <el-autocomplete
-            v-model="searchRuleForm.warehousename"
-            :fetch-suggestions="querySaleContractWarehouseSearchAsync"
-            placeholder="请输入仓库名称"
-          >
+          <el-autocomplete v-model="searchRuleForm.warehousename"
+                           :fetch-suggestions="querySaleContractWarehouseSearchAsync"
+                           placeholder="请输入仓库名称">
             <template slot-scope="{ item }">
               <div class="name">{{ item.value }}</div>
               <span hidden>{{ item.id }}</span>
             </template>
           </el-autocomplete>
-          <el-autocomplete
-            v-model="searchRuleForm.productspec"
-            :fetch-suggestions="queryProductspecSearchAsync"
-            placeholder="请输入商品规格"
-          >
+          <el-autocomplete v-model="searchRuleForm.productspec"
+                           :fetch-suggestions="queryProductspecSearchAsync"
+                           placeholder="请输入商品规格">
             <template slot-scope="{ item }">
               <div class="name">{{ item.value }}</div>
               <span hidden>{{ item.id }}</span>
             </template>
           </el-autocomplete>
-          <el-autocomplete
-            v-model="searchRuleForm.productfactory"
-            :fetch-suggestions="queryProductfactorySearchAsync"
-            placeholder="请输入钢厂"
-          >
+          <el-autocomplete v-model="searchRuleForm.productfactory"
+                           :fetch-suggestions="queryProductfactorySearchAsync"
+                           placeholder="请输入钢厂">
             <template slot-scope="{ item }">
               <div class="name">{{ item.value }}</div>
               <span hidden>{{ item.id }}</span>
             </template>
           </el-autocomplete>
-          <el-autocomplete
-            v-model="searchRuleForm.productmark"
-            :fetch-suggestions="queryProductmarkSearchAsync"
-            placeholder="请输入材质"
-          >
+          <el-autocomplete v-model="searchRuleForm.productmark"
+                           :fetch-suggestions="queryProductmarkSearchAsync"
+                           placeholder="请输入材质">
             <template slot-scope="{ item }">
               <div class="name">{{ item.value }}</div>
               <span hidden>{{ item.id }}</span>
@@ -70,18 +62,18 @@
           <!-- <el-input v-model="filters.keyword" placeholder="客户名称"></el-input> -->
         </el-form-item>
         <el-form-item>
-          <el-button
-            type="primary"
-            class="el-icon-search"
-            v-on:click="getContract"
-            v-if="findShow"
-          >查询</el-button>
+          <el-button type="primary"
+                     class="el-icon-search"
+                     v-on:click="getContract"
+                     v-if="findShow">查询</el-button>
         </el-form-item>
         <el-form-item v-if="lockShow&&activeName=='在库'">
-          <el-button type="primary" v-on:click="lockDialog">锁货</el-button>
+          <el-button type="primary"
+                     v-on:click="lockDialog">锁货</el-button>
         </el-form-item>
         <el-form-item v-if="unlockShow&&activeName=='已锁货'">
-          <el-button type="primary" v-on:click="unlock">解锁</el-button>
+          <el-button type="primary"
+                     v-on:click="unlock">解锁</el-button>
         </el-form-item>
         <!-- <el-form-item v-if="addShow&&activeName=='已锁货'">
           <el-button type="success" @click.native="showDialogForm">生成现货销售订单</el-button>
@@ -92,139 +84,177 @@
       </el-form>
     </el-col>
     <el-col>
-      <el-tabs v-model="activeName" @tab-click="handleClick">
-        <el-tab-pane label="在库" name="在库"></el-tab-pane>
-        <el-tab-pane label="已锁货" name="已锁货"></el-tab-pane>
-        <el-tab-pane label="已出库" name="已出库"></el-tab-pane>
+      <el-tabs v-model="activeName"
+               @tab-click="handleClick">
+        <el-tab-pane label="在库"
+                     name="在库"></el-tab-pane>
+        <el-tab-pane label="已锁货"
+                     name="已锁货"></el-tab-pane>
+        <el-tab-pane label="已出库"
+                     name="已出库"></el-tab-pane>
       </el-tabs>
     </el-col>
     <!--列表-->
     <el-col>
-      <el-table
-        ref="contractTable"
-        :data="stockgridData"
-        highlight-current-row
-        v-loading="listLoading"
-        element-loading-text="拼命加载中"
-        @selection-change="handleSelectionChange"
-        style="width: 100%;"
-      >
-        <el-table-column type="selection" :selectable="checkboxNum" width="80"></el-table-column>
+      <el-table ref="contractTable"
+                :data="stockgridData"
+                highlight-current-row
+                v-loading="listLoading"
+                element-loading-text="拼命加载中"
+                @selection-change="handleSelectionChange"
+                style="width: 100%;">
+        <el-table-column type="selection"
+                         :selectable="checkboxNum"
+                         width="80"></el-table-column>
 
-        <el-table-column property="id" v-if="isshow" label="ID" width="100">
+        <el-table-column property="id"
+                         v-if="isshow"
+                         label="ID"
+                         width="100">
           <template slot-scope="scope">
             <span>{{scope.row.id}}</span>
           </template>
         </el-table-column>
 
-        <el-table-column property="productid" v-if="isshow" label="productId" width="100">
+        <el-table-column property="productid"
+                         v-if="isshow"
+                         label="productId"
+                         width="100">
           <template slot-scope="scope">
             <span>{{scope.row.productid}}</span>
           </template>
         </el-table-column>
 
-        <el-table-column property="productname" label="名称" width="180">
+        <el-table-column property="productname"
+                         label="名称"
+                         width="180">
           <template slot-scope="scope">
             <span>{{scope.row.productname}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="productspec" label="规格" width="150">
+        <el-table-column property="productspec"
+                         label="规格"
+                         width="150">
           <template slot-scope="scope">
             <span>{{scope.row.productspec}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="packingno" label="捆包号" width="150">
+        <el-table-column property="packingno"
+                         label="捆包号"
+                         width="150">
           <template slot-scope="scope">
             <span>{{scope.row.packingno}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="productfactory" label="钢厂" width="120">
+        <el-table-column property="productfactory"
+                         label="钢厂"
+                         width="120">
           <template slot-scope="scope">
             <span>{{scope.row.productfactory}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="productmark" label="材质" width="150">
+        <el-table-column property="productmark"
+                         label="材质"
+                         width="150">
           <template slot-scope="scope">
             <span>{{scope.row.productmark}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="weight" label="重量(吨)" width="160">
+        <el-table-column property="weight"
+                         label="重量(吨)"
+                         width="160">
           <template slot-scope="scope">
             <span>{{scope.row.weight}}</span>
           </template>
         </el-table-column>
 
-        <el-table-column property="unit" label="单位" width="120">
+        <el-table-column property="unit"
+                         label="单位"
+                         width="120">
           <template slot-scope="scope">
             <span>{{scope.row.unit}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="num" label="数量" width="120">
+        <el-table-column property="num"
+                         label="数量"
+                         width="120">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.num}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="warehousename" label="所在仓库" width="120">
+        <el-table-column property="warehousename"
+                         label="所在仓库"
+                         width="120">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.warehousename}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="stockouttype" label="出库方式" width="160">
+        <el-table-column property="stockouttype"
+                         label="出库方式"
+                         width="160">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.stockouttype}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="quality" label="品级" width="160">
+        <el-table-column property="quality"
+                         label="品级"
+                         width="160">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.quality}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="purchaseno" label="采购入库单号" width="160" fixed="right">
+        <el-table-column property="purchaseno"
+                         label="采购入库单号"
+                         width="160"
+                         fixed="right">
           <template slot-scope="scope">
             <span>{{scope.row.purchaseno}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="crt" label="入库时间" width="160" fixed="right">
+        <el-table-column property="crt"
+                         label="入库时间"
+                         width="160"
+                         fixed="right">
           <template slot-scope="scope">
             <span v-show="scope.row.crt!=null">{{scope.row.crt, 'yyyy-MM-dd hh:mm:ss' | dataFormat}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="status" label="状态" fixed="right">
+        <el-table-column property="status"
+                         label="状态"
+                         fixed="right">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.status}}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          property="lockman"
-          label="锁货人"
-          width="100"
-          fixed="right"
-          v-if="activeName=='已锁货'"
-        >
+        <el-table-column property="lockman"
+                         label="锁货人"
+                         width="100"
+                         fixed="right"
+                         v-if="activeName=='已锁货'">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.lockman}}</span>
           </template>
         </el-table-column>
 
-        <el-table-column
-          property="customername"
-          label="客户名称"
-          v-if="activeName=='已锁货'"
-          width="150"
-          fixed="right"
-        >
+        <el-table-column property="customername"
+                         label="客户名称"
+                         v-if="activeName=='已锁货'"
+                         width="150"
+                         fixed="right">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.customername}}</span>
           </template>
         </el-table-column>
-        <el-table-column property="customerid" label="客户id" v-if="isshow">
+        <el-table-column property="customerid"
+                         label="客户id"
+                         v-if="isshow">
           <template slot-scope="scope">
             <!-- <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
             <span>{{scope.row.customerid}}</span>
@@ -233,159 +263,167 @@
       </el-table>
     </el-col>
     <el-col>
-      <div class="block" style="float: right;margin-right: 10px;margin-top: 10px;">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="startPage"
-          :page-sizes="pageSizes"
-          :page-size="pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="total"
-        ></el-pagination>
+      <div class="block"
+           style="float: right;margin-right: 10px;margin-top: 10px;">
+        <el-pagination @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :current-page="startPage"
+                       :page-sizes="pageSizes"
+                       :page-size="pageSize"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="total"></el-pagination>
       </div>
     </el-col>
     <el-col :span="2">
-      <el-dialog
-        :close-on-click-modal="false"
-        :title="thistitle"
-        :visible.sync="dialogFormVisible"
-        width="1250px"
-      >
+      <el-dialog :close-on-click-modal="false"
+                 :title="thistitle"
+                 :visible.sync="dialogFormVisible"
+                 width="1250px">
         <div>
-          <el-form
-            :model="ruleForm"
-            status-icon
-            :rules="rules"
-            ref="ruleForm"
-            :inline="true"
-            label-width="90px"
-            class="demo-form-inline"
-          >
+          <el-form :model="ruleForm"
+                   status-icon
+                   :rules="rules"
+                   ref="ruleForm"
+                   :inline="true"
+                   label-width="90px"
+                   class="demo-form-inline">
             <el-col :span="12">
-              <el-form-item label="客户名称" prop="addcustomername">
-                <el-autocomplete
-                  v-model="ruleForm.addcustomername"
-                  :fetch-suggestions="querySearchAsync"
-                  placeholder="请输入客户名称"
-                  @select="handleSelectCustomer"
-                  class="inputwidth"
-                  disabled="inputdisabled"
-                ></el-autocomplete>
+              <el-form-item label="客户名称"
+                            prop="addcustomername">
+                <el-autocomplete v-model="ruleForm.addcustomername"
+                                 :fetch-suggestions="querySearchAsync"
+                                 placeholder="请输入客户名称"
+                                 @select="handleSelectCustomer"
+                                 class="inputwidth"
+                                 disabled="inputdisabled"></el-autocomplete>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="签约地点" prop="addcontractaddress">
-                <el-input
-                  class="inputwidth"
-                  v-model="ruleForm.addcontractaddress"
-                  placeholder="请输入内容"
-                ></el-input>
+              <el-form-item label="签约地点"
+                            prop="addcontractaddress">
+                <el-input class="inputwidth"
+                          v-model="ruleForm.addcontractaddress"
+                          placeholder="请输入内容"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="交货日期" prop="adddeliverydate">
-                <el-date-picker
-                  v-model="ruleForm.adddeliverydate"
-                  type="date"
-                  placeholder="选择日期"
-                  class="inputwidth"
-                ></el-date-picker>
+              <el-form-item label="交货日期"
+                            prop="adddeliverydate">
+                <el-date-picker v-model="ruleForm.adddeliverydate"
+                                type="date"
+                                placeholder="选择日期"
+                                class="inputwidth"></el-date-picker>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="付款方式" prop="addpayment">
-                <el-select class="inputwidth" v-model="ruleForm.addpayment" placeholder="请选择">
-                  <el-option label="电汇" value="电汇"></el-option>
-                  <el-option label="支票" value="支票"></el-option>
-                  <el-option label="承兑" value="承兑"></el-option>
+              <el-form-item label="付款方式"
+                            prop="addpayment">
+                <el-select class="inputwidth"
+                           v-model="ruleForm.addpayment"
+                           placeholder="请选择">
+                  <el-option label="电汇"
+                             value="电汇"></el-option>
+                  <el-option label="支票"
+                             value="支票"></el-option>
+                  <el-option label="承兑"
+                             value="承兑"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="结算方式" prop="addsettlement">
-                <el-select
-                  class="settleinputwidth"
-                  v-model="ruleForm.addsettlement"
-                  placeholder="请选择"
-                  @change="addsettlementChange()"
-                >
-                  <el-option label="货到付款" value="货到付款"></el-option>
-                  <el-option label="款到发货" value="款到发货"></el-option>
-                  <el-option label="月结" value="月结"></el-option>
-                  <el-option label="预付" value="预付"></el-option>
+              <el-form-item label="结算方式"
+                            prop="addsettlement">
+                <el-select class="settleinputwidth"
+                           v-model="ruleForm.addsettlement"
+                           placeholder="请选择"
+                           @change="addsettlementChange()">
+                  <el-option label="货到付款"
+                             value="货到付款"></el-option>
+                  <el-option label="款到发货"
+                             value="款到发货"></el-option>
+                  <el-option label="月结"
+                             value="月结"></el-option>
+                  <el-option label="预付"
+                             value="预付"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label prop="percent" v-if="percentShow">
-                <el-select
-                  class="settleinputwidth"
-                  v-model="ruleForm.percent"
-                  placeholder="请输入百分比金额"
-                >
-                  <el-option
-                    v-for="item in percentoptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
+              <el-form-item label
+                            prop="percent"
+                            v-if="percentShow">
+                <el-select class="settleinputwidth"
+                           v-model="ruleForm.percent"
+                           placeholder="请输入百分比金额">
+                  <el-option v-for="item in percentoptions"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="预付日期" prop="depositdate" v-if="percentShow">
-                <el-date-picker
-                  v-model="ruleForm.depositdate"
-                  type="date"
-                  placeholder="选择日期"
-                  class="settleinputwidth"
-                ></el-date-picker>
+              <el-form-item label="预付日期"
+                            prop="depositdate"
+                            v-if="percentShow">
+                <el-date-picker v-model="ruleForm.depositdate"
+                                type="date"
+                                placeholder="选择日期"
+                                class="settleinputwidth"></el-date-picker>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="运输方式" prop="addtransporttype">
-                <el-select class="inputwidth" v-model="ruleForm.addtransporttype" placeholder="请选择">
-                  <el-option label="代运" value="代运"></el-option>
-                  <el-option label="自提" value="自提"></el-option>
+              <el-form-item label="运输方式"
+                            prop="addtransporttype">
+                <el-select class="inputwidth"
+                           v-model="ruleForm.addtransporttype"
+                           placeholder="请选择">
+                  <el-option label="代运"
+                             value="代运"></el-option>
+                  <el-option label="自提"
+                             value="自提"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
             <el-col :span="12">
-              <el-form-item label="附加条款" prop="remark">
-                <el-input
-                  :rows="3"
-                  class="inputwidth"
-                  type="textarea"
-                  placeholder="请输入备注"
-                  auto-complete="off"
-                  v-model="ruleForm.remark"
-                ></el-input>
+              <el-form-item label="附加条款"
+                            prop="remark">
+                <el-input :rows="3"
+                          class="inputwidth"
+                          type="textarea"
+                          placeholder="请输入备注"
+                          auto-complete="off"
+                          v-model="ruleForm.remark"></el-input>
               </el-form-item>
             </el-col>
             <el-form-item label="商品明细">
-              <el-table
-                style="width:1100px"
-                :data="gridData"
-                max-height="500"
-                :span-method="arraySpanMethod"
-                show-summary
-                :summary-method="getSummaries"
-                @current-change="handleRowChange"
-                class="el-tb-edit"
-                ref="gridTable"
-                highlight-current-row
-              >
+              <el-table style="width:1100px"
+                        :data="gridData"
+                        max-height="500"
+                        :span-method="arraySpanMethod"
+                        show-summary
+                        :summary-method="getSummaries"
+                        @current-change="handleRowChange"
+                        class="el-tb-edit"
+                        ref="gridTable"
+                        highlight-current-row>
                 <!-- <el-table-column type="selection" width="85" @selection-change="handleItemSelectionChange" :selectable='checkboxProcessInit'>
                 </el-table-column>-->
-                <el-table-column property="stockid" label="ID" width="100">
+                <el-table-column property="stockid"
+                                 label="ID"
+                                 width="100">
                   <template slot-scope="scope">
                     <span>{{scope.row.stockid}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="status" v-if="isshow" label="状态" width="200">
+                <el-table-column property="status"
+                                 v-if="isshow"
+                                 label="状态"
+                                 width="200">
                   <template slot-scope="scope">
                     <span>{{scope.row.status}}</span>
                   </template>
                 </el-table-column>
 
-                <el-table-column property="productname" label="名称" width="200">
+                <el-table-column property="productname"
+                                 label="名称"
+                                 width="200">
                   <template slot-scope="scope">
                     <!-- <el-autocomplete class="autoInputwidth" ref="productnameInput" v-model="scope.row.productname" v-if="scope.row.status=='待审核'||scope.row.status==undefined" :fetch-suggestions="queryProductNameSearchAsync" placeholder="请输入商品名称">
                       <template slot-scope="{ item }">
@@ -400,7 +438,9 @@
                     <span>{{scope.row.productname}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="productspec" label="规格" width="200">
+                <el-table-column property="productspec"
+                                 label="规格"
+                                 width="200">
                   <template slot-scope="scope">
                     <!-- <el-autocomplete class="autoInputwidth" v-model="scope.row.productspec" v-if="scope.row.status=='待审核'||scope.row.status==undefined" :fetch-suggestions="queryProductspecSearchAsync" placeholder="请输入商品规格">
                       <template slot-scope="{ item }">
@@ -415,7 +455,9 @@
                     <span>{{scope.row.productspec}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="productfactory" label="钢厂" width="160">
+                <el-table-column property="productfactory"
+                                 label="钢厂"
+                                 width="160">
                   <template slot-scope="scope">
                     <!-- <el-autocomplete class="autoInputwidth" v-model="scope.row.productfactory" v-if="scope.row.status=='待审核'||scope.row.status==undefined" :fetch-suggestions="queryProductfactorySearchAsync" placeholder="请输入钢厂">
                       <template slot-scope="{ item }">
@@ -429,7 +471,9 @@
                     <span>{{scope.row.productfactory}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="productmark" label="材质" width="160">
+                <el-table-column property="productmark"
+                                 label="材质"
+                                 width="160">
                   <template slot-scope="scope">
                     <!-- <el-autocomplete class="autoInputwidth" v-model="scope.row.productmark" v-if="scope.row.status=='待审核'||scope.row.status==undefined" :fetch-suggestions="queryProductmarkSearchAsync" placeholder="请输入材质">
                       <template slot-scope="{ item }">
@@ -443,19 +487,27 @@
                     <span>{{scope.row.productmark}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="weight" label="重量(吨)" width="120">
+                <el-table-column property="weight"
+                                 label="重量(吨)"
+                                 width="120">
                   <template slot-scope="scope">
                     <!-- <el-input size="mini" v-if="scope.row.status=='待审核' ||scope.row.status==undefined " v-model="scope.row.weight" placeholder="请输入内容"></el-input> -->
                     <span>{{scope.row.weight}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="price" label="单价(元)" width="150">
+                <el-table-column property="price"
+                                 label="单价(元)"
+                                 width="150">
                   <template slot-scope="scope">
-                    <el-input size="mini" v-model="scope.row.price" placeholder="请输入内容"></el-input>
+                    <el-input size="mini"
+                              v-model="scope.row.price"
+                              placeholder="请输入内容"></el-input>
                     <span>{{scope.row.price}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="unit" label="单位" width="100">
+                <el-table-column property="unit"
+                                 label="单位"
+                                 width="100">
                   <template slot-scope="scope">
                     <!-- <el-select size="mini" v-if="scope.row.status=='待审核' ||scope.row.status==undefined " filterable class="inputwidth" v-model="scope.row.unit" placeholder="请选择">
                       <el-option label="件" value="件"></el-option>
@@ -465,19 +517,25 @@
                     <span>{{scope.row.unit}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="num" label="数量" width="80">
+                <el-table-column property="num"
+                                 label="数量"
+                                 width="80">
                   <template slot-scope="scope">
                     <!-- <el-input size="mini" v-if="scope.row.status=='待审核' ||scope.row.status==undefined " v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
                     <span>{{scope.row.num}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="total" label="合计(元)" width="150">
+                <el-table-column property="total"
+                                 label="合计(元)"
+                                 width="150">
                   <template slot-scope="scope">
                     <span>{{scope.row.total}}</span>
                   </template>
                 </el-table-column>
 
-                <el-table-column property="warehousename" label="所在仓库" width="200">
+                <el-table-column property="warehousename"
+                                 label="所在仓库"
+                                 width="200">
                   <template slot-scope="scope">
                     <!-- <el-autocomplete class="autoInputwidth" v-model="scope.row.warehousename" v-if="scope.row.status=='待审核'||scope.row.status==undefined" :fetch-suggestions="querySaleContractWarehouseSearchAsync" placeholder="请输入仓库名称">
                       <template slot-scope="{ item }">
@@ -493,24 +551,28 @@
                   </template>
                 </el-table-column>
 
-                <el-table-column property="stockouttype" label="出库方式" width="150">
+                <el-table-column property="stockouttype"
+                                 label="出库方式"
+                                 width="150">
                   <template slot-scope="scope">
                     <span>{{scope.row.stockouttype}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="quality" label="品级" width="150">
+                <el-table-column property="quality"
+                                 label="品级"
+                                 width="150">
                   <template slot-scope="scope">
                     <span>{{scope.row.quality}}</span>
                   </template>
                 </el-table-column>
 
-                <el-table-column fixed="right" label="操作" width="120">
+                <el-table-column fixed="right"
+                                 label="操作"
+                                 width="120">
                   <template slot-scope="scope">
-                    <el-button
-                      @click.native.prevent="deleteRow(scope.$index, gridData)"
-                      type="text"
-                      size="small"
-                    >移除</el-button>
+                    <el-button @click.native.prevent="deleteRow(scope.$index, gridData)"
+                               type="text"
+                               size="small">移除</el-button>
                     <!-- <el-button @click.native.prevent="copyRow(scope.row)" type="text" size="small">
                       复制
                     </el-button>-->
@@ -520,69 +582,71 @@
             </el-form-item>
           </el-form>
         </div>
-        <div slot="footer" class="dialog-footer">
+        <div slot="footer"
+             class="dialog-footer">
           <el-button @click="closeDialog('ruleForm')">取 消</el-button>
           <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
-          <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+          <el-button type="primary"
+                     @click="submitForm('ruleForm')">确 定</el-button>
         </div>
       </el-dialog>
     </el-col>
 
     <el-col :span="2">
-      <el-dialog
-        :close-on-click-modal="false"
-        :title="thistitle"
-        :visible.sync="lockdialogFormVisible"
-        width="1250px"
-      >
+      <el-dialog :close-on-click-modal="false"
+                 :title="thistitle"
+                 :visible.sync="lockdialogFormVisible"
+                 width="1250px">
         <div>
-          <el-form
-            status-icon
-            :rules="rules"
-            ref="lockRuleForm"
-            :inline="true"
-            label-width="90px"
-            class="demo-form-inline"
-            :model="ruleForm"
-          >
+          <el-form status-icon
+                   :rules="rules"
+                   ref="lockRuleForm"
+                   :inline="true"
+                   label-width="90px"
+                   class="demo-form-inline"
+                   :model="ruleForm">
             <el-col :span="24">
-              <el-form-item label="客户名称" prop="addcustomername">
-                <el-autocomplete
-                  v-model="ruleForm.addcustomername"
-                  :fetch-suggestions="querySearchAsync"
-                  placeholder="请输入客户名称"
-                  @select="handleSelectCustomer"
-                  class="inputwidth"
-                ></el-autocomplete>
+              <el-form-item label="客户名称"
+                            prop="addcustomername">
+                <el-autocomplete v-model="ruleForm.addcustomername"
+                                 :fetch-suggestions="querySearchAsync"
+                                 placeholder="请输入客户名称"
+                                 @select="handleSelectCustomer"
+                                 class="inputwidth"></el-autocomplete>
               </el-form-item>
             </el-col>
             <el-form-item label="商品明细">
-              <el-table
-                style="width:1100px"
-                :data="gridData"
-                max-height="500"
-                :span-method="arraySpanMethod"
-                show-summary
-                :summary-method="getSummaries"
-                @current-change="handleRowChange"
-                class="el-tb-edit"
-                ref="gridTable"
-                highlight-current-row
-              >
+              <el-table style="width:1100px"
+                        :data="gridData"
+                        max-height="500"
+                        :span-method="arraySpanMethod"
+                        show-summary
+                        :summary-method="getSummaries"
+                        @current-change="handleRowChange"
+                        class="el-tb-edit"
+                        ref="gridTable"
+                        highlight-current-row>
                 <!-- <el-table-column type="selection" width="85" @selection-change="handleItemSelectionChange" :selectable='checkboxProcessInit'>
                 </el-table-column>-->
-                <el-table-column property="stockid" label="ID" width="80">
+                <el-table-column property="stockid"
+                                 label="ID"
+                                 width="80">
                   <template slot-scope="scope">
                     <span>{{scope.row.stockid}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="status" v-if="isshow" label="状态" width="150">
+                <el-table-column property="status"
+                                 v-if="isshow"
+                                 label="状态"
+                                 width="150">
                   <template slot-scope="scope">
                     <span>{{scope.row.status}}</span>
                   </template>
                 </el-table-column>
 
-                <el-table-column property="productname" label="名称" width="150">
+                <el-table-column property="productname"
+                                 label="名称"
+                                 width="150">
                   <template slot-scope="scope">
                     <!-- <el-autocomplete class="autoInputwidth" ref="productnameInput" v-model="scope.row.productname" v-if="scope.row.status=='待审核'||scope.row.status==undefined" :fetch-suggestions="queryProductNameSearchAsync" placeholder="请输入商品名称">
                       <template slot-scope="{ item }">
@@ -597,7 +661,9 @@
                     <span>{{scope.row.productname}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="productspec" label="规格" width="150">
+                <el-table-column property="productspec"
+                                 label="规格"
+                                 width="150">
                   <template slot-scope="scope">
                     <!-- <el-autocomplete class="autoInputwidth" v-model="scope.row.productspec" v-if="scope.row.status=='待审核'||scope.row.status==undefined" :fetch-suggestions="queryProductspecSearchAsync" placeholder="请输入商品规格">
                       <template slot-scope="{ item }">
@@ -612,7 +678,9 @@
                     <span>{{scope.row.productspec}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="productfactory" label="钢厂" width="120">
+                <el-table-column property="productfactory"
+                                 label="钢厂"
+                                 width="120">
                   <template slot-scope="scope">
                     <!-- <el-autocomplete class="autoInputwidth" v-model="scope.row.productfactory" v-if="scope.row.status=='待审核'||scope.row.status==undefined" :fetch-suggestions="queryProductfactorySearchAsync" placeholder="请输入钢厂">
                       <template slot-scope="{ item }">
@@ -626,7 +694,9 @@
                     <span>{{scope.row.productfactory}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="productmark" label="材质" width="120">
+                <el-table-column property="productmark"
+                                 label="材质"
+                                 width="120">
                   <template slot-scope="scope">
                     <!-- <el-autocomplete class="autoInputwidth" v-model="scope.row.productmark" v-if="scope.row.status=='待审核'||scope.row.status==undefined" :fetch-suggestions="queryProductmarkSearchAsync" placeholder="请输入材质">
                       <template slot-scope="{ item }">
@@ -640,19 +710,27 @@
                     <span>{{scope.row.productmark}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="weight" label="重量(吨)" width="120">
+                <el-table-column property="weight"
+                                 label="重量(吨)"
+                                 width="120">
                   <template slot-scope="scope">
                     <!-- <el-input size="mini" v-if="scope.row.status=='待审核' ||scope.row.status==undefined " v-model="scope.row.weight" placeholder="请输入内容"></el-input> -->
-                    <el-input size="mini" v-model="scope.row.weight" placeholder="请输入内容"></el-input>
+                    <el-input size="mini"
+                              v-model="scope.row.weight"
+                              placeholder="请输入内容"></el-input>
                     <span>{{scope.row.weight}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="price" label="单价(元)" width="120">
+                <el-table-column property="price"
+                                 label="单价(元)"
+                                 width="120">
                   <template slot-scope="scope">
                     <span>{{scope.row.price}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="unit" label="单位" width="60">
+                <el-table-column property="unit"
+                                 label="单位"
+                                 width="60">
                   <template slot-scope="scope">
                     <!-- <el-select size="mini" v-if="scope.row.status=='待审核' ||scope.row.status==undefined " filterable class="inputwidth" v-model="scope.row.unit" placeholder="请选择">
                       <el-option label="件" value="件"></el-option>
@@ -662,20 +740,28 @@
                     <span>{{scope.row.unit}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="num" label="数量" width="80">
+                <el-table-column property="num"
+                                 label="数量"
+                                 width="80">
                   <template slot-scope="scope">
                     <!-- <el-input size="mini" v-if="scope.row.status=='待审核' ||scope.row.status==undefined " v-model="scope.row.num" placeholder="请输入内容"></el-input> -->
-                    <el-input size="mini" v-model="scope.row.num" placeholder="请输入内容"></el-input>
+                    <el-input size="mini"
+                              v-model="scope.row.num"
+                              placeholder="请输入内容"></el-input>
                     <span>{{scope.row.num}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="total" label="合计(元)" width="150">
+                <el-table-column property="total"
+                                 label="合计(元)"
+                                 width="150">
                   <template slot-scope="scope">
                     <span>{{scope.row.total}}</span>
                   </template>
                 </el-table-column>
 
-                <el-table-column property="warehousename" label="所在仓库" width="150">
+                <el-table-column property="warehousename"
+                                 label="所在仓库"
+                                 width="150">
                   <template slot-scope="scope">
                     <!-- <el-autocomplete class="autoInputwidth" v-model="scope.row.warehousename" v-if="scope.row.status=='待审核'||scope.row.status==undefined" :fetch-suggestions="querySaleContractWarehouseSearchAsync" placeholder="请输入仓库名称">
                       <template slot-scope="{ item }">
@@ -691,24 +777,28 @@
                   </template>
                 </el-table-column>
 
-                <el-table-column property="stockouttype" label="出库方式" width="100">
+                <el-table-column property="stockouttype"
+                                 label="出库方式"
+                                 width="100">
                   <template slot-scope="scope">
                     <span>{{scope.row.stockouttype}}</span>
                   </template>
                 </el-table-column>
-                <el-table-column property="quality" label="品级" width="110">
+                <el-table-column property="quality"
+                                 label="品级"
+                                 width="110">
                   <template slot-scope="scope">
                     <span>{{scope.row.quality}}</span>
                   </template>
                 </el-table-column>
 
-                <el-table-column fixed="right" label="操作" width="120">
+                <el-table-column fixed="right"
+                                 label="操作"
+                                 width="120">
                   <template slot-scope="scope">
-                    <el-button
-                      @click.native.prevent="deleteRow(scope.$index, gridData)"
-                      type="text"
-                      size="small"
-                    >移除</el-button>
+                    <el-button @click.native.prevent="deleteRow(scope.$index, gridData)"
+                               type="text"
+                               size="small">移除</el-button>
                     <!-- <el-button @click.native.prevent="copyRow(scope.row)" type="text" size="small">
                       复制
                     </el-button>-->
@@ -718,45 +808,48 @@
             </el-form-item>
           </el-form>
         </div>
-        <div slot="footer" class="dialog-footer">
+        <div slot="footer"
+             class="dialog-footer">
           <el-button @click="closeDialog('lockRuleForm')">取 消</el-button>
           <!-- <el-button @click="resetForm('ruleForm')">重置</el-button> -->
-          <el-button type="primary" @click="lock('lockRuleForm')">确 定</el-button>
+          <el-button type="primary"
+                     @click="lock('lockRuleForm')">确 定</el-button>
         </div>
       </el-dialog>
     </el-col>
     <el-col :span="2">
-      <el-dialog title="合同条款" :visible.sync="termFormVisible" :close-on-click-modal="false">
+      <el-dialog title="合同条款"
+                 :visible.sync="termFormVisible"
+                 :close-on-click-modal="false">
         <div>
-          <el-form
-            ref="termRuleForm"
-            status-icon
-            :rules="rules"
-            :inline="true"
-            label-width="90px"
-            class="demo-form-inline"
-          >
-            <el-form-item label="公司名称:" prop="companyName">
+          <el-form ref="termRuleForm"
+                   status-icon
+                   :rules="rules"
+                   :inline="true"
+                   label-width="90px"
+                   class="demo-form-inline">
+            <el-form-item label="公司名称:"
+                          prop="companyName">
               {{companyName}}
               <!-- <el-input v-model="companyName" :readonly="true" ></el-input> -->
             </el-form-item>
-            <el-form-item label="合同号:" prop="contractNo">
+            <el-form-item label="合同号:"
+                          prop="contractNo">
               {{contractNo}}
               <!-- <el-input v-model="contractNo" :readonly="true" ></el-input> -->
             </el-form-item>
             <div>
-              <quill-editor
-                class="termquill"
-                ref="myTextEditor"
-                v-model="content"
-                :options="editorOption3"
-                @blur="onEditorBlur($event)"
-                @focus="onEditorFocus($event)"
-                @ready="onEditorReady($event)"
-                @change="onEditorChange($event)"
-              >
+              <quill-editor class="termquill"
+                            ref="myTextEditor"
+                            v-model="content"
+                            :options="editorOption3"
+                            @blur="onEditorBlur($event)"
+                            @focus="onEditorFocus($event)"
+                            @ready="onEditorReady($event)"
+                            @change="onEditorChange($event)">
                 >
-                <div id="toolbar3" slot="toolbar">
+                <div id="toolbar3"
+                     slot="toolbar">
                   <button class="ql-bold">Bold</button>
                   <button class="ql-italic">Italic</button>
                   <select class="ql-size">
@@ -782,14 +875,17 @@
             </div>
           </el-form>
         </div>
-        <div slot="footer" class="limit">
+        <div slot="footer"
+             class="limit">
           当前已输入
           <span>{{nowLength}}</span> 个字符，您还可以输入
           <span>{{SurplusLength}}</span> 个字符。
         </div>
-        <div slot="footer" class="dialog-footer">
+        <div slot="footer"
+             class="dialog-footer">
           <el-button @click="closeDialog('termRuleForm')">取 消</el-button>
-          <el-button type="primary" @click="submitTermForm('termRuleForm')">保 存</el-button>
+          <el-button type="primary"
+                     @click="submitTermForm('termRuleForm')">保 存</el-button>
         </div>
       </el-dialog>
     </el-col>
@@ -800,7 +896,7 @@
 //   import http from '../../utils/http'
 
 export default {
-  data() {
+  data () {
     return {
       activeName: "在库", //tab切换选中的数据
       thistitle: "",
@@ -1048,7 +1144,7 @@ export default {
   },
 
   methods: {
-    checkboxNum(row, rowIndex) {
+    checkboxNum (row, rowIndex) {
       if (row.num == 0) {
         return false; //禁用
       } else {
@@ -1056,11 +1152,11 @@ export default {
       }
     },
     // 切换tab数据
-    handleClick(tab, event) {
+    handleClick (tab, event) {
       this.statusTab = tab.name;
       this.getContract();
     },
-    addwarehouseRow() {
+    addwarehouseRow () {
       var d = {
         warehousename: "",
         warehouseaddress: "",
@@ -1072,7 +1168,7 @@ export default {
         this.$refs.warehouseGridData.setCurrentRow(d);
       }, 10);
     },
-    handleItemSelectionChange(val) {
+    handleItemSelectionChange (val) {
       this.selectedIds = [];
       if (val) {
         val.forEach(row => {
@@ -1081,7 +1177,7 @@ export default {
         this.multipleSelection = val;
       }
     },
-    closeDialog(formName) {
+    closeDialog (formName) {
       if (formName === "ruleForm") {
         this.dialogFormVisible = false;
       } else if (formName === "termRuleForm") {
@@ -1091,7 +1187,7 @@ export default {
       }
       this.$refs[formName].resetFields();
     },
-    addsettlementChange() {
+    addsettlementChange () {
       if (this.ruleForm.addsettlement === "预付") {
         this.percentShow = true;
       } else {
@@ -1099,11 +1195,11 @@ export default {
       }
     },
     //删除行
-    deleteRow(index, rows) {
+    deleteRow (index, rows) {
       rows.splice(index, 1);
     },
 
-    deleteWarehouseRow(row, index, rows) {
+    deleteWarehouseRow (row, index, rows) {
       this.$confirm("此操作将永久删除该仓库, 是否继续?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -1117,7 +1213,7 @@ export default {
           this.message(true, "已取消删除", "error");
         });
     },
-    delWarehouseRow(row) {
+    delWarehouseRow (row) {
       let _this = this;
       let params = new FormData();
       params.append("id", row.id);
@@ -1143,7 +1239,7 @@ export default {
     // handleCurrentChange(val) {
     //   this.currentRow = val;
     // },
-    copyRow(row) {
+    copyRow (row) {
       let d = {
         productname: row.productname,
         productspec: row.productspec,
@@ -1163,7 +1259,7 @@ export default {
       }, 10);
     },
 
-    async lockDialog() {
+    async lockDialog () {
       let addstock = this.addstock;
       if (this.addstock.length === 0) {
         this.message(true, "请选择需要锁的货", "error");
@@ -1180,7 +1276,7 @@ export default {
       }, 10);
       this.gridDataCopy = JSON.parse(JSON.stringify(this.gridData));
     },
-    async lock() {
+    async lock () {
       let _this = this;
       let ids = [];
       let nums = [];
@@ -1190,7 +1286,7 @@ export default {
         _this.message(true, "请选择已存在的客户！", "error");
         return;
       }
-      _this.gridData.forEach(function(c, index, array) {
+      _this.gridData.forEach(function (c, index, array) {
         if (c.num === "") {
           _this.message(true, "数量不能为空", "error");
           return;
@@ -1207,7 +1303,7 @@ export default {
             "error"
           );
           return;
-        } else if (!/^[+-]?((\d*(\.\d{1,5})$)|(\d+$))/.test(c.weight)) {
+        } else if (!/^[+]?((\d*(\.\d{1,5})$)|(\d+$))/.test(c.weight)) {
           _this.message(true, "重量只能为正整数或者最多带5位小数", "error");
           return;
         } else if (c.weight.length > 11) {
@@ -1257,7 +1353,7 @@ export default {
           });
       }
     },
-    async unlock() {
+    async unlock () {
       let _this = this;
       let productids = [];
       let ids = [];
@@ -1267,7 +1363,7 @@ export default {
         this.message(true, "请选择需要解锁的货", "error");
         return;
       }
-      _this.addstock.forEach(function(c) {
+      _this.addstock.forEach(function (c) {
         productids.push(c.productid);
         ids.push(c.stockid);
         nums.push(c.num);
@@ -1296,7 +1392,7 @@ export default {
         });
     },
     // 查询合同
-    async getContract() {
+    async getContract () {
       let _this = this;
       _this.listLoading = true;
       let params = new FormData();
@@ -1336,7 +1432,7 @@ export default {
         });
     },
     // 表单提交
-    submitForm(formName) {
+    submitForm (formName) {
       // console.log(this.gridData, 'this.gridData');
 
       this.$refs[formName].validate(valid => {
@@ -1428,7 +1524,7 @@ export default {
       });
     },
 
-    warehouseSelect() {
+    warehouseSelect () {
       let params = new FormData();
       let memberId = this.memberId;
       params.append("memberId", memberId);
@@ -1452,12 +1548,12 @@ export default {
         });
     },
 
-    arraySpanMethod({ row, column, rowIndex, columnIndex }) {
+    arraySpanMethod ({ row, column, rowIndex, columnIndex }) {
       if (columnIndex === 9) {
         row.total = (row.price * row.weight).toFixed(2);
       }
     },
-    getSummaries(param) {
+    getSummaries (param) {
       const { columns, data } = param;
       const sums = [];
       columns.forEach((column, index) => {
@@ -1511,11 +1607,11 @@ export default {
     },
 
     // 重置
-    resetForm(formName) {
+    resetForm (formName) {
       this.$refs[formName].resetFields();
     },
     // 显示添加合同窗口
-    showDialogForm() {
+    showDialogForm () {
       if (this.addstock.length === 0) {
         this.message(true, "请选择需要生成销售订单的商品", "error");
         return;
@@ -1563,7 +1659,7 @@ export default {
       // this.findSaleContractWarehouse();
     },
     //搜索产品接口
-    findProduct() {
+    findProduct () {
       let params = new FormData();
 
       params.append("memberId", this.memberId);
@@ -1588,7 +1684,7 @@ export default {
         });
     },
     //读取产品规格接口
-    findProductSpec() {
+    findProductSpec () {
       let params = new FormData();
       params.append("memberId", this.memberId);
       this.axios
@@ -1614,7 +1710,7 @@ export default {
       return;
     },
     //读取产品厂家接口
-    findProductFactory() {
+    findProductFactory () {
       let params = new FormData();
       params.append("memberId", this.memberId);
       //删除成功走读取接口
@@ -1641,7 +1737,7 @@ export default {
       return;
     },
     //读取产品牌号
-    findProductMark() {
+    findProductMark () {
       let params = new FormData();
       params.append("memberId", this.memberId);
       //删除成功走读取接口
@@ -1669,14 +1765,14 @@ export default {
     },
 
     //读取合同仓库
-    findSaleContractWarehouse() {
+    findSaleContractWarehouse () {
       let params = new FormData();
       params.append("memberId", this.memberId);
       //删除成功走读取接口
       this.axios
         .post(
           process.env.API_ROOT +
-            "/SaleContractApi/v1/findSaleContractWarehouse",
+          "/SaleContractApi/v1/findSaleContractWarehouse",
           params
         )
         .then(res => {
@@ -1698,7 +1794,7 @@ export default {
       return;
     },
 
-    getCustomerList() {
+    getCustomerList () {
       let _this = this;
       var usr = this.usr;
       let memberId = "";
@@ -1730,7 +1826,7 @@ export default {
         });
     },
 
-    querySearchAsync(queryString, cb) {
+    querySearchAsync (queryString, cb) {
       var customerList = this.customerList;
       var results = queryString
         ? customerList.filter(this.createStateFilter(queryString))
@@ -1741,7 +1837,7 @@ export default {
         cb(results);
       }, 500);
     },
-    queryProductNameSearchAsync(queryString, cb) {
+    queryProductNameSearchAsync (queryString, cb) {
       var productNameList = this.productNameList;
       var results = queryString
         ? productNameList.filter(this.createStateFilter(queryString))
@@ -1752,7 +1848,7 @@ export default {
         cb(results);
       }, 500);
     },
-    queryProductfactorySearchAsync(queryString, cb) {
+    queryProductfactorySearchAsync (queryString, cb) {
       var productfactoryList = this.productfactoryList;
       var results = queryString
         ? productfactoryList.filter(this.createStateFilter(queryString))
@@ -1764,7 +1860,7 @@ export default {
       }, 500);
     },
 
-    queryProductspecSearchAsync(queryString, cb) {
+    queryProductspecSearchAsync (queryString, cb) {
       var productspecList = this.productspecList;
       var results = queryString
         ? productspecList.filter(this.createStateFilter(queryString))
@@ -1776,7 +1872,7 @@ export default {
       }, 500);
     },
 
-    queryProductmarkSearchAsync(queryString, cb) {
+    queryProductmarkSearchAsync (queryString, cb) {
       var productmarkList = this.productmarkList;
       var results = queryString
         ? productmarkList.filter(this.createStateFilter(queryString))
@@ -1787,7 +1883,7 @@ export default {
         cb(results);
       }, 500);
     },
-    queryWarehouseSearchAsync(queryString, cb) {
+    queryWarehouseSearchAsync (queryString, cb) {
       var warehouseList = this.warehouseList;
       var results = queryString
         ? warehouseList.filter(this.createStateFilter(queryString))
@@ -1799,7 +1895,7 @@ export default {
       }, 500);
     },
 
-    querySaleContractWarehouseSearchAsync(queryString, cb) {
+    querySaleContractWarehouseSearchAsync (queryString, cb) {
       var saleContractWarehouseList = this.saleContractWarehouseList;
       var results = queryString
         ? saleContractWarehouseList.filter(this.createStateFilter(queryString))
@@ -1811,29 +1907,29 @@ export default {
       }, 500);
     },
 
-    createStateFilter(queryString) {
+    createStateFilter (queryString) {
       return state => {
         return state.value.indexOf(queryString) >= 0;
       };
     },
-    handleSelectCustomer(item) {
+    handleSelectCustomer (item) {
       this.ruleForm.customerId = item.id;
     },
 
-    handleSelectKeyword(item) {
+    handleSelectKeyword (item) {
       this.filters.keyword = item.value;
     },
 
-    handleSelectTdWarehouse(item) {
+    handleSelectTdWarehouse (item) {
       this.tdruleForm.warehouseName = item.value;
       this.tdruleForm.warehouseId = item.id;
     },
 
-    handleRowChange() {
+    handleRowChange () {
       this.rowShow = false;
     },
     // 添加合同
-    async addContract() {
+    async addContract () {
       let _this = this;
       let memberId = "";
       var usr = this.usr;
@@ -1883,7 +1979,7 @@ export default {
         });
     },
 
-    handleSelectionChange(val) {
+    handleSelectionChange (val) {
       // this.contactIds = [];
       // this.contractNos = [];
       this.addstock = [];
@@ -1916,7 +2012,7 @@ export default {
       }
     },
 
-    checkboxProcessInit(row, index) {
+    checkboxProcessInit (row, index) {
       if (row.processstatus) {
         return 0; //不可勾选
       } else {
@@ -1924,14 +2020,14 @@ export default {
       }
     },
 
-    checkboxDeliveryInit(row, index) {
+    checkboxDeliveryInit (row, index) {
       if (row.deliverystatus === "运输中") {
         return 0; //不可勾选
       } else {
         return 1; //可勾选
       }
     },
-    submitTermForm() {
+    submitTermForm () {
       if (this.content.length == 0) {
         this.message(true, "合同条款不能为空", "error");
       } else {
@@ -1954,29 +2050,29 @@ export default {
           });
       }
     },
-    onEditorBlur(editor) {
+    onEditorBlur (editor) {
       this.editor = editor;
     },
-    message(ifshow, msg, type) {
+    message (ifshow, msg, type) {
       this.$message({
         showClose: ifshow,
         message: msg,
         type: type
       });
     },
-    onEditorFocus(editor) {
+    onEditorFocus (editor) {
       this.editor = editor;
       editor.root.contentEditable = true;
     },
-    onEditorReady(editor) {
+    onEditorReady (editor) {
       this.editor = editor;
     },
-    onEditorChange(editor) {
+    onEditorChange (editor) {
       this.editor = editor;
       this.currentLength = editor.text.replace("\n", "").length;
       this.content = editor.html;
     },
-    timestampToTime: function(timestamp) {
+    timestampToTime: function (timestamp) {
       var date = new Date(timestamp); //时间戳为10位需*1000，时间戳为13位的话不需乘1000
       var Y = date.getFullYear() + "-";
       var M =
@@ -1988,12 +2084,12 @@ export default {
     },
 
     // 每页大小改变时触发
-    handleSizeChange(val) {
+    handleSizeChange (val) {
       this.pageSize = val;
       this.getContract();
     },
     // 当前页码改变时触发
-    handleCurrentChange(val) {
+    handleCurrentChange (val) {
       this.startPage = val;
       this.getContract();
     },
@@ -2004,7 +2100,7 @@ export default {
     /**
      * ifshow: true/false msg: message  type: error/error/success
      */
-    message(ifshow, msg, type) {
+    message (ifshow, msg, type) {
       this.$message({
         showClose: ifshow,
         message: msg,
@@ -2012,7 +2108,7 @@ export default {
       });
     },
     //删除名称
-    delProductname(itemId) {
+    delProductname (itemId) {
       let params = new FormData();
       params.append("id", itemId);
       params.append("memberId", this.memberId);
@@ -2031,7 +2127,7 @@ export default {
         });
     },
     // 删除规格
-    delProductspec(itemId) {
+    delProductspec (itemId) {
       let params = new FormData();
       params.append("id", itemId);
       params.append("memberId", this.memberId);
@@ -2051,10 +2147,10 @@ export default {
             return;
           }
         })
-        .catch(error => {});
+        .catch(error => { });
     },
     // 删除厂家
-    delProductfactory(itemId) {
+    delProductfactory (itemId) {
       let params = new FormData();
       params.append("id", itemId);
       params.append("memberId", this.memberId);
@@ -2076,7 +2172,7 @@ export default {
         });
     },
     // 删除牌号
-    delProductmark(itemId) {
+    delProductmark (itemId) {
       let params = new FormData();
       params.append("id", itemId);
       params.append("memberId", this.memberId);
@@ -2093,7 +2189,7 @@ export default {
         });
     },
     // 删除仓库
-    delSaleContractWarehouse(itemId) {
+    delSaleContractWarehouse (itemId) {
       let params = new FormData();
       params.append("id", itemId);
       params.append("memberId", this.memberId);
@@ -2109,7 +2205,7 @@ export default {
           }
         });
     },
-    searchTime() {
+    searchTime () {
       if (
         this.filters.validateTime &&
         this.filters.validateTime[0] &&
@@ -2126,7 +2222,7 @@ export default {
     }
   },
 
-  mounted() {
+  mounted () {
     if (this.$cookie.get("user") !== null) {
       this.usr = JSON.parse(this.$cookie.get("user"));
     }
@@ -2141,7 +2237,7 @@ export default {
     this.getCustomerList();
   },
   computed: {
-    nowLength: function() {
+    nowLength: function () {
       if (Number(this.currentLength) - this.maxLength >= 0) {
         this.$refs.myTextEditor.quill.root.contentEditable = false;
         let currentText = this.$refs.myTextEditor.quill.root.innerText;
@@ -2152,7 +2248,7 @@ export default {
 
       return this.currentLength;
     },
-    SurplusLength: function() {
+    SurplusLength: function () {
       // 计算属性 获得当前输入字符长度
       let num = this.maxLength - Number(this.currentLength);
       if (num > 0) {
@@ -2162,16 +2258,16 @@ export default {
       }
     },
 
-    addShow() {
+    addShow () {
       return this.getHasRule("生成现货销售合同");
     },
-    findShow() {
+    findShow () {
       return this.getHasRule("查询库存");
     },
-    lockShow() {
+    lockShow () {
       return this.getHasRule("锁货");
     },
-    unlockShow() {
+    unlockShow () {
       return this.getHasRule("解锁");
     }
   }
