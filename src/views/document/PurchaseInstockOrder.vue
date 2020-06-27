@@ -83,12 +83,13 @@
         <el-table-column prop="purchaseno" label="采购单号" sortable width="200"></el-table-column>
         <el-table-column prop="contractno" label="销售合同号" sortable width="150" v-if="isshow"></el-table-column>
         <el-table-column prop="customername" label="客户名称" sortable width="250" v-if="isshow"></el-table-column>
-        <el-table-column prop="purchaseweight" label="入库重量(吨)" sortable width="150"></el-table-column>
-        <el-table-column prop="purchaseamount" label="采购金额(元)" sortable width="150"></el-table-column>
+        <el-table-column prop="totalnum" label="入库数量(元)" sortable width="150"></el-table-column>
+        <el-table-column prop="totalweight" label="入库重量(吨)" sortable width="150"></el-table-column>
+        <el-table-column prop="totalamount" label="入库金额(元)" sortable width="150"></el-table-column>
         <el-table-column prop="payment" label="付款方式" sortable width="100"></el-table-column>
-        <el-table-column prop="purchasedate" label="入库日期" sortable width="150">
+        <el-table-column prop="crt" label="入库日期" sortable width="150">
           <template slot-scope="scope">
-            <span>{{scope.row.purchasedate, 'yyyy-MM-dd' | dataFormat}}</span>
+            <span>{{scope.row.crt, 'yyyy-MM-dd' | dataFormat}}</span>
           </template>
         </el-table-column>
         <el-table-column prop="crt" label="创建日期" sortable width="200">
@@ -871,7 +872,7 @@ export default {
       this.axios
         .post(
           process.env.API_ROOT +
-            "/PurchaseContractApi/v1/findPurchaseContractByPage",
+            "/PurchaseContractApi/v1/findPurchaseInstockByPage",
           params
         )
         .then(response => {

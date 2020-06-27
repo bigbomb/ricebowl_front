@@ -86,6 +86,11 @@
                          sortable
                          fixed="left"
                          width="250"></el-table-column>
+                         <el-table-column prop="supplyerid"
+                         label="供应商id"
+                         sortable
+                         fixed="left"
+                         width="250" v-if="isshow"></el-table-column>
         <el-table-column prop="purchaseno"
                          label="采购合同号"
                          sortable
@@ -213,34 +218,46 @@
                  width="1250px"
                  :append-to-body="true">
         <div>
-          <el-form :model="puchaseinstockForm"
+          <el-form :model="purchaseinstockForm"
                    status-icon
-                   ref="puchaseinstockForm"
+                   ref="purchaseinstockForm"
                    :inline="true"
                    label-width="100px"
                    class="demo-form-inline">
             <el-col :span="6">
               <el-form-item label="采购合同号"
                             prop="purchaseno">
-                <span>{{puchaseinstockForm.purchaseno}}</span>
+                <span>{{purchaseinstockForm.purchaseno}}</span>
               </el-form-item>
             </el-col>
+            <!-- <el-col :span="6">
+              <el-form-item label="销售合同号"
+                            prop="contractno">
+                <span>{{purchaseinstockForm.contractno}}</span>
+              </el-form-item>
+            </el-col> -->
             <el-col :span="6">
               <el-form-item label="供应商名称"
                             prop="supplyername">
-                <span>{{puchaseinstockForm.supplyername}}</span>
+                <span>{{purchaseinstockForm.supplyername}}</span>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6" v-if="isshow">
+              <el-form-item label="供应商id"
+                            prop="supplyerid">
+                <span>{{purchaseinstockForm.supplyerid}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="采购日期"
                             prop="purchasedate">
-                <span>{{puchaseinstockForm.purchasedate, 'yyyy-MM-dd' | dataFormat}}</span>
+                <span>{{purchaseinstockForm.purchasedate, 'yyyy-MM-dd' | dataFormat}}</span>
               </el-form-item>
             </el-col>
             <el-col :span="6">
               <el-form-item label="付款方式"
                             prop="payment">
-                <span>{{puchaseinstockForm.payment}}</span>
+                <span>{{purchaseinstockForm.payment}}</span>
                 <!-- <el-select class="autoinputwidth" v-model="supplyerForm.payment" placeholder="请选择">
                   <el-option label="电汇" value="电汇"></el-option>
                   <el-option label="支票" value="支票"></el-option>
@@ -258,11 +275,11 @@
                         highlight-current-row
                         :summary-method="getpurchaseSummaries">
                 <!-- :summary-method="getpurchaseSummaries" -->
-                <!-- <el-table-column property="status" label="状态" width="100">
+                <el-table-column property="id" label="id" width="100" v-if="isshow">
                   <template slot-scope="scope">
-                    <span>{{scope.row.status}}</span>
+                    <span>{{scope.row.id}}</span>
                   </template>
-                </el-table-column>-->
+                </el-table-column>
 
                 <el-table-column property="productname"
                                  label="名称"
@@ -399,7 +416,7 @@
                     <span>{{scope.row.status}}</span>
                   </template>
                 </el-table-column>-->
-
+                  
                 <el-table-column property="productname"
                                  label="名称"
                                  width="200">
@@ -521,6 +538,13 @@
                               placeholder="请输入内容"></el-input>
                   </template>
                 </el-table-column>
+                <el-table-column property="id"
+                                 label="id"
+                                 width="100" v-if="isshow">
+                  <template slot-scope="scope">
+                    <span>{{scope.row.id}}</span>
+                  </template>
+                </el-table-column>
                 <el-table-column fixed="right"
                                  label="操作"
                                  width="120">
@@ -536,7 +560,7 @@
         </div>
         <div slot="footer"
              class="dialog-footer">
-          <el-button @click="closeDialog('puchaseinstockForm')">取 消</el-button>
+          <el-button @click="closeDialog('purchaseinstockForm')">取 消</el-button>
 
           <el-button @click="submitInstockForm()">保存</el-button>
         </div>
@@ -970,6 +994,8 @@ export default {
         purchaseno: "",
         memberId: "",
         customername: "",
+        supplyerid:"",
+        supplyername:"",
         purchaseweight: "",
         purchaseamount: "",
         purchasedate: "",
@@ -978,7 +1004,7 @@ export default {
         purchasestatus: ""
       },
 
-      puchaseinstockForm: {
+      purchaseinstockForm: {
         id: "",
         contractno: "",
         purchaseno: "",
@@ -1142,7 +1168,7 @@ export default {
         this.jgdialogFormVisible = false;
       } else if (formName === "tdruleForm") {
         this.tddialogFormVisible = false;
-      } else if (formName === "puchaseinstockForm") {
+      } else if (formName === "purchaseinstockForm") {
         this.puchaseinstockVisible = false;
       }
 
@@ -1287,6 +1313,7 @@ export default {
     },
     addpruchaseinstockRow (row) {
       let d = {
+        id:row.id,
         productname: row.productname,
         productspec: row.productspec,
         productfactory: row.productfactory,
@@ -1427,7 +1454,6 @@ export default {
 
     // 入库明细保存
     submitInstockForm () {
-      debugger
       for (let i = 0; i < this.instockGridData.length; i++) {
         let item = this.instockGridData[i];
         if (item.weight === "") {
@@ -1523,15 +1549,17 @@ export default {
     purchaseInstockShow (row) {
       this.puchaseinstockVisible = true;
       this.thistitle = "新增采购入库单";
-      this.puchaseinstockForm.id = row.id;
-      this.puchaseinstockForm.purchaseno = row.purchaseno;
-      this.puchaseinstockForm.supplyername = row.supplyername;
-      this.puchaseinstockForm.purchaseweight = row.purchaseweight;
-      this.puchaseinstockForm.purchaseamount = row.purchaseamount;
-      this.puchaseinstockForm.purchasedate = row.purchasedate;
-      this.puchaseinstockForm.payment = row.payment;
-      this.puchaseinstockForm.remark = row.remark;
-      this.puchaseinstockForm.purchasestatus = row.purchasestatus;
+      this.purchaseinstockForm.id = row.id;
+      this.purchaseinstockForm.purchaseno = row.purchaseno;
+      this.purchaseinstockForm.contractno = row.contractno
+      this.purchaseinstockForm.supplyername = row.supplyername;
+      this.purchaseinstockForm.supplyerid = row.supplyerid
+      this.purchaseinstockForm.purchaseweight = row.purchaseweight;
+      this.purchaseinstockForm.purchaseamount = row.purchaseamount;
+      this.purchaseinstockForm.purchasedate = row.purchasedate;
+      this.purchaseinstockForm.payment = row.payment;
+      this.purchaseinstockForm.remark = row.remark;
+      this.purchaseinstockForm.purchasestatus = row.purchasestatus;
       if (this.purchaseContractGridData.length > 0) {
         this.purchaseContractGridData = [];
       }
@@ -1960,7 +1988,7 @@ export default {
       };
     },
     handleSelect (item) {
-      this.supplyerForm.id = item.id;
+      this.supplyerForm.supplyerid = item.id;
     },
 
     handleSelect1 (item) {
@@ -2022,7 +2050,7 @@ export default {
         memberId = usr.memberId;
       }
       let params = new FormData();
-      params.append("id", _this.supplyerForm.id);
+      params.append("supplyerid", _this.supplyerForm.supplyerid);
       params.append("memberid", memberId);
       params.append("contractno", _this.supplyerForm.contractno);
       params.append("purchaseno", _this.supplyerForm.purchaseno);
@@ -2070,16 +2098,16 @@ export default {
       }
       let params = new FormData();
       params.append("memberid", memberId);
-      params.append("contractno", _this.puchaseinstockForm.contractno);
-      params.append("purchaseno", _this.puchaseinstockForm.purchaseno);
-      params.append("supplyerid", _this.puchaseinstockForm.id);
-      params.append("supplyername", _this.puchaseinstockForm.supplyername);
-      // params.append("purchasedate", new Date(_this.puchaseinstockForm.purchasedate));
-      params.append("payment", _this.puchaseinstockForm.payment);
+      // params.append("contractno", _this.purchaseinstockForm.contractno);
+      params.append("purchaseno", _this.purchaseinstockForm.purchaseno);
+      params.append("supplyerid", _this.purchaseinstockForm.supplyerid);
+      params.append("supplyername", _this.purchaseinstockForm.supplyername);
+      // params.append("purchasedate", new Date(_this.purchaseinstockForm.purchasedate));
+      params.append("payment", _this.purchaseinstockForm.payment);
       params.append("instocktotalweight", _this.instocktotalWeight);
       params.append("instocktotalamount", _this.instocktotalAmount);
       params.append("instocktotalnum", _this.instocktotalNum);
-      params.append("remark", _this.supplyerForm.remark);
+      params.append("remark", _this.purchaseinstockForm.remark);
       params.append(
         "purchaseContractDetail",
         JSON.stringify(_this.instockGridData)
@@ -2100,8 +2128,8 @@ export default {
 
           if (response.data.status === 200) {
             this.message(true, response.data.msg, "success");
-            _this.resetForm("supplyerForm");
-            _this.supplyDialogFormVisible = false;
+            _this.resetForm("purchaseinstockForm");
+            _this.puchaseinstockVisible = false;
           } else {
             _this.message(true, response.data.msg, "error");
           }
